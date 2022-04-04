@@ -2,21 +2,23 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <sqlite3.h>
+
+#include "dbreader.h"
 
 using namespace std;
 using boost::property_tree::ptree;
+using namespace Kaco;
+
+constexpr char dbpath_app[] = "../files/config-app.db3";
+constexpr char dbpath_pds2[] = "../files/config-pds2.db3";
 
 int main(int argc, char* argv[])
 {
-    sqlite3 *db;
-    auto rc = sqlite3_open("../files/config-app.db3", &db);
-    if(rc)
-        cout << "Can't open database: " << sqlite3_errmsg(db) << endl;
-    else    
-        cout << "Opened database successfully" << endl; 
+    DBReader dbreader_app;
+    dbreader_app.connect(dbpath_app);
 
-    sqlite3_close(db);
+    DBReader dbreader_pds2;
+    dbreader_pds2.connect(dbpath_pds2);
 
     return 0;
 }
