@@ -20,5 +20,8 @@ int main(int argc, char* argv[])
     DBReader dbreader_pds2;
     dbreader_pds2.connect(dbpath_pds2);
 
+    auto rc = dbreader_app.sqlExec("select * from sqlite_master where tbl_name = 'accounts';", nullptr);
+    cout << __FUNCTION__ << "(" << __LINE__ << "): " << "sqlExec(): rc = " << (rc == SQLITE_OK ? "TRUE" : "FALSE") << endl;
+
     return 0;
 }
