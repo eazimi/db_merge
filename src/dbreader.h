@@ -26,6 +26,7 @@ namespace Kaco
             bool connect(string dbPath);
             int sqlExec(string sql, ExecCallback cb);
             int dump_db(char *fileName);
+            void run_db_command(string dbPath, string output, string command);
     };
 
 

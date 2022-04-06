@@ -1,6 +1,7 @@
 #include "dbreader.h"
 #include <iostream>
 #include <cstring>
+#include <sstream>
 
 namespace Kaco
 {
@@ -154,6 +155,13 @@ namespace Kaco
         if (fp)
             fclose(fp);
         return ret;
+    }
+
+    void DBReader::run_db_command(string dbPath, string output, string command)
+    {
+        stringstream ss;
+        ss << "sqlite3 " << dbPath << " \"" << command << " \" > " << output;
+        system(ss.str().c_str());
     }
 
 } // namespace Kaco
