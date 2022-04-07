@@ -164,4 +164,12 @@ namespace Kaco
         system(ss.str().c_str());
     }
 
+
+    void DBReader::get_db_differences(string dbPath1, string dbPath2, string output)
+    {
+        stringstream ss;
+        ss << "sqldiff --transaction " << dbPath1 << " " << dbPath2 << " > " << output;
+        system(ss.str().c_str());
+    }
+
 } // namespace Kaco
