@@ -28,5 +28,10 @@ int main(int argc, char *argv[])
 
     dbreader_app.get_db_differences("../files/config-app.db3", "../files/config-pds2.db3", "diff.sql");
 
+    auto tables = dbreader_app.get_dbTables();
+    cout << "tables of config-app: " << endl;
+    for(auto str:tables)
+        cout << "   " << str << endl;
+    
     return 0;
 }

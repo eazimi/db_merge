@@ -172,4 +172,25 @@ namespace Kaco
         system(ss.str().c_str());
     }
 
+    vector<string> DBReader::get_dbTables()
+    {
+        vector<string> tables = {};
+        sqlite3_stmt *stmt_table = nullptr;
+        auto query = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;";
+        int rc = sqlite3_prepare_v2(db, query, -1, &stmt_table, nullptr);
+        if (rc == SQLITE_OK)
+        {
+            rc = sqlite3_step(stmt_table);
+            while(rc == SQLITE_ROW)
+            {
+                auto data = (const char*) sqlite3_column_text(stmt_table, 0);
+                tables.push_back(data);
+                rc = sqlite3_step(stmt_table);
+            }
+        }
+        if (stmt_table)
+            sqlite3_finalize(stmt_table);
+        return tables;
+    }
+
 } // namespace Kaco

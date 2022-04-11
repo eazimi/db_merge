@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include <string>
 #include <functional>
+#include <vector>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ namespace Kaco
             int dump_db(char *fileName);
             void run_db_command(string dbPath, string output, string command);
             void get_db_differences(string dbPath1, string dbPath2, string output);
+            vector<string> get_dbTables();
     };
 
 
