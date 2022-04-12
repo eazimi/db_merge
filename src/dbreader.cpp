@@ -4,6 +4,7 @@
 #include <sstream>
 #include <memory>
 
+#define SEPERATOR "|"
 namespace Kaco
 {
     DBReader::~DBReader()
@@ -44,14 +45,14 @@ namespace Kaco
     {
         vector<string> result = {};
 
-        auto cb = [](void *buffer, int cnt, char ** row, char ** cols)
+        auto cb = [](void *buffer, int cnt, char **row, char **cols)
         {
             stringstream ssdata;
             for (auto i = 0; i < cnt; i++)
             {
-                if(i)
+                if (i)
                     ssdata << "|";
-                if(row[i])
+                if (row[i])
                     ssdata << row[i];
             }
             (*((vector<string> *)buffer)).push_back(ssdata.str());
@@ -59,7 +60,7 @@ namespace Kaco
         };
         // char *zErrMsg = (char *)(string("ERROR::" + cmd)).c_str());
         char *zErrMsg = (char *)(("ERROR::" + cmd).c_str());
-        
+
         auto rc = sqlite3_exec(db, cmd.c_str(), cb, (void *)&result, &zErrMsg);
 
         return result;
@@ -94,8 +95,8 @@ namespace Kaco
         ret = sqlite3_step(stmt_table);
         while (ret == SQLITE_ROW)
         {
-            data = (const char*) sqlite3_column_text(stmt_table, 0);
-            table_name = (const char*) sqlite3_column_text(stmt_table, 1);
+            data = (const char *)sqlite3_column_text(stmt_table, 0);
+            table_name = (const char *)sqlite3_column_text(stmt_table, 1);
             if (!data || !table_name)
             {
                 ret = -1;
@@ -121,7 +122,7 @@ namespace Kaco
                 {
                     if (index)
                         strcat(cmd, ",");
-                    data = (const char*) sqlite3_column_text(stmt_data, index);
+                    data = (const char *)sqlite3_column_text(stmt_data, index);
 
                     if (data)
                     {
@@ -158,7 +159,7 @@ namespace Kaco
         ret = sqlite3_step(stmt_table);
         while (ret == SQLITE_ROW)
         {
-            data = (const char*) sqlite3_column_text(stmt_table, 0);
+            data = (const char *)sqlite3_column_text(stmt_table, 0);
             if (!data)
             {
                 ret = -1;
@@ -190,7 +191,6 @@ namespace Kaco
         system(ss.str().c_str());
     }
 
-
     void DBReader::get_db_differences(string dbPath1, string dbPath2, string output)
     {
         stringstream ss;
@@ -207,9 +207,9 @@ namespace Kaco
         if (rc == SQLITE_OK)
         {
             rc = sqlite3_step(stmt_table);
-            while(rc == SQLITE_ROW)
+            while (rc == SQLITE_ROW)
             {
-                auto data = (const char*) sqlite3_column_text(stmt_table, 0);
+                auto data = (const char *)sqlite3_column_text(stmt_table, 0);
                 tables.push_back(data);
                 rc = sqlite3_step(stmt_table);
             }
@@ -227,12 +227,22 @@ namespace Kaco
         return tableSchema;
     }
 
-    vector<string> DBReader::getTriggers(string tableName)
+    vector<pair<string, string>> DBReader::getTriggers(string tableName)
     {
         stringstream ss;
         ss << "SELECT name, sql from sqlite_master WHERE type='trigger' AND tbl_name='" << tableName << "';";
-        auto triggers = sql_exec(ss.str());
+        auto result = sql_exec(ss.str());
+
+        vector<pair<string, string>> triggers{};
+        for (auto str : result)
+        {
+            auto pos = str.find(SEPERATOR);
+            auto name = str.substr(0, pos);
+            auto sql = str.substr(pos + 1);
+            triggers.push_back(std::forward<pair<string, string>>({name, sql}));
+        }
+
         return triggers;
     }
-    
+
 } // namespace Kaco

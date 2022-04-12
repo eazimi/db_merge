@@ -1,4 +1,5 @@
 #include <iostream>
+#include <tuple>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
         cout << str << endl;
 #endif
 
-#define PRINT_TABLE_SCHEMA
+// #define PRINT_TABLE_SCHEMA
 #ifdef PRINT_TABLE_SCHEMA
     auto tableSchema = dbreader_app.getTableSchema("accounts");
     cout << "schema of accounts table: " << endl;
@@ -53,12 +54,15 @@ int main(int argc, char *argv[])
         cout << str << endl;
 #endif
 
-// #define GET_TRIGGERS
+#define GET_TRIGGERS
 #ifdef GET_TRIGGERS
     auto triggers = dbreader_app.getTriggers("accounts");
     cout << "triggers of account table: " << endl;
     for (auto str : triggers)
-        cout << str << endl;
+    {
+        cout << get<0>(str) << endl;
+        cout << get<1>(str) << endl;
+    }
 #endif
 
     return 0;
