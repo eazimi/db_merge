@@ -42,23 +42,23 @@ int main(int argc, char *argv[])
     auto tables = dbreader_app.get_dbTables();
     cout << "tables of config-app: " << endl;
     for (auto str : tables)
-        cout << "   " << str << endl;
+        cout << str << endl;
 #endif
 
 // #define PRINT_TABLE_SCHEMA
 #ifdef PRINT_TABLE_SCHEMA
     auto tableSchema = dbreader_app.getTableSchema("accounts");
-    cout << "schema accounts: " << endl;
+    cout << "schema of accounts table: " << endl;
     for (auto str : tableSchema)
-        cout << "   " << str << endl;
+        cout << str << endl;
 #endif
 
 #define GET_TRIGGERS
 #ifdef GET_TRIGGERS
     auto triggers = dbreader_app.getTriggers("accounts");
-    cout << "triggers account: " << endl;
+    cout << "triggers of account table: " << endl;
     for (auto str : triggers)
-        cout << "   " << str << endl;
+        cout << str << endl;
 #endif
 
     return 0;

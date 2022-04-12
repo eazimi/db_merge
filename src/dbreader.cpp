@@ -26,7 +26,7 @@ namespace Kaco
         return true;
     }
 
-    int DBReader::sqlExec(string sql, ExecCallback cb)
+    int DBReader::sql_exec(string sql, ExecCallback cb)
     {
         char *zErrMsg = 0;
         auto rc = sqlite3_exec(db, sql.c_str(), cb, this, &zErrMsg);
@@ -38,6 +38,31 @@ namespace Kaco
             sqlite3_free(zErrMsg);
 
         return rc;
+    }
+
+    vector<string> DBReader::sql_exec(string cmd)
+    {
+        vector<string> result = {};
+
+        auto cb = [](void *buffer, int cnt, char ** row, char ** cols)
+        {
+            stringstream ssdata;
+            for (auto i = 0; i < cnt; i++)
+            {
+                if(i)
+                    ssdata << "|";
+                if(row[i])
+                    ssdata << row[i];
+            }
+            (*((vector<string> *)buffer)).push_back(ssdata.str());
+            return 0;
+        };
+        // char *zErrMsg = (char *)(string("ERROR::" + cmd)).c_str());
+        char *zErrMsg = (char *)(("ERROR::" + cmd).c_str());
+        
+        auto rc = sqlite3_exec(db, cmd.c_str(), cb, (void *)&result, &zErrMsg);
+
+        return result;
     }
 
     int DBReader::dump_db(char *fileName)
@@ -223,29 +248,10 @@ namespace Kaco
 
     vector<string> DBReader::getTriggers(string tableName)
     {
-        vector<string> triggers = {};
-        
         stringstream ss;
         ss << "SELECT name, sql from sqlite_master WHERE type='trigger' AND tbl_name='" << tableName << "';";
-        
-        auto cb = [](void *buffer, int cnt, char ** row, char ** cols)
-        {
-            stringstream ssdata;
-            for (auto i = 0; i < cnt; i++)
-            {
-                if(i)
-                    ssdata << "|";
-                if(row[i])
-                    ssdata << row[i];
-            }
-            (*((vector<string> *)buffer)).push_back(ssdata.str());
-            return 0;
-        };
-        char *zErrMsg = const_cast<char *>(string(ss.str() + " ERROR").c_str());
-        
-        auto rc = sqlite3_exec(db, ss.str().c_str(), cb, (void *)&triggers, &zErrMsg);
-
+        auto triggers = sql_exec(ss.str());
         return triggers;
     }
-
+    
 } // namespace Kaco

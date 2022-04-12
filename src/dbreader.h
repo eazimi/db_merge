@@ -25,7 +25,8 @@ namespace Kaco
             ~DBReader();
 
             bool connect(string dbPath);
-            int sqlExec(string sql, ExecCallback cb);
+            int sql_exec(string sql, ExecCallback cb);
+            vector<string> sql_exec(string cmd);
             int dump_db(char *fileName);
             void run_db_command(string dbPath, string output, string command);
             void get_db_differences(string dbPath1, string dbPath2, string output);
