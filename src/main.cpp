@@ -28,10 +28,21 @@ int main(int argc, char *argv[])
 
     dbreader_app.get_db_differences("../files/config-app.db3", "../files/config-pds2.db3", "diff.sql");
 
+// #define PRINT_TABLES
+#ifdef PRINT_TABLES
     auto tables = dbreader_app.get_dbTables();
     cout << "tables of config-app: " << endl;
-    for(auto str:tables)
+    for (auto str : tables)
         cout << "   " << str << endl;
-    
+#endif
+
+#define PRINT_TABLE_SCHEMA 
+#ifdef PRINT_TABLE_SCHEMA
+    auto tableSchema = dbreader_app.getTableSchema("accounts");
+    cout << ".schema accounts: " << endl;
+    for (auto str : tableSchema)
+        cout << "   " << str << endl;
+#endif
+
     return 0;
 }

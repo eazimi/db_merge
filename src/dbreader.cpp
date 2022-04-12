@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include <memory>
 
 namespace Kaco
 {
@@ -191,6 +192,33 @@ namespace Kaco
         if (stmt_table)
             sqlite3_finalize(stmt_table);
         return tables;
+    }
+
+    vector<string> DBReader::getTableSchema(string tableName)
+    {
+        vector<string> tableSchema = {};
+        
+        stringstream ss;
+        ss << "PRAGMA table_info(" << tableName << ");";
+        
+        auto cb = [](void *buffer, int cnt, char ** row, char ** cols)
+        {
+            stringstream ssdata;
+            for (auto i = 0; i < cnt; i++)
+            {
+                if(i)
+                    ssdata << "|";
+                if(row[i])
+                    ssdata << row[i];
+            }
+            (*((vector<string> *)buffer)).push_back(ssdata.str());
+            return 0;
+        };
+        char *zErrMsg = const_cast<char *>(string(ss.str() + " ERROR").c_str());
+        
+        auto rc = sqlite3_exec(db, ss.str().c_str(), cb, (void *)&tableSchema, &zErrMsg);
+
+        return tableSchema;
     }
 
 } // namespace Kaco

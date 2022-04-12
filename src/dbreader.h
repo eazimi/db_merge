@@ -30,6 +30,7 @@ namespace Kaco
             void run_db_command(string dbPath, string output, string command);
             void get_db_differences(string dbPath1, string dbPath2, string output);
             vector<string> get_dbTables();
+            vector<string> getTableSchema(string tableName);
     };
 
 
