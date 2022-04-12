@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
         cout << str << endl;
 #endif
 
-#define GET_TRIGGERS
+// #define GET_TRIGGERS
 #ifdef GET_TRIGGERS
     auto triggers = dbreader_app.getTriggers("accounts");
     cout << "triggers of account table: " << endl;
@@ -63,6 +63,14 @@ int main(int argc, char *argv[])
         cout << get<0>(str) << endl;
         cout << get<1>(str) << endl;
     }
+#endif
+
+#define GET_INDICES
+#ifdef GET_INDICES
+    auto indices = dbreader_app.getIndices("metaInfo");
+    cout << "indices of metaInfo table: " << endl;
+    for (auto str : indices)
+        cout << str << endl;
 #endif
 
     return 0;

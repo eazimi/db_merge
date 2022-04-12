@@ -51,14 +51,13 @@ namespace Kaco
             for (auto i = 0; i < cnt; i++)
             {
                 if (i)
-                    ssdata << "|";
+                    ssdata << SEPERATOR;
                 if (row[i])
                     ssdata << row[i];
             }
             (*((vector<string> *)buffer)).push_back(ssdata.str());
             return 0;
         };
-        // char *zErrMsg = (char *)(string("ERROR::" + cmd)).c_str());
         char *zErrMsg = (char *)(("ERROR::" + cmd).c_str());
 
         auto rc = sqlite3_exec(db, cmd.c_str(), cb, (void *)&result, &zErrMsg);
@@ -243,6 +242,14 @@ namespace Kaco
         }
 
         return triggers;
+    }
+
+    vector<string> DBReader::getIndices(string tableName)
+    {
+        stringstream ss;
+        ss << "SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='" << tableName << "' ORDER BY name;";
+        auto tableIndices = sql_exec(ss.str());
+        return tableIndices;
     }
 
 } // namespace Kaco

@@ -34,6 +34,7 @@ namespace Kaco
             vector<string> get_dbTables();
             vector<string> getTableSchema(string tableName);
             vector<pair<string, string>> getTriggers(string tableName);
+            vector<string> getIndices(string tableName);
     };
 
 
