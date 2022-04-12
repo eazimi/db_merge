@@ -20,13 +20,22 @@ int main(int argc, char *argv[])
     DBReader dbreader_pds2;
     dbreader_pds2.connect(dbpath_pds2);
 
+// #define DUMP
+#ifdef DUMP
     dbreader_app.dump_db((char *)"sqlite_c_dump.sql");
+#endif
 
+// #define RUN_DB_COMMAND
+#ifdef RUN_DB_COMMAND
     dbreader_app.run_db_command("../files/config-app.db3", "dump_accounts.sql", ".dump accounts");
     dbreader_app.run_db_command("../files/config-app.db3", "schema_accounts.sql", ".schema accounts");
     dbreader_app.run_db_command("../files/config-app.db3", "schema_config-app.sql", ".schema");
+#endif
 
+// #define DB_DIFF
+#ifdef DB_DIFF
     dbreader_app.get_db_differences("../files/config-app.db3", "../files/config-pds2.db3", "diff.sql");
+#endif
 
 // #define PRINT_TABLES
 #ifdef PRINT_TABLES
