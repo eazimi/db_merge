@@ -221,4 +221,31 @@ namespace Kaco
         return tableSchema;
     }
 
+    vector<string> DBReader::getTriggers(string tableName)
+    {
+        vector<string> triggers = {};
+        
+        stringstream ss;
+        ss << "SELECT name, sql from sqlite_master WHERE type='trigger' AND tbl_name='" << tableName << "';";
+        
+        auto cb = [](void *buffer, int cnt, char ** row, char ** cols)
+        {
+            stringstream ssdata;
+            for (auto i = 0; i < cnt; i++)
+            {
+                if(i)
+                    ssdata << "|";
+                if(row[i])
+                    ssdata << row[i];
+            }
+            (*((vector<string> *)buffer)).push_back(ssdata.str());
+            return 0;
+        };
+        char *zErrMsg = const_cast<char *>(string(ss.str() + " ERROR").c_str());
+        
+        auto rc = sqlite3_exec(db, ss.str().c_str(), cb, (void *)&triggers, &zErrMsg);
+
+        return triggers;
+    }
+
 } // namespace Kaco

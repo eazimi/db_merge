@@ -31,6 +31,7 @@ namespace Kaco
             void get_db_differences(string dbPath1, string dbPath2, string output);
             vector<string> get_dbTables();
             vector<string> getTableSchema(string tableName);
+            vector<string> getTriggers(string tableName);
     };
 
 

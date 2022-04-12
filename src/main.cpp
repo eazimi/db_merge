@@ -45,11 +45,19 @@ int main(int argc, char *argv[])
         cout << "   " << str << endl;
 #endif
 
-#define PRINT_TABLE_SCHEMA 
+// #define PRINT_TABLE_SCHEMA
 #ifdef PRINT_TABLE_SCHEMA
     auto tableSchema = dbreader_app.getTableSchema("accounts");
-    cout << ".schema accounts: " << endl;
+    cout << "schema accounts: " << endl;
     for (auto str : tableSchema)
+        cout << "   " << str << endl;
+#endif
+
+#define GET_TRIGGERS
+#ifdef GET_TRIGGERS
+    auto triggers = dbreader_app.getTriggers("accounts");
+    cout << "triggers account: " << endl;
+    for (auto str : triggers)
         cout << "   " << str << endl;
 #endif
 
