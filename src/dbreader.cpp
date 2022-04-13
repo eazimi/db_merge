@@ -14,7 +14,6 @@ namespace Kaco
 
     bool DBReader::connect(string dbPath)
     {
-        this->dbPath = "";
         auto rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READONLY, 0);
         if (rc)
         {
@@ -23,7 +22,6 @@ namespace Kaco
         }
         else
             cout << "Opened database successfully: " << dbPath << endl;
-        this->dbPath = dbPath;
         return true;
     }
 
@@ -33,7 +31,7 @@ namespace Kaco
         auto rc = sqlite3_exec(db, sql.c_str(), cb, this, &zErrMsg);
 
         if (SQLITE_OK != rc)
-            cout << __FUNCTION__ << " returned error code " << rc << ": " << zErrMsg << " for " << dbPath;
+            cout << __FUNCTION__ << " returned error code " << rc << ": " << zErrMsg;
 
         if (zErrMsg)
             sqlite3_free(zErrMsg);
@@ -65,7 +63,7 @@ namespace Kaco
         return result;
     }
 
-    int DBReader::dump_db(char *fileName)
+    int DBReader::dbDump(char *fileName)
     {
         FILE *fp = NULL;
 
@@ -183,21 +181,21 @@ namespace Kaco
         return ret;
     }
 
-    void DBReader::run_db_command(string dbPath, string output, string command)
+    void DBReader::command_exec(string dbPath, string output, string command)
     {
         stringstream ss;
         ss << "sqlite3 " << dbPath << " \"" << command << " \" > " << output;
         system(ss.str().c_str());
     }
 
-    void DBReader::get_db_differences(string dbPath1, string dbPath2, string output)
+    void DBReader::dbDiff(string dbPath1, string dbPath2, string output)
     {
         stringstream ss;
         ss << "sqldiff --transaction " << dbPath1 << " " << dbPath2 << " > " << output;
         system(ss.str().c_str());
     }
 
-    vector<string> DBReader::get_dbTables()
+    vector<string> DBReader::getTables()
     {
         vector<string> tables = {};
         sqlite3_stmt *stmt_table = nullptr;

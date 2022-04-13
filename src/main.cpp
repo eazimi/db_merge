@@ -13,6 +13,9 @@ using namespace Kaco;
 constexpr char dbpath_app[] = "../files/config-app.db3";
 constexpr char dbpath_pds2[] = "../files/config-pds2.db3";
 
+#define SPACE \
+    cout << endl;
+
 int main(int argc, char *argv[])
 {
     DBReader dbreader_app;
@@ -23,24 +26,25 @@ int main(int argc, char *argv[])
 
 // #define DUMP
 #ifdef DUMP
-    dbreader_app.dump_db((char *)"sqlite_c_dump.sql");
+    dbreader_app.dbDump((char *)"sqlite_c_dump.sql");
 #endif
 
 // #define RUN_DB_COMMAND
 #ifdef RUN_DB_COMMAND
-    dbreader_app.run_db_command("../files/config-app.db3", "dump_accounts.sql", ".dump accounts");
-    dbreader_app.run_db_command("../files/config-app.db3", "schema_accounts.sql", ".schema accounts");
-    dbreader_app.run_db_command("../files/config-app.db3", "schema_config-app.sql", ".schema");
+    dbreader_app.command_exec("../files/config-app.db3", "dump_accounts.sql", ".dump accounts");
+    dbreader_app.command_exec("../files/config-app.db3", "schema_accounts.sql", ".schema accounts");
+    dbreader_app.command_exec("../files/config-app.db3", "schema_config-app.sql", ".schema");
 #endif
 
 // #define DB_DIFF
 #ifdef DB_DIFF
-    dbreader_app.get_db_differences("../files/config-app.db3", "../files/config-pds2.db3", "diff.sql");
+    dbreader_app.dbDiff("../files/config-app.db3", "../files/config-pds2.db3", "diff.sql");
 #endif
 
 // #define PRINT_TABLES
 #ifdef PRINT_TABLES
-    auto tables = dbreader_app.get_dbTables();
+    SPACE;
+    auto tables = dbreader_app.getTables();
     cout << "tables of config-app: " << endl;
     for (auto str : tables)
         cout << str << endl;
@@ -48,14 +52,16 @@ int main(int argc, char *argv[])
 
 // #define PRINT_TABLE_SCHEMA
 #ifdef PRINT_TABLE_SCHEMA
+    SPACE;
     auto tableSchema = dbreader_app.getTableSchema("accounts");
     cout << "schema of accounts table: " << endl;
     for (auto str : tableSchema)
         cout << str << endl;
 #endif
 
-// #define GET_TRIGGERS
+#define GET_TRIGGERS
 #ifdef GET_TRIGGERS
+    SPACE;
     auto triggers = dbreader_app.getTriggers("accounts");
     cout << "triggers of account table: " << endl;
     for (auto str : triggers)
@@ -67,6 +73,7 @@ int main(int argc, char *argv[])
 
 #define GET_INDICES
 #ifdef GET_INDICES
+    SPACE;
     auto indices = dbreader_app.getIndices("metaInfo");
     cout << "indices of metaInfo table: " << endl;
     for (auto str : indices)
