@@ -19,6 +19,7 @@ namespace Kaco
             // std::vector<std::string> compareSchema(std::string tableName);
             bool initialize();
             void testTableSchema();
+            void testTableIndices();
 
         private:
             std::shared_ptr<IDbReader> m_db1, m_db2;
@@ -28,7 +29,7 @@ namespace Kaco
             bool m_initialized;
 
             void initDbTableSchema();
-            bool initDbTableIndices();
+            void initDbTableIndices();
             bool initTriggers();
     };
 

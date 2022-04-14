@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define STR_SEPERATOR "##" 
+#define STR_SEPERATOR "##"
 #define CHECK_INITIALIZED(x) \
     if ((x)) { \
         cout << "DbCompare is already initialized." \
@@ -29,6 +29,27 @@ namespace Kaco
                     ss << STR_SEPERATOR;
                 ss << tableSchema[i];
             }   
+            result.insert({table, ss.str()});
+        }
+
+        return result;
+    }
+
+    static map<string, string> initTableIndices(const shared_ptr<IDbReader> &db)
+    {
+        map<string, string> result {};
+        auto tables = db->getTables();
+
+        for(auto table:tables)
+        {
+            auto tableIndex = db->getIndices(table);
+            stringstream ss;
+            for (auto i=0; i<tableIndex.size(); i++)
+            {
+                if(i)
+                    ss << STR_SEPERATOR;
+                ss << tableIndex[i];
+            }
             result.insert({table, ss.str()});
         }
 
@@ -76,11 +97,21 @@ namespace Kaco
         m_db2TblSchema = std::move(tblSchema2);
     }
 
+    void DbCompare::initDbTableIndices()
+    {
+        auto tableIndices1 = initTableIndices(m_db1);
+        m_db1TblIndices = std::move(tableIndices1);
+
+        auto tableIndices2 = initTableIndices(m_db2);
+        m_db2TblIndices = std::move(tableIndices2);
+    }
+
     bool DbCompare::initialize()
     {
         CHECK_INITIALIZED(m_initialized);
 
         initDbTableSchema();
+        initDbTableIndices();
 
         m_initialized = true;
         return m_initialized;
@@ -94,6 +125,16 @@ namespace Kaco
         cout << endl << "db2 all the table schemas: " << endl;
         for(auto str:m_db2TblSchema)
             cout << str.first << ": " << str.second << endl; 
+    }
+
+    void DbCompare::testTableIndices()
+    {
+        cout << "db1 all the table indices: " << endl;
+        for(auto str:m_db1TblIndices)
+            cout << str.first << ": " << str.second << endl; 
+        cout << endl << "db2 all the table indices: " << endl;
+        for(auto str:m_db2TblIndices)
+            cout << str.first << ": " << str.second << endl;        
     }
 
     // std::vector<std::string> DbCompare::compareSchema(std::string tableName)

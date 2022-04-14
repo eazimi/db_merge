@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
         cout << str << endl;
 #endif
 
-#define PRINT_TABLE_SCHEMA
+// #define PRINT_TABLE_SCHEMA
 #ifdef PRINT_TABLE_SCHEMA
     NEW_LINE;
     auto tableSchema = dbreader_app.getTableSchema("accounts");
@@ -77,17 +77,22 @@ int main(int argc, char *argv[])
     }
 #endif
 
-// #define GET_INDICES
+#define GET_INDICES
 #ifdef GET_INDICES
     NEW_LINE;
     auto indices = dbreader_app.getIndices("metaInfo");
-    cout << "indices of metaInfo table: " << endl;
+    cout << "indices of app::metaInfo table: " << endl;
     for (auto str : indices)
         cout << str << endl;
+    NEW_LINE;
+    indices = dbreader_pds2.getIndices("metaInfo");
+    cout << "indices of pds2::metaInfo table: " << endl;
+    for (auto str : indices)
+        cout << str << endl;    
 #endif
 
-#define DBCOMPARE_TEST_TABLES_SCHEMA
-#ifdef DBCOMPARE_TEST_TABLES_SCHEMA
+#define DBCOMPARE
+#ifdef DBCOMPARE
     NEW_LINE;
     shared_ptr<DbReader> pdb1 = make_shared<DbReader>();
     shared_ptr<DbReader> pdb2 = make_shared<DbReader>();
@@ -96,12 +101,14 @@ int main(int argc, char *argv[])
     pdb2->connect(dbpath_pds2);
 
     unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
-    
+
     NEW_LINE;
     cout << "first call to initialize()" << endl;
     bool initialized = dbCompare->initialize();
     cout << "initialized: " << initialized << endl;
 
+// #define INIT
+#ifdef INIT
     // second call
     NEW_LINE;
     cout << "second call to initialize()" << endl;
@@ -113,9 +120,19 @@ int main(int argc, char *argv[])
     cout << "third call to initialize()" << endl;
     initialized = dbCompare->initialize();
     cout << "initialized: " << initialized << endl;
+#endif
 
+// #define TEST_TABLES_SCHEMA
+#ifdef TEST_TABLES_SCHEMA
     NEW_LINE;
     dbCompare->testTableSchema();
+#endif
+
+#define TEST_TABLES_INDICES
+#ifdef TEST_TABLES_INDICES
+    NEW_LINE;
+    dbCompare->testTableIndices();
+#endif
 
 #endif
 
