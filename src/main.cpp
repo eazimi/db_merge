@@ -5,6 +5,7 @@
 #include <boost/property_tree/json_parser.hpp>
 
 #include "dbreader.h"
+#include "dbcompare.h"
 
 using namespace std;
 using boost::property_tree::ptree;
@@ -13,7 +14,7 @@ using namespace Kaco;
 constexpr char dbpath_app[] = "../files/config-app.db3";
 constexpr char dbpath_pds2[] = "../files/config-pds2.db3";
 
-#define SPACE \
+#define NEW_LINE \
     cout << endl;
 
 int main(int argc, char *argv[])
@@ -43,25 +44,30 @@ int main(int argc, char *argv[])
 
 // #define PRINT_TABLES
 #ifdef PRINT_TABLES
-    SPACE;
+    NEW_LINE;
     auto tables = dbreader_app.getTables();
     cout << "tables of config-app: " << endl;
     for (auto str : tables)
         cout << str << endl;
 #endif
 
-// #define PRINT_TABLE_SCHEMA
+#define PRINT_TABLE_SCHEMA
 #ifdef PRINT_TABLE_SCHEMA
-    SPACE;
+    NEW_LINE;
     auto tableSchema = dbreader_app.getTableSchema("accounts");
-    cout << "schema of accounts table: " << endl;
+    cout << "schema of app::accounts table: " << endl;
+    for (auto str : tableSchema)
+        cout << str << endl;
+    NEW_LINE;
+    tableSchema = dbreader_pds2.getTableSchema("accounts");
+    cout << "schema of pds2::accounts table: " << endl;
     for (auto str : tableSchema)
         cout << str << endl;
 #endif
 
-#define GET_TRIGGERS
+// #define GET_TRIGGERS
 #ifdef GET_TRIGGERS
-    SPACE;
+    NEW_LINE;
     auto triggers = dbreader_app.getTriggers("accounts");
     cout << "triggers of account table: " << endl;
     for (auto str : triggers)
@@ -71,13 +77,46 @@ int main(int argc, char *argv[])
     }
 #endif
 
-#define GET_INDICES
+// #define GET_INDICES
 #ifdef GET_INDICES
-    SPACE;
+    NEW_LINE;
     auto indices = dbreader_app.getIndices("metaInfo");
     cout << "indices of metaInfo table: " << endl;
     for (auto str : indices)
         cout << str << endl;
+#endif
+
+#define DBCOMPARE_TEST_TABLES_SCHEMA
+#ifdef DBCOMPARE_TEST_TABLES_SCHEMA
+    NEW_LINE;
+    shared_ptr<DBReader> pdb1 = make_shared<DBReader>();
+    shared_ptr<DBReader> pdb2 = make_shared<DBReader>();
+
+    pdb1->connect(dbpath_app);
+    pdb2->connect(dbpath_pds2);
+
+    unique_ptr<DBCompare> dbCompare = make_unique<DBCompare>(pdb1, pdb2);
+    
+    NEW_LINE;
+    cout << "first call to initialize()" << endl;
+    bool initialized = dbCompare->initialize();
+    cout << "initialized: " << initialized << endl;
+
+    // second call
+    NEW_LINE;
+    cout << "second call to initialize()" << endl;
+    initialized = dbCompare->initialize();
+    cout << "initialized: " << initialized << endl;
+
+    // third call
+    NEW_LINE;
+    cout << "third call to initialize()" << endl;
+    initialized = dbCompare->initialize();
+    cout << "initialized: " << initialized << endl;
+
+    NEW_LINE;
+    dbCompare->testTableSchema();
+
 #endif
 
     return 0;

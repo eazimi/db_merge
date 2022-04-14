@@ -19,6 +19,8 @@ ADD_EXECUTABLE(${PROJECT}
     src/IDBReader.hpp
     src/dbreader.cpp
     src/dbreader.h
+    src/dbcompare.cpp
+    src/dbcompare.h    
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT} ${SQLite3_LIBRARIES})
