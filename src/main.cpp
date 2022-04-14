@@ -65,19 +65,7 @@ int main(int argc, char *argv[])
         cout << str << endl;
 #endif
 
-// #define GET_TRIGGERS
-#ifdef GET_TRIGGERS
-    NEW_LINE;
-    auto triggers = dbreader_app.getTriggers("accounts");
-    cout << "triggers of account table: " << endl;
-    for (auto str : triggers)
-    {
-        cout << get<0>(str) << endl;
-        cout << get<1>(str) << endl;
-    }
-#endif
-
-#define GET_INDICES
+// #define GET_INDICES
 #ifdef GET_INDICES
     NEW_LINE;
     auto indices = dbreader_app.getIndices("metaInfo");
@@ -89,6 +77,26 @@ int main(int argc, char *argv[])
     cout << "indices of pds2::metaInfo table: " << endl;
     for (auto str : indices)
         cout << str << endl;    
+#endif
+
+#define GET_TRIGGERS
+#ifdef GET_TRIGGERS
+    NEW_LINE;
+    auto triggers = dbreader_app.getTriggers("accounts");
+    cout << "triggers of app::account table: " << endl;
+    for (auto str : triggers)
+    {
+        cout << get<0>(str) << endl;
+        cout << get<1>(str) << endl;
+    }
+    NEW_LINE;
+    triggers = dbreader_pds2.getTriggers("accounts");
+    cout << "triggers of pds2::account table: " << endl;
+    for (auto str : triggers)
+    {
+        cout << get<0>(str) << endl;
+        cout << get<1>(str) << endl;
+    }
 #endif
 
 #define DBCOMPARE
@@ -128,10 +136,16 @@ int main(int argc, char *argv[])
     dbCompare->testTableSchema();
 #endif
 
-#define TEST_TABLES_INDICES
+// #define TEST_TABLES_INDICES
 #ifdef TEST_TABLES_INDICES
     NEW_LINE;
     dbCompare->testTableIndices();
+#endif
+
+#define TEST_TABLE_TRIGGERS
+#ifdef TEST_TABLE_TRIGGERS
+    NEW_LINE;
+    dbCompare->testTableTriggers();    
 #endif
 
 #endif

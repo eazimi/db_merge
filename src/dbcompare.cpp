@@ -5,6 +5,7 @@
 using namespace std;
 
 #define STR_SEPERATOR "##"
+#define VAL_SEPERATOR "|"
 #define CHECK_INITIALIZED(x) \
     if ((x)) { \
         cout << "DbCompare is already initialized." \
@@ -49,6 +50,27 @@ namespace Kaco
                 if(i)
                     ss << STR_SEPERATOR;
                 ss << tableIndex[i];
+            }
+            result.insert({table, ss.str()});
+        }
+
+        return result;
+    }
+
+    static map<string, string> initTableTriggers(const shared_ptr<IDbReader> &db)
+    {
+        map<string, string> result {};
+        auto tables = db->getTables();
+
+        for(auto table:tables)
+        {
+            auto tableTriggers = db->getTriggers(table);
+            stringstream ss;
+            for (auto i=0; i<tableTriggers.size(); i++)
+            {
+                if(i)
+                    ss << STR_SEPERATOR;
+                ss << tableTriggers[i].first << VAL_SEPERATOR << tableTriggers[i].second;
             }
             result.insert({table, ss.str()});
         }
@@ -106,12 +128,22 @@ namespace Kaco
         m_db2TblIndices = std::move(tableIndices2);
     }
 
+    void DbCompare::initDbTableTriggers()
+    {
+        auto tableTriggers1 = initTableTriggers(m_db1);
+        m_db1TblTriggers = std::move(tableTriggers1);
+
+        auto tableTriggers2 = initTableTriggers(m_db2);
+        m_db2TblTriggers = std::move(tableTriggers2);
+    }
+
     bool DbCompare::initialize()
     {
         CHECK_INITIALIZED(m_initialized);
 
         initDbTableSchema();
         initDbTableIndices();
+        initDbTableTriggers();
 
         m_initialized = true;
         return m_initialized;
@@ -137,14 +169,14 @@ namespace Kaco
             cout << str.first << ": " << str.second << endl;        
     }
 
-    // std::vector<std::string> DbCompare::compareSchema(std::string tableName)
-    // {
-    //     vector<string> result {};
-    //     // auto tables1 = m_db1->getTables();
-    //     // auto tables2 = m_db2->getTables();
-    //     // result.insert(result.end(), tables1.begin(), tables1.end());
-    //     // result.insert(result.end(), tables2.begin(), tables2.end());
-    //     return result;
-    // }
+    void DbCompare::testTableTriggers()
+    {
+        cout << "db1 all the table triggers: " << endl;
+        for(auto str:m_db1TblTriggers)
+            cout << str.first << ": " << str.second << endl; 
+        cout << endl << "db2 all the table triggers: " << endl;
+        for(auto str:m_db2TblTriggers)
+            cout << str.first << ": " << str.second << endl;        
+    }
 
 } // namespace Kaco
