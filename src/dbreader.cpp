@@ -7,12 +7,12 @@
 #define SEPERATOR "|"
 namespace Kaco
 {
-    DBReader::~DBReader()
+    DbReader::~DbReader()
     {
         sqlite3_close(db);
     }
 
-    bool DBReader::connect(string dbPath)
+    bool DbReader::connect(string dbPath)
     {
         auto rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READONLY, 0);
         if (rc)
@@ -25,7 +25,7 @@ namespace Kaco
         return true;
     }
 
-    int DBReader::sql_exec(string sql, ExecCallback cb)
+    int DbReader::sql_exec(string sql, ExecCallback cb)
     {
         char *zErrMsg = 0;
         auto rc = sqlite3_exec(db, sql.c_str(), cb, this, &zErrMsg);
@@ -39,7 +39,7 @@ namespace Kaco
         return rc;
     }
 
-    vector<string> DBReader::sql_exec(string cmd)
+    vector<string> DbReader::sql_exec(string cmd)
     {
         vector<string> result = {};
 
@@ -63,7 +63,7 @@ namespace Kaco
         return result;
     }
 
-    int DBReader::dbDump(char *fileName)
+    int DbReader::dbDump(char *fileName)
     {
         FILE *fp = NULL;
 
@@ -181,21 +181,21 @@ namespace Kaco
         return ret;
     }
 
-    void DBReader::command_exec(string dbPath, string output, string command)
+    void DbReader::command_exec(string dbPath, string output, string command)
     {
         stringstream ss;
         ss << "sqlite3 " << dbPath << " \"" << command << " \" > " << output;
         system(ss.str().c_str());
     }
 
-    void DBReader::dbDiff(string dbPath1, string dbPath2, string output)
+    void DbReader::dbDiff(string dbPath1, string dbPath2, string output)
     {
         stringstream ss;
         ss << "sqldiff --transaction " << dbPath1 << " " << dbPath2 << " > " << output;
         system(ss.str().c_str());
     }
 
-    vector<string> DBReader::getTables()
+    vector<string> DbReader::getTables()
     {
         vector<string> tables = {};
         sqlite3_stmt *stmt_table = nullptr;
@@ -216,7 +216,7 @@ namespace Kaco
         return tables;
     }
 
-    vector<string> DBReader::getTableSchema(string tableName)
+    vector<string> DbReader::getTableSchema(string tableName)
     {
         stringstream ss;
         ss << "PRAGMA table_info(" << tableName << ");";
@@ -224,7 +224,7 @@ namespace Kaco
         return tableSchema;
     }
 
-    vector<pair<string, string>> DBReader::getTriggers(string tableName)
+    vector<pair<string, string>> DbReader::getTriggers(string tableName)
     {
         stringstream ss;
         ss << "SELECT name, sql from sqlite_master WHERE type='trigger' AND tbl_name='" << tableName << "';";
@@ -242,7 +242,7 @@ namespace Kaco
         return triggers;
     }
 
-    vector<string> DBReader::getIndices(string tableName)
+    vector<string> DbReader::getIndices(string tableName)
     {
         stringstream ss;
         ss << "SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='" << tableName << "' ORDER BY name;";

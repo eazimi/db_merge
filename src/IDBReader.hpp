@@ -7,7 +7,7 @@
 
 namespace Kaco
 {
-    class IDBReader
+    class IDbReader
     {
     public:
         virtual bool connect(std::string dbPath) = 0;

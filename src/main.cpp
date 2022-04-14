@@ -19,10 +19,10 @@ constexpr char dbpath_pds2[] = "../files/config-pds2.db3";
 
 int main(int argc, char *argv[])
 {
-    DBReader dbreader_app;
+    DbReader dbreader_app;
     dbreader_app.connect(dbpath_app);
 
-    DBReader dbreader_pds2;
+    DbReader dbreader_pds2;
     dbreader_pds2.connect(dbpath_pds2);
 
 // #define DUMP
@@ -89,13 +89,13 @@ int main(int argc, char *argv[])
 #define DBCOMPARE_TEST_TABLES_SCHEMA
 #ifdef DBCOMPARE_TEST_TABLES_SCHEMA
     NEW_LINE;
-    shared_ptr<DBReader> pdb1 = make_shared<DBReader>();
-    shared_ptr<DBReader> pdb2 = make_shared<DBReader>();
+    shared_ptr<DbReader> pdb1 = make_shared<DbReader>();
+    shared_ptr<DbReader> pdb2 = make_shared<DbReader>();
 
     pdb1->connect(dbpath_app);
     pdb2->connect(dbpath_pds2);
 
-    unique_ptr<DBCompare> dbCompare = make_unique<DBCompare>(pdb1, pdb2);
+    unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
     
     NEW_LINE;
     cout << "first call to initialize()" << endl;

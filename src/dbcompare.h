@@ -9,19 +9,19 @@
 
 namespace Kaco
 {
-    class DBCompare
+    class DbCompare
     {
         public:
-            DBCompare();
-            DBCompare(std::shared_ptr<IDBReader> db1, std::shared_ptr<IDBReader> db2);
-            ~DBCompare();
+            DbCompare();
+            DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2);
+            ~DbCompare();
 
             // std::vector<std::string> compareSchema(std::string tableName);
             bool initialize();
             void testTableSchema();
 
         private:
-            std::shared_ptr<IDBReader> m_db1, m_db2;
+            std::shared_ptr<IDbReader> m_db1, m_db2;
             std::map<std::string, std::string> m_db1TblSchema, m_db2TblSchema;
             std::map<std::string, std::string> m_db1TblIndices, m_db2TblIndices;
             std::map<std::string, std::string> m_db1TblTriggers, m_db2TblTriggers;

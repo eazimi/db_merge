@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Kaco
 {
-    static map<string, string> initTablesSchema(const shared_ptr<IDBReader> &db)
+    static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db)
     {
         map<string, string> result {};
         auto tables = db->getTables();
@@ -29,7 +29,7 @@ namespace Kaco
         return result;
     }
 
-    DBCompare::DBCompare() : m_db1(nullptr), m_db2(nullptr)
+    DbCompare::DbCompare() : m_db1(nullptr), m_db2(nullptr)
     {
         m_db1TblSchema = {};
         m_db2TblSchema = {};
@@ -40,7 +40,7 @@ namespace Kaco
         m_initialized = false;
     }
 
-    DBCompare::DBCompare(std::shared_ptr<IDBReader> db1, std::shared_ptr<IDBReader> db2) : m_db1(db1), m_db2(db2)
+    DbCompare::DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2) : m_db1(db1), m_db2(db2)
     {
         m_db1TblSchema = {};
         m_db2TblSchema = {};
@@ -51,7 +51,7 @@ namespace Kaco
         m_initialized = false;
     }
 
-    DBCompare::~DBCompare()
+    DbCompare::~DbCompare()
     {
         m_db1TblSchema.clear();
         m_db2TblSchema.clear();
@@ -61,7 +61,7 @@ namespace Kaco
         m_db2TblTriggers.clear();
     }
 
-    void DBCompare::initDbTableSchema()
+    void DbCompare::initDbTableSchema()
     {
         auto tblSchema1 = initTablesSchema(m_db1);
         m_db1TblSchema = std::move(tblSchema1);
@@ -70,7 +70,7 @@ namespace Kaco
         m_db2TblSchema = std::move(tblSchema2);
     }
 
-    bool DBCompare::initialize()
+    bool DbCompare::initialize()
     {
         if(m_initialized)
         {
@@ -84,7 +84,7 @@ namespace Kaco
         return m_initialized;
     }
 
-    void DBCompare::testTableSchema()
+    void DbCompare::testTableSchema()
     {
         cout << "db1 all the table schemas: " << endl;
         for(auto str:m_db1TblSchema)
@@ -94,7 +94,7 @@ namespace Kaco
             cout << str.first << ": " << str.second << endl; 
     }
 
-    // std::vector<std::string> DBCompare::compareSchema(std::string tableName)
+    // std::vector<std::string> DbCompare::compareSchema(std::string tableName)
     // {
     //     vector<string> result {};
     //     // auto tables1 = m_db1->getTables();

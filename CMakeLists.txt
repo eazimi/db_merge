@@ -16,7 +16,7 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 ADD_EXECUTABLE(${PROJECT} 
     src/main.cpp
-    src/IDBReader.hpp
+    src/IDbReader.hpp
     src/dbreader.cpp
     src/dbreader.h
     src/dbcompare.cpp

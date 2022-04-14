@@ -13,14 +13,14 @@ namespace Kaco
 {
     typedef int (*ExecCallback)(void*, int, char**, char**);
 
-    class DBReader : public IDBReader
+    class DbReader : public IDbReader
     {
         // TODO: set flags by a function
         // TODO: read path from a config file
         // TODO: refactor dbDump()
         public:
-            explicit DBReader() = default;
-            ~DBReader();
+            explicit DbReader() = default;
+            ~DbReader();
 
             bool connect(string dbPath);
             int sql_exec(string sql, ExecCallback cb);
