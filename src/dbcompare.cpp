@@ -5,6 +5,12 @@
 using namespace std;
 
 #define STR_SEPERATOR "##" 
+#define CHECK_INITIALIZED(x) \
+    if ((x)) { \
+        cout << "DbCompare is already initialized." \
+             << endl; \
+        return false; \
+    }
 
 namespace Kaco
 {
@@ -72,11 +78,7 @@ namespace Kaco
 
     bool DbCompare::initialize()
     {
-        if(m_initialized)
-        {
-            cout << "DbCompare already initialized." << endl;
-            return false;
-        }
+        CHECK_INITIALIZED(m_initialized);
 
         initDbTableSchema();
 
