@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     cout << "initialized: " << initialized << endl;
 #endif
 
-// #define TEST_TABLES_SCHEMA
+#define TEST_TABLES_SCHEMA
 #ifdef TEST_TABLES_SCHEMA
     NEW_LINE;
     dbCompare->testTableSchema();
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
     dbCompare->testTableIndices();
 #endif
 
-#define TEST_TABLE_TRIGGERS
+// #define TEST_TABLE_TRIGGERS
 #ifdef TEST_TABLE_TRIGGERS
     NEW_LINE;
     dbCompare->testTableTriggers();    

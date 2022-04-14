@@ -15,11 +15,10 @@ using namespace std;
 
 namespace Kaco
 {
-    static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db)
+    static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db, const vector<string>& tables)
     {
         map<string, string> result {};
-        auto tables = db->getTables();
-
+        
         for (auto table : tables)
         {
             auto tableSchema = db->getTableSchema(table);
@@ -36,10 +35,9 @@ namespace Kaco
         return result;
     }
 
-    static map<string, string> initTableIndices(const shared_ptr<IDbReader> &db)
+    static map<string, string> initTableIndices(const shared_ptr<IDbReader> &db, const vector<string>& tables)
     {
         map<string, string> result {};
-        auto tables = db->getTables();
 
         for(auto table:tables)
         {
@@ -57,10 +55,9 @@ namespace Kaco
         return result;
     }
 
-    static map<string, string> initTableTriggers(const shared_ptr<IDbReader> &db)
+    static map<string, string> initTableTriggers(const shared_ptr<IDbReader> &db, const vector<string>& tables)
     {
         map<string, string> result {};
-        auto tables = db->getTables();
 
         for(auto table:tables)
         {
@@ -80,6 +77,8 @@ namespace Kaco
 
     DbCompare::DbCompare() : m_db1(nullptr), m_db2(nullptr)
     {
+        m_db1Tables = {};
+        m_db2Tables = {};
         m_db1TblSchema = {};
         m_db2TblSchema = {};
         m_db1TblIndices = {};
@@ -91,6 +90,8 @@ namespace Kaco
 
     DbCompare::DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2) : m_db1(db1), m_db2(db2)
     {
+        m_db1Tables = {};
+        m_db2Tables = {};
         m_db1TblSchema = {};
         m_db2TblSchema = {};
         m_db1TblIndices = {};
@@ -110,30 +111,36 @@ namespace Kaco
         m_db2TblTriggers.clear();
     }
 
+    void DbCompare::initDbTables()
+    {
+        m_db1Tables = m_db1->getTables();
+        m_db2Tables = m_db2->getTables();
+    }
+
     void DbCompare::initDbTableSchema()
     {
-        auto tblSchema1 = initTablesSchema(m_db1);
+        auto tblSchema1 = initTablesSchema(m_db1, m_db1Tables);
         m_db1TblSchema = std::move(tblSchema1);
 
-        auto tblSchema2 = initTablesSchema(m_db2);
+        auto tblSchema2 = initTablesSchema(m_db2, m_db2Tables);
         m_db2TblSchema = std::move(tblSchema2);
     }
 
     void DbCompare::initDbTableIndices()
     {
-        auto tableIndices1 = initTableIndices(m_db1);
+        auto tableIndices1 = initTableIndices(m_db1, m_db1Tables);
         m_db1TblIndices = std::move(tableIndices1);
 
-        auto tableIndices2 = initTableIndices(m_db2);
+        auto tableIndices2 = initTableIndices(m_db2, m_db2Tables);
         m_db2TblIndices = std::move(tableIndices2);
     }
 
     void DbCompare::initDbTableTriggers()
     {
-        auto tableTriggers1 = initTableTriggers(m_db1);
+        auto tableTriggers1 = initTableTriggers(m_db1, m_db1Tables);
         m_db1TblTriggers = std::move(tableTriggers1);
 
-        auto tableTriggers2 = initTableTriggers(m_db2);
+        auto tableTriggers2 = initTableTriggers(m_db2, m_db2Tables);
         m_db2TblTriggers = std::move(tableTriggers2);
     }
 
@@ -141,6 +148,7 @@ namespace Kaco
     {
         CHECK_INITIALIZED(m_initialized);
 
+        initDbTables();
         initDbTableSchema();
         initDbTableIndices();
         initDbTableTriggers();

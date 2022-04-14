@@ -24,11 +24,13 @@ namespace Kaco
 
         private:
             std::shared_ptr<IDbReader> m_db1, m_db2;
+            std::vector<std::string> m_db1Tables, m_db2Tables;
             std::map<std::string, std::string> m_db1TblSchema, m_db2TblSchema;
             std::map<std::string, std::string> m_db1TblIndices, m_db2TblIndices;
             std::map<std::string, std::string> m_db1TblTriggers, m_db2TblTriggers;
             bool m_initialized;
 
+            void initDbTables();
             void initDbTableSchema();
             void initDbTableIndices();
             void initDbTableTriggers();
