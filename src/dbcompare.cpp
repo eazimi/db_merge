@@ -114,39 +114,6 @@ namespace Kaco
         m_db2TblTriggers.clear();
     }
 
-    void DbCompare::initDbTables()
-    {
-        m_db1Tables = m_db1->getTables();
-        m_db2Tables = m_db2->getTables();
-    }
-
-    void DbCompare::initDbTableSchema()
-    {
-        auto tblSchema1 = initTablesSchema(m_db1, m_db1Tables);
-        m_db1TblSchema = std::move(tblSchema1);
-
-        auto tblSchema2 = initTablesSchema(m_db2, m_db2Tables);
-        m_db2TblSchema = std::move(tblSchema2);
-    }
-
-    void DbCompare::initDbTableIndices()
-    {
-        auto tableIndices1 = initTableIndices(m_db1, m_db1Tables);
-        m_db1TblIndices = std::move(tableIndices1);
-
-        auto tableIndices2 = initTableIndices(m_db2, m_db2Tables);
-        m_db2TblIndices = std::move(tableIndices2);
-    }
-
-    void DbCompare::initDbTableTriggers()
-    {
-        auto tableTriggers1 = initTableTriggers(m_db1, m_db1Tables);
-        m_db1TblTriggers = std::move(tableTriggers1);
-
-        auto tableTriggers2 = initTableTriggers(m_db2, m_db2Tables);
-        m_db2TblTriggers = std::move(tableTriggers2);
-    }
-
     bool DbCompare::initialize()
     {
         CHECK_INITIALIZED(m_initialized, MSG_ALREADY_INIT);
@@ -202,6 +169,44 @@ namespace Kaco
         cout << m_db1TblTriggers[tableName] << endl;
         cout << endl << "db2::" << tableName << " table triggers: " << endl;
         cout << m_db2TblTriggers[tableName] << endl;
+    }
+
+    void DbCompare::initDbTables()
+    {
+        m_db1Tables = m_db1->getTables();
+        m_db2Tables = m_db2->getTables();
+    }
+
+    void DbCompare::initDbTableSchema()
+    {
+        auto tblSchema1 = initTablesSchema(m_db1, m_db1Tables);
+        m_db1TblSchema = std::move(tblSchema1);
+
+        auto tblSchema2 = initTablesSchema(m_db2, m_db2Tables);
+        m_db2TblSchema = std::move(tblSchema2);
+    }
+
+    void DbCompare::initDbTableIndices()
+    {
+        auto tableIndices1 = initTableIndices(m_db1, m_db1Tables);
+        m_db1TblIndices = std::move(tableIndices1);
+
+        auto tableIndices2 = initTableIndices(m_db2, m_db2Tables);
+        m_db2TblIndices = std::move(tableIndices2);
+    }
+
+    void DbCompare::initDbTableTriggers()
+    {
+        auto tableTriggers1 = initTableTriggers(m_db1, m_db1Tables);
+        m_db1TblTriggers = std::move(tableTriggers1);
+
+        auto tableTriggers2 = initTableTriggers(m_db2, m_db2Tables);
+        m_db2TblTriggers = std::move(tableTriggers2);
+    }
+
+    bool DbCompare::compareDbTables()
+    {
+        return true;
     }
 
 } // namespace Kaco
