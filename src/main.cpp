@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         cout << str << endl;    
 #endif
 
-#define GET_TRIGGERS
+// #define GET_TRIGGERS
 #ifdef GET_TRIGGERS
     NEW_LINE;
     auto triggers = dbreader_app.getTriggers("accounts");
@@ -110,13 +110,18 @@ int main(int argc, char *argv[])
 
     unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
 
+    bool initialized = false;
+
+// #define FIRST_INIT
+#ifdef FIRST_INIT
     NEW_LINE;
     cout << "first call to initialize()" << endl;
-    bool initialized = dbCompare->initialize();
+    initialized = dbCompare->initialize();
     cout << "initialized: " << initialized << endl;
+#endif
 
-// #define INIT
-#ifdef INIT
+#define NEXT_INITS
+#ifdef NEXT_INITS
     // second call
     NEW_LINE;
     cout << "second call to initialize()" << endl;
@@ -148,7 +153,7 @@ int main(int argc, char *argv[])
     dbCompare->testTableTriggers();    
 #endif
 
-#define TEST_INDIVIDUAL_TABLE_TRIGGERS
+// #define TEST_INDIVIDUAL_TABLE_TRIGGERS
 #ifdef TEST_INDIVIDUAL_TABLE_TRIGGERS
     NEW_LINE;
     dbCompare->testTableTriggers("accounts");    
