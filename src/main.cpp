@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     cout << "initialized: " << initialized << endl;
 #endif
 
-#define NEXT_INITS
+// #define NEXT_INITS
 #ifdef NEXT_INITS
     // second call
     NEW_LINE;
@@ -157,6 +157,12 @@ int main(int argc, char *argv[])
 #ifdef TEST_INDIVIDUAL_TABLE_TRIGGERS
     NEW_LINE;
     dbCompare->testTableTriggers("accounts");    
+#endif
+
+#define COMPARE_AND_MERGE
+#ifdef COMPARE_AND_MERGE
+    NEW_LINE;
+    dbCompare->compareAndMerge();
 #endif
 
 #endif
