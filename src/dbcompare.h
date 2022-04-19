@@ -21,6 +21,7 @@ namespace Kaco
             void testTableSchema();
             void testTableIndices();
             void testTableTriggers();
+            void testTableTriggers(std::string tableName);
 
         private:
             std::shared_ptr<IDbReader> m_db1, m_db2;

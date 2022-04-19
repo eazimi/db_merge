@@ -187,4 +187,12 @@ namespace Kaco
             cout << str.first << ": " << str.second << endl;        
     }
 
+    void DbCompare::testTableTriggers(string tableName)
+    {
+        cout << "db1::" << tableName << " table triggers: " << endl;
+        cout << m_db1TblTriggers[tableName] << endl;
+        cout << endl << "db2::" << tableName << " table triggers: " << endl;
+        cout << m_db2TblTriggers[tableName] << endl;
+    }
+
 } // namespace Kaco
