@@ -9,26 +9,45 @@ using namespace std;
 #define MSG_ALREADY_INIT "DbCompare is already initialized."
 #define MSG_NOT_INIT "DbCompare is not initialized. Call initialize() first!"
 
-#define CHECK_INITIALIZED(x, message) \
-    if ((x)) { \
-        cout << message \
-             << endl; \
-        return false; \
+#define INIT_VECTORS  \
+    m_db1Tables = {}; \
+    m_db2Tables = {};
+
+#define INIT_MAPS                               \
+    m_db1TblSchema = {};                        \
+    m_db2TblSchema = {};                        \
+    m_db1TblIndices = {}, m_db2TblIndices = {}; \
+    m_db1TblTriggers = {}, m_db2TblTriggers = {};
+
+#define CLEAR_MAPS            \
+    m_db1TblSchema.clear();   \
+    m_db2TblSchema.clear();   \
+    m_db1TblIndices.clear();  \
+    m_db2TblIndices.clear();  \
+    m_db1TblTriggers.clear(); \
+    m_db2TblTriggers.clear();
+
+#define CHECK_INITIALIZED(x, message, r) \
+    if ((x))                             \
+    {                                    \
+        cout << message                  \
+             << endl;                    \
+        return r;                        \
     }
 
 namespace Kaco
 {
-    static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db, const vector<string>& tables)
+    static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db, const vector<string> &tables)
     {
-        map<string, string> result {};
+        map<string, string> result{};
         
         for (auto table : tables)
         {
             auto tableSchema = db->getTableSchema(table);
             stringstream ss;
-            for(auto i=0; i<tableSchema.size(); i++)
+            for (auto i = 0; i < tableSchema.size(); i++)
             {
-                if(i)
+                if (i)
                     ss << STR_SEPERATOR;
                 ss << tableSchema[i];
             }   
@@ -38,17 +57,17 @@ namespace Kaco
         return result;
     }
 
-    static map<string, string> initTableIndices(const shared_ptr<IDbReader> &db, const vector<string>& tables)
+    static map<string, string> initTableIndices(const shared_ptr<IDbReader> &db, const vector<string> &tables)
     {
-        map<string, string> result {};
+        map<string, string> result{};
 
-        for(auto table:tables)
+        for (auto table : tables)
         {
             auto tableIndex = db->getIndices(table);
             stringstream ss;
-            for (auto i=0; i<tableIndex.size(); i++)
+            for (auto i = 0; i < tableIndex.size(); i++)
             {
-                if(i)
+                if (i)
                     ss << STR_SEPERATOR;
                 ss << tableIndex[i];
             }
@@ -58,17 +77,17 @@ namespace Kaco
         return result;
     }
 
-    static map<string, string> initTableTriggers(const shared_ptr<IDbReader> &db, const vector<string>& tables)
+    static map<string, string> initTableTriggers(const shared_ptr<IDbReader> &db, const vector<string> &tables)
     {
-        map<string, string> result {};
+        map<string, string> result{};
 
-        for(auto table:tables)
+        for (auto table : tables)
         {
             auto tableTriggers = db->getTriggers(table);
             stringstream ss;
-            for (auto i=0; i<tableTriggers.size(); i++)
+            for (auto i = 0; i < tableTriggers.size(); i++)
             {
-                if(i)
+                if (i)
                     ss << STR_SEPERATOR;
                 ss << tableTriggers[i].first << VAL_SEPERATOR << tableTriggers[i].second;
             }
@@ -78,45 +97,26 @@ namespace Kaco
         return result;
     }
 
-    DbCompare::DbCompare() : m_db1(nullptr), m_db2(nullptr)
+    DbCompare::DbCompare() : m_db1(nullptr), m_db2(nullptr), m_initialized(false)
     {
-        m_db1Tables = {};
-        m_db2Tables = {};
-        m_db1TblSchema = {};
-        m_db2TblSchema = {};
-        m_db1TblIndices = {};
-        m_db2TblIndices = {};
-        m_db1TblTriggers = {}; 
-        m_db2TblTriggers = {};
-        m_initialized = false;
+        INIT_VECTORS;
+        INIT_MAPS;
     }
 
-    DbCompare::DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2) : m_db1(db1), m_db2(db2)
+    DbCompare::DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2) : m_db1(db1), m_db2(db2), m_initialized(false)
     {
-        m_db1Tables = {};
-        m_db2Tables = {};
-        m_db1TblSchema = {};
-        m_db2TblSchema = {};
-        m_db1TblIndices = {};
-        m_db2TblIndices = {};
-        m_db1TblTriggers = {}; 
-        m_db2TblTriggers = {};
-        m_initialized = false;
+        INIT_VECTORS;
+        INIT_MAPS;
     }
 
     DbCompare::~DbCompare()
     {
-        m_db1TblSchema.clear();
-        m_db2TblSchema.clear();
-        m_db1TblIndices.clear();
-        m_db2TblIndices.clear();
-        m_db1TblTriggers.clear();
-        m_db2TblTriggers.clear();
+        CLEAR_MAPS;
     }
 
     bool DbCompare::initialize()
     {
-        CHECK_INITIALIZED(m_initialized, MSG_ALREADY_INIT);
+        CHECK_INITIALIZED(m_initialized, MSG_ALREADY_INIT, FALSE);
 
         initDbTables();
         initDbTableSchema();
@@ -136,30 +136,33 @@ namespace Kaco
     void DbCompare::testTableSchema()
     {
         cout << "db1 all the table schemas: " << endl;
-        for(auto str:m_db1TblSchema)
+        for (auto str : m_db1TblSchema)
             cout << str.first << ": " << str.second << endl; 
-        cout << endl << "db2 all the table schemas: " << endl;
-        for(auto str:m_db2TblSchema)
+        cout << endl
+             << "db2 all the table schemas: " << endl;
+        for (auto str : m_db2TblSchema)
             cout << str.first << ": " << str.second << endl; 
     }
 
     void DbCompare::testTableIndices()
     {
         cout << "db1 all the table indices: " << endl;
-        for(auto str:m_db1TblIndices)
+        for (auto str : m_db1TblIndices)
             cout << str.first << ": " << str.second << endl; 
-        cout << endl << "db2 all the table indices: " << endl;
-        for(auto str:m_db2TblIndices)
+        cout << endl
+             << "db2 all the table indices: " << endl;
+        for (auto str : m_db2TblIndices)
             cout << str.first << ": " << str.second << endl;        
     }
 
     void DbCompare::testTableTriggers()
     {
         cout << "db1 all the table triggers: " << endl;
-        for(auto str:m_db1TblTriggers)
+        for (auto str : m_db1TblTriggers)
             cout << str.first << ": " << str.second << endl; 
-        cout << endl << "db2 all the table triggers: " << endl;
-        for(auto str:m_db2TblTriggers)
+        cout << endl
+             << "db2 all the table triggers: " << endl;
+        for (auto str : m_db2TblTriggers)
             cout << str.first << ": " << str.second << endl;        
     }
 
@@ -167,7 +170,8 @@ namespace Kaco
     {
         cout << "db1::" << tableName << " table triggers: " << endl;
         cout << m_db1TblTriggers[tableName] << endl;
-        cout << endl << "db2::" << tableName << " table triggers: " << endl;
+        cout << endl
+             << "db2::" << tableName << " table triggers: " << endl;
         cout << m_db2TblTriggers[tableName] << endl;
     }
 
@@ -202,11 +206,6 @@ namespace Kaco
 
         auto tableTriggers2 = initTableTriggers(m_db2, m_db2Tables);
         m_db2TblTriggers = std::move(tableTriggers2);
-    }
-
-    bool DbCompare::compareDbTables()
-    {
-        return true;
     }
 
 } // namespace Kaco
