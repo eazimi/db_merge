@@ -224,6 +224,25 @@ namespace Kaco
         return tableSchema;
     }
 
+    string DbReader::getCreateTblSQL(string tblName)
+    {
+        string sql = "";
+        stringstream ss;     
+        ss << "SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '" << tblName << "'";
+        sqlite3_stmt *stmt_table = nullptr;
+        int rc = sqlite3_prepare_v2(db, ss.str().c_str(), -1, &stmt_table, nullptr);
+        if(rc == SQLITE_OK)
+        {
+            rc = sqlite3_step(stmt_table);
+            if (rc == SQLITE_ROW)
+                sql = (const char *)sqlite3_column_text(stmt_table, 0);
+        }
+        if(stmt_table)
+            sqlite3_finalize(stmt_table);
+
+        return sql;
+    }
+
     vector<pair<string, string>> DbReader::getTriggers(string tableName)
     {
         stringstream ss;

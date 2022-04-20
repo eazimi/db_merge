@@ -159,10 +159,16 @@ int main(int argc, char *argv[])
     dbCompare->testTableTriggers("accounts");    
 #endif
 
-#define COMPARE_AND_MERGE
+// #define COMPARE_AND_MERGE
 #ifdef COMPARE_AND_MERGE
     NEW_LINE;
     dbCompare->compareAndMerge();
+#endif
+
+#define CREATE_NEW_TBL
+#ifdef CREATE_NEW_TBL
+    NEW_LINE;
+    dbCompare->testCreateNewTbl();
 #endif
 
 #endif

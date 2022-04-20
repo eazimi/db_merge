@@ -23,6 +23,7 @@ namespace Kaco
             void testTableIndices();
             void testTableTriggers();
             void testTableTriggers(std::string tableName);
+            void testCreateNewTbl();
 
         private:
             std::shared_ptr<IDbReader> m_db1, m_db2;
@@ -36,6 +37,7 @@ namespace Kaco
             void initDbTableSchema();
             void initDbTableIndices();
             void initDbTableTriggers();
+            std::string createNewTbl(std::string tblName);
     };
 
 } // namespace Kaco

@@ -30,6 +30,7 @@ namespace Kaco
             void dbDiff(string dbPath1, string dbPath2, string output);
             vector<string> getTables();
             vector<string> getTableSchema(string tableName);
+            string getCreateTblSQL(string tblName);
             vector<pair<string, string>> getTriggers(string tableName);
             vector<string> getIndices(string tableName);
 

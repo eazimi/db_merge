@@ -237,6 +237,11 @@ namespace Kaco
         cout << m_db2TblTriggers[tableName] << endl;
     }
 
+    void DbCompare::testCreateNewTbl()
+    {
+        createNewTbl("accounts");
+    }
+
     void DbCompare::initDbTables()
     {
         m_db1Tables = m_db1->getTables();
@@ -268,6 +273,20 @@ namespace Kaco
 
         auto tableTriggers2 = initTableTriggers(m_db2, m_db2Tables);
         m_db2TblTriggers = std::move(tableTriggers2);
+    }
+
+    string DbCompare::createNewTbl(std::string tblName)
+    {        
+        string sql = "";
+
+        // db1: target, db2: reference
+        auto targetCmd = m_db1->getCreateTblSQL(tblName);
+        auto refCmd = m_db2->getCreateTblSQL(tblName);
+        
+        cout << "targetCmd:" << endl << targetCmd << endl;
+        cout << "refCmd:" << endl << refCmd << endl;
+
+        return sql;
     }
 
 } // namespace Kaco

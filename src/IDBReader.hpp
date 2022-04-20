@@ -15,6 +15,7 @@ namespace Kaco
         virtual std::vector<std::string> getTableSchema(std::string tableName) = 0;
         virtual std::vector<std::string> getIndices(std::string tableName) = 0;
         virtual std::vector<std::pair<std::string, std::string>> getTriggers(std::string tableName) = 0;
+        virtual std::string getCreateTblSQL(std::string tblName) = 0;
     };
 
 } // namespace Kaco
