@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
     bool initialized = false;
 
-// #define FIRST_INIT
+#define FIRST_INIT
 #ifdef FIRST_INIT
     NEW_LINE;
     cout << "first call to initialize()" << endl;

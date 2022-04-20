@@ -6,6 +6,8 @@ using namespace std;
 
 #define STR_SEPERATOR "##"
 #define VAL_SEPERATOR "|"
+#define STR_NULL std::string("")
+#define FALSE false
 #define MSG_ALREADY_INIT "DbCompare is already initialized."
 #define MSG_NOT_INIT "DbCompare is not initialized. Call initialize() first!"
 
@@ -40,7 +42,7 @@ namespace Kaco
     static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db, const vector<string> &tables)
     {
         map<string, string> result{};
-        
+
         for (auto table : tables)
         {
             auto tableSchema = db->getTableSchema(table);
@@ -50,7 +52,7 @@ namespace Kaco
                 if (i)
                     ss << STR_SEPERATOR;
                 ss << tableSchema[i];
-            }   
+            }
             result.insert({table, ss.str()});
         }
 
@@ -127,43 +129,103 @@ namespace Kaco
         return m_initialized;
     }
 
-    bool DbCompare::compareAndMerge()
+    string DbCompare::compareAndMerge()
     {
-        CHECK_INITIALIZED(!m_initialized, MSG_NOT_INIT);
-        return true;
+        CHECK_INITIALIZED(!m_initialized, MSG_NOT_INIT, STR_NULL);
+
+        string result{};
+        // db1: source -> db2: target
+        for (auto tblName_schema : m_db1TblSchema)
+        {
+            auto srcTblName = tblName_schema.first;
+            // bool targetTblFound = (m_db2TblSchema.find(srcTblName) != m_db2TblSchema.end());
+            bool targetTblFound = false;
+            auto targetTblSchema = m_db2TblSchema[srcTblName];
+            if (targetTblSchema != "")
+                targetTblFound = true;
+            if (targetTblFound)
+            {
+                // check for schemas
+                auto srcTblSchema = tblName_schema.second;
+                auto targetTblSchema = m_db2TblSchema[srcTblName];
+                if (srcTblSchema == targetTblSchema)
+                {
+                    // check for the indices
+                    auto srcTblIndices = m_db1TblIndices[srcTblName];
+                    auto targetTblIndices = m_db2TblIndices[srcTblName];
+                    if (srcTblIndices == targetTblIndices)
+                    {
+                        // check for triggers
+                        auto srcTblTriggers = m_db1TblTriggers[srcTblName];
+                        auto targetTblTriggers = m_db2TblTriggers[srcTblName];
+                        if (srcTblTriggers == targetTblTriggers)
+                        {
+                            // TODO: complete it
+                            // check for data
+                        }
+                        else
+                        {
+                            // TODO: complete it
+                            // different triggers
+                            cout << srcTblName << " is different in triggers" << endl;
+                        }
+                    }
+                    else
+                    {
+                        // TODO: complete it
+                        // different indices
+                        cout << srcTblName << " is different in indices" << endl;
+                    }
+                }
+                else
+                {
+                    // TODO: complete it
+                    // different schemas
+                    cout << srcTblName << " is different in schema" << endl;
+                }
+            }
+            else
+            {
+                // TODO: complete it
+                // new table
+                cout << srcTblName << " is new to db2" << endl;
+            }
+        }
+
+        return result;
     }
 
     void DbCompare::testTableSchema()
     {
         cout << "db1 all the table schemas: " << endl;
         for (auto str : m_db1TblSchema)
-            cout << str.first << ": " << str.second << endl; 
+            cout << str.first << ": " << str.second << endl;
         cout << endl
              << "db2 all the table schemas: " << endl;
         for (auto str : m_db2TblSchema)
-            cout << str.first << ": " << str.second << endl; 
+            cout << str.first << ": " << str.second << endl;
     }
 
     void DbCompare::testTableIndices()
     {
         cout << "db1 all the table indices: " << endl;
         for (auto str : m_db1TblIndices)
-            cout << str.first << ": " << str.second << endl; 
+            cout << str.first << ": " << str.second << endl;
         cout << endl
              << "db2 all the table indices: " << endl;
         for (auto str : m_db2TblIndices)
-            cout << str.first << ": " << str.second << endl;        
+            cout << str.first << ": " << str.second << endl;
     }
 
     void DbCompare::testTableTriggers()
     {
         cout << "db1 all the table triggers: " << endl;
         for (auto str : m_db1TblTriggers)
-            cout << str.first << ": " << str.second << endl; 
+            cout << str.first << ": " << str.second << endl;
         cout << endl
              << "db2 all the table triggers: " << endl;
         for (auto str : m_db2TblTriggers)
-            cout << str.first << ": " << str.second << endl;        
+            cout << str.first << ": " << str.second << endl;
     }
 
     void DbCompare::testTableTriggers(string tableName)
