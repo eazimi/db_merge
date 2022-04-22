@@ -1,6 +1,9 @@
 #include "dbcompare.h"
 #include <iostream>
 #include <sstream>
+#include <cstring>
+#include <algorithm>
+#include <stack>
 
 using namespace std;
 
@@ -39,6 +42,84 @@ using namespace std;
 
 namespace Kaco
 {
+    auto checkForMatch = [](char *stream)
+    {
+        stack<char> stack;
+        for (auto i = 0; stream[i] != '\0'; i++)
+        {
+            if ((stream[i] == '(') || (stream[i] == '['))
+                stack.push(stream[i]);
+            else if ((stream[i] == ')') || (stream[i] == ']')) // I assume that [ and ( are followed by closings immediately
+                stack.pop();
+        }
+        if (stack.empty())
+            return true;
+        return false;
+    };
+
+    static vector<string> splitString(string input, char startChr, char endChr, char delimiter)
+    {
+        vector<string> splitCols = {};
+        auto firstPos = input.find(startChr);
+        auto lastPos = input.find_last_of(endChr);
+        auto columns = input.substr(firstPos + 1, lastPos - firstPos - 1);
+        char *pch = strtok(const_cast<char *>(columns.c_str()), &delimiter);
+        bool wait = false;
+        stringstream ss;        
+        while(pch != nullptr)
+        {
+            if (pch[0] == ' ')
+                pch = &pch[1];
+            bool matched = checkForMatch(pch);
+            if(matched)
+                splitCols.push_back(std::move(pch));
+            else if(wait)
+            {                
+                ss << pch;
+                splitCols.push_back(std::move(ss.str()));
+                wait = false;
+                ss.str("");
+            }
+            else
+            {
+                wait = true;
+                ss << pch << ", ";
+            }
+            pch = strtok(nullptr, &delimiter);
+        }
+        return splitCols;
+    }
+
+    static pair<vector<string>, vector<string>> checkColExtra(vector<string> targetCols, vector<string> refCols)
+    {
+        vector<string> targetDiff = {};
+        vector<string> refDiff = {};
+        sort(targetCols.begin(), targetCols.end());
+        sort(refCols.begin(), refCols.end());
+        set_difference(targetCols.begin(), targetCols.end(), refCols.begin(), refCols.end(), back_inserter(targetDiff));
+        set_difference(refCols.begin(), refCols.end(), targetCols.begin(), targetCols.end(), back_inserter(refDiff));
+        return {targetDiff, refDiff};
+
+        // a replacment implementation that might be useful
+        /*
+        vector<string> targetExtra = {};
+        vector<string> refExtra = {};
+        for (const auto &str : refCols)
+        {
+            bool found = (find(targetCols.begin(), targetCols.end(), str) != targetCols.end());
+            if (!found)
+                refExtra.push_back(str);
+        }
+        for (const auto &str : targetCols)
+        {
+            bool found = (find(refCols.begin(), refCols.end(), str) != refCols.end());
+            if(!found)
+                targetExtra.push_back(str);
+        }
+        return {targetExtra, refExtra};
+        */
+    }
+
     static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db, const vector<string> &tables)
     {
         map<string, string> result{};
@@ -239,7 +320,11 @@ namespace Kaco
 
     void DbCompare::testCreateNewTbl()
     {
-        createNewTbl("accounts");
+        
+        auto sql = createNewTbl("countrySettingCfg");
+        // auto sql = createNewTbl("accounts");
+        // auto sql = createNewTbl("inv");
+        cout << "create table: " << endl << sql << endl;
     }
 
     void DbCompare::initDbTables()
@@ -282,9 +367,22 @@ namespace Kaco
         // db1: target, db2: reference
         auto targetCmd = m_db1->getCreateTblSQL(tblName);
         auto refCmd = m_db2->getCreateTblSQL(tblName);
-        
-        cout << "targetCmd:" << endl << targetCmd << endl;
-        cout << "refCmd:" << endl << refCmd << endl;
+
+        auto targetCols = splitString(targetCmd, '(', ')', ',');
+        auto refCols = splitString(refCmd, '(', ')', ',');
+
+        auto extras = checkColExtra(targetCols, refCols);
+
+        stringstream ss;
+        ss << "CREATE TABLE " << tblName << "_tmp (";
+        for (auto const &col : targetCols)
+            ss << col << ", ";
+        for (auto const &col : extras.second)
+            ss << col << ", ";
+        ss << ")";
+        sql = ss.str();
+        auto pos = sql.find_last_of(",");
+        sql.replace(pos, 2, "");
 
         return sql;
     }
