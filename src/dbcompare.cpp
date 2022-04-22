@@ -7,6 +7,8 @@
 
 using namespace std;
 
+// #define DEBUG
+
 #define STR_SEPERATOR "##"
 #define VAL_SEPERATOR "|"
 #define STR_NULL std::string("")
@@ -42,7 +44,7 @@ using namespace std;
 
 namespace Kaco
 {
-    auto checkForMatch = [](char *stream)
+    static auto checkForMatch = [](char *stream)
     {
         stack<char> stack;
         for (auto i = 0; stream[i] != '\0'; i++)
@@ -57,6 +59,69 @@ namespace Kaco
         return false;
     };
 
+    // it assumes that there is no disparity between the number of '(' and ')'
+    static auto handleWord = [](string word, stack<char> &stack)
+    {
+        bool stackIsEmpty = false;
+        bool virgool = false;
+        for (auto ch : word)
+        {
+            if (ch == '(')
+                stack.push('(');
+            else if (ch == ')')
+                stack.pop();
+            else if (ch == ',')
+            {
+                virgool = true;
+                stackIsEmpty = stack.empty();
+            }
+        }
+        return (stackIsEmpty && virgool);
+    };
+
+    static vector<string>
+    splitCreateTblCmd(string cmd)
+    {
+        vector<string> cols = {};
+        int firstPos = cmd.find_first_of("(");
+        int lastPos = cmd.find_last_of(")");
+
+        auto data = cmd.substr(firstPos + 1, lastPos - firstPos - 1);
+        int spacePos = 0;
+        stack<char> stack;
+        stringstream ss;
+        spacePos = data.find_first_of(" ");
+
+#ifdef DEBUG
+        cout << endl
+             << "splitCreateTblCmd(): " << endl;
+        cout << "input cmd is: " << endl
+             << cmd << endl;
+        cout << endl
+             << "data is: " << endl
+             << data << endl;
+#endif
+
+        while (spacePos != string::npos)
+        {
+            auto word = data.substr(0, spacePos);
+            bool flush = handleWord(word, stack);
+            if (flush)
+            {
+                ss << word.substr(0, word.length() - 1);
+                cols.push_back(std::move(ss.str()));
+                ss.str("");
+            }
+            else
+                ss << word << " ";
+            data = data.substr(spacePos + 1);
+            spacePos = data.find_first_of(" ");
+        }
+        ss << data;
+        cols.push_back(ss.str());
+        return cols;
+    }
+
     static vector<string> splitString(string input, char startChr, char endChr, char delimiter)
     {
         vector<string> splitCols = {};
@@ -65,16 +130,16 @@ namespace Kaco
         auto columns = input.substr(firstPos + 1, lastPos - firstPos - 1);
         char *pch = strtok(const_cast<char *>(columns.c_str()), &delimiter);
         bool wait = false;
-        stringstream ss;        
-        while(pch != nullptr)
+        stringstream ss;
+        while (pch != nullptr)
         {
             if (pch[0] == ' ')
                 pch = &pch[1];
             bool matched = checkForMatch(pch);
-            if(matched)
+            if (matched)
                 splitCols.push_back(std::move(pch));
-            else if(wait)
-            {                
+            else if (wait)
+            {
                 ss << pch;
                 splitCols.push_back(std::move(ss.str()));
                 wait = false;
@@ -320,11 +385,14 @@ namespace Kaco
 
     void DbCompare::testCreateNewTbl()
     {
-        
+#ifdef DEBUG
         auto sql = createNewTbl("countrySettingCfg");
-        // auto sql = createNewTbl("accounts");
-        // auto sql = createNewTbl("inv");
-        cout << "create table: " << endl << sql << endl;
+        auto sql = createNewTbl("accounts");
+#endif
+        auto sql = createNewTbl("inv");
+        cout << endl
+             << "create table: " << endl
+             << sql << endl;
     }
 
     void DbCompare::initDbTables()
@@ -361,17 +429,41 @@ namespace Kaco
     }
 
     string DbCompare::createNewTbl(std::string tblName)
-    {        
+    {
         string sql = "";
 
         // db1: target, db2: reference
         auto targetCmd = m_db1->getCreateTblSQL(tblName);
-        auto refCmd = m_db2->getCreateTblSQL(tblName);
+        auto targetCols = splitCreateTblCmd(targetCmd);
 
-        auto targetCols = splitString(targetCmd, '(', ')', ',');
-        auto refCols = splitString(refCmd, '(', ')', ',');
+        auto refCmd = m_db2->getCreateTblSQL(tblName);
+        auto refCols = splitCreateTblCmd(refCmd);
 
         auto extras = checkColExtra(targetCols, refCols);
+
+// #ifdef DEBUG
+        cout << "target cmd is: " << endl
+             << targetCmd << endl;
+        cout << endl
+             << "targetCols are: " << endl;
+        for (auto str : targetCols)
+            cout << str << endl;
+        cout << endl
+             << "refCmd is: " << endl
+             << refCmd << endl;
+        cout << endl
+             << "refCols are:" << endl;
+        for (auto str : refCols)
+            cout << str << endl;
+        cout << endl
+             << "extra cols in target: " << endl;
+        for (auto str : extras.first)
+            cout << str << endl;
+        cout << endl
+             << "extra cols in ref: " << endl;
+        for (auto str : extras.second)
+            cout << str << endl;
+// #endif
 
         stringstream ss;
         ss << "CREATE TABLE " << tblName << "_tmp (";

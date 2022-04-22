@@ -19,11 +19,22 @@ constexpr char dbpath_pds2[] = "../files/config-pds2.db3";
 
 int main(int argc, char *argv[])
 {
+// #define LEGACY
+#ifdef LEGACY
     DbReader dbreader_app;
-    dbreader_app.connect(dbpath_app);
+    bool connected = dbreader_app.connect(dbpath_app);
+    if (connected)
+        cout << "opened " << dbpath_app << " successfully" << endl;
+    else
+        cout << "can't open " << dbpath_app << endl;
 
     DbReader dbreader_pds2;
-    dbreader_pds2.connect(dbpath_pds2);
+    connected = dbreader_pds2.connect(dbpath_pds2);
+    if (connected)
+        cout << "opened " << dbpath_pds2 << " successfully" << endl;
+    else
+        cout << "can't open " << dbpath_pds2 << endl;
+#endif
 
 // #define DUMP
 #ifdef DUMP
@@ -105,8 +116,17 @@ int main(int argc, char *argv[])
     shared_ptr<DbReader> pdb1 = make_shared<DbReader>();
     shared_ptr<DbReader> pdb2 = make_shared<DbReader>();
 
-    pdb1->connect(dbpath_app);
-    pdb2->connect(dbpath_pds2);
+    bool db_connected = pdb1->connect(dbpath_app);
+    if (db_connected)
+        cout << "opened " << dbpath_app << " successfully" << endl;
+    else
+        cout << "can't open " << dbpath_app << endl;
+
+    db_connected = pdb2->connect(dbpath_pds2);
+    if (db_connected)
+        cout << "opened " << dbpath_pds2 << " successfully" << endl;
+    else
+        cout << "can't open " << dbpath_pds2 << endl;
 
     unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
 
