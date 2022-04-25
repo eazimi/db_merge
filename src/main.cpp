@@ -12,7 +12,7 @@ using boost::property_tree::ptree;
 using namespace Kaco;
 
 constexpr char dbpath_app[] = "../files/config-app.db3";
-constexpr char dbpath_pds2[] = "../files/config-pds2.db3";
+constexpr char dbpath_pds2[] = "../files/config-psd2.db3";
 
 #define NEW_LINE \
     cout << endl;
