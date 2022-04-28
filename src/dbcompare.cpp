@@ -131,6 +131,44 @@ namespace Kaco
         return updatedCols;
     };
 
+    static auto updateColNameInConstraints = [](vector<string> constraints, unordered_set<string> cols, string schema, string tblName)
+    {
+        vector<string> updated_constraints = {};
+        for (auto constraint : constraints)
+        {
+            for (auto col : cols)
+            {
+                int index = 0;
+                do
+                {
+                    size_t pos = constraint.find(col, index);
+                    if (pos != string::npos)
+                    {
+                        int col_length = col.length();
+                        auto next_pos = pos + col_length;
+                        char ch = constraint[next_pos];
+                        if ((ch == ' ') || (ch == ',') || (ch == ')'))
+                        {
+                            stringstream ss;
+                            ss << "\"" << schema << "\""
+                               << "." << tblName << "." << col;
+                            auto ss_str = ss.str();
+                            constraint.replace(pos, col_length, ss_str);
+                            ss.str("");
+                            index += (pos + ss_str.length());
+                        }
+                        else
+                            index = next_pos;
+                    }
+                    else
+                        break;
+                } while (true);
+            }
+            updated_constraints.push_back(std::move(constraint));
+        }
+        return updated_constraints;
+    };    
+
     static auto getCols = [](unordered_map<string, string> cols)
     {
         vector<string> col_name = {};
