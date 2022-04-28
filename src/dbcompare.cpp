@@ -513,9 +513,9 @@ namespace Kaco
     {
         string sql;
         // sql = createNewTbl("inv");
-        sql = createNewTbl("countrySettingCfg");
+        // sql = createNewTbl("countrySettingCfg");
         // sql = createNewTbl("accounts");
-        // sql = createNewTbl("invCfg");
+        sql = createNewTbl("invCfg");
         print<vector<string>>("-> create table", {sql});
     }
 
@@ -624,18 +624,19 @@ namespace Kaco
         auto detailedRefCols = updateColNames(umapRefCols, SCHEMA_REF, tblName);
         detailedRefCols = updateRefTable(detailedRefCols, SCHEMA_REF);
         auto refColNames = getColNamesDetails(umapRefCols).first;
-        auto detailedRefCons = updateColNameInConstraints(refConstraints, refColNames, SCHEMA_REF, tblName);
-        auto detailedRefColsCons = mergeColsAndConstraint(detailedRefCols, detailedRefCons);
+        auto detailedRefConst = updateColNameInConstraints(refConstraints, refColNames, SCHEMA_REF, tblName);
+        detailedRefConst = updateRefTable(detailedRefConst, SCHEMA_REF);
+        auto detailedRefColsCons = mergeColsAndConstraint(detailedRefCols, detailedRefConst);
         
         print<vector<string>>("-> detailedRefColsCons", detailedRefColsCons); 
         
         auto detailedDiffTargetCols = updateColNames(umapDiffTargetCols, SCHEMA_MAIN, tblName);
         detailedDiffTargetCols = updateRefTable(detailedDiffTargetCols, SCHEMA_MAIN);
-        auto detailedDiffTargetCons = updateColNameInConstraints(diffTargetContraints, diffTargetColNames, SCHEMA_MAIN, tblName);
-        auto detailedDiffTargetColsCons = mergeColsAndConstraint(detailedDiffTargetCols, detailedDiffTargetCons);
+        auto detailedDiffTargetConst = updateColNameInConstraints(diffTargetContraints, diffTargetColNames, SCHEMA_MAIN, tblName);
+        detailedDiffTargetConst = updateRefTable(detailedDiffTargetConst, SCHEMA_MAIN);
+        auto detailedDiffTargetColsCons = mergeColsAndConstraint(detailedDiffTargetCols, detailedDiffTargetConst);
 
         print<vector<string>>("-> detailedDiffTargetColsCons", detailedDiffTargetColsCons);
-
 
         return sql;
     }
