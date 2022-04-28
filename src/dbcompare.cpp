@@ -4,6 +4,8 @@
 #include <cstring>
 #include <algorithm>
 #include <stack>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
@@ -15,6 +17,12 @@ using namespace std;
 #define FALSE false
 #define MSG_ALREADY_INIT "DbCompare is already initialized."
 #define MSG_NOT_INIT "DbCompare is not initialized. Call initialize() first!"
+
+#define CT_CONSTRAINT   "CONSTRAINT"
+#define CT_PRIMARY      "PRIMARY"
+#define CT_UNIQUE       "UNIQUE"
+#define CT_CHECK        "CHECK"
+#define CT_FOREIGN      "FOREIGN"
 
 #define INIT_VECTORS  \
     m_db1Tables = {}; \
@@ -42,8 +50,28 @@ using namespace std;
         return r;                        \
     }
 
+#define CHECK_IS_TBL_CONSTRAINT(x) \
+    (((x) == CT_CONSTRAINT) ? true : (((x) == CT_PRIMARY) ? true : (((x) == CT_UNIQUE) ? true : (((x) == CT_CHECK) ? true : (((x) == CT_FOREIGN) ? true : false)))))
+
 namespace Kaco
 {
+    static auto getColsAndConstraints = [](vector<string> colsCons)
+    {
+        unordered_map<string, string> cols = {};
+        vector<string> constraints = {};
+        for (auto str : colsCons)
+        {
+            int pos = str.find_first_of(" ");
+            auto col = str.substr(0, pos);
+            bool isTblConstraint = CHECK_IS_TBL_CONSTRAINT(col);
+            if (!isTblConstraint)
+                cols.insert({std::move(col), std::move(str)});
+            else
+                constraints.push_back(std::move(str));
+        }
+        return make_pair(cols, constraints);
+    };
+
     static auto checkForMatch = [](char *stream)
     {
         stack<char> stack;
