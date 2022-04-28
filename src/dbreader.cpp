@@ -219,7 +219,7 @@ namespace Kaco
         return tableSchema;
     }
 
-    string DbReader::getCreateTblSQL(string tblName)
+    string DbReader::getCreateTblCmd(string tblName)
     {
         string sql = "";
         stringstream ss;     
