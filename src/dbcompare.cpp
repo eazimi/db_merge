@@ -15,6 +15,9 @@ using namespace std;
 #define VAL_SEPERATOR "|"
 #define STR_NULL std::string("")
 #define FALSE false
+#define SCHEMA_REF "ref"
+#define SCHEMA_MAIN "main"
+#define CT_REF "REFERENCES"
 #define MSG_ALREADY_INIT "DbCompare is already initialized."
 #define MSG_NOT_INIT "DbCompare is not initialized. Call initialize() first!"
 
@@ -74,6 +77,32 @@ namespace Kaco
             auto val = (keyVal) ? str.second : str.first;
             cout << val << endl;
         }
+    };
+
+    static auto updateRefTable = [](string ctCmd, string schema)
+    {
+        size_t pos = ctCmd.find(CT_REF);
+        int ctref_size = ((string)CT_REF).length();
+        while (pos != string::npos)
+        {
+            int index = pos + ctref_size + 1; // right on the beginning of the table name
+            pos = ctCmd.find_first_of(" ", index);
+            if(pos != string::npos)
+            {
+                int tblname_len = pos - index;
+                auto tblName = ctCmd.substr(index, tblname_len);
+                stringstream ss;
+                ss << "\"" << schema << "\"" << "." << tblName;
+                auto newtbl_name = ss.str();
+                int newtblname_size = newtbl_name.size();
+                ctCmd.replace(index, tblname_len, newtbl_name);
+                pos = ctCmd.find(CT_REF, index + newtblname_size);
+            }
+            else
+                break;
+
+        }
+        return ctCmd;
     };
 
     static auto getCols = [](unordered_map<string, string> cols)
