@@ -76,6 +76,13 @@ namespace Kaco
         }
     };
 
+    static auto getCols = [](unordered_map<string, string> cols)
+    {
+        vector<string> col_name = {};
+        for (const auto &str : cols)
+            col_name.push_back(str.first);
+        return col_name;
+    };
     static auto getColsAndConstraints = [](vector<string> colsCons)
     {
         unordered_map<string, string> cols = {};
