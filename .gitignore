@@ -2,3 +2,4 @@ build
 files
 c_cpp_properties.json
 settings.json
+commented.cpp
