@@ -105,6 +105,32 @@ namespace Kaco
         return ctCmd;
     };
 
+    static auto updateColsNames = [](unordered_map<string, string> cols, string schema, string tblName)
+    {
+        vector<string> updatedCols = {};
+        for (auto col : cols)
+        {
+            auto colName = col.first;
+            auto colDef = col.second;
+            size_t pos = colDef.find(colName);
+            if (pos != string::npos)
+            {
+                int col_length = colName.length();
+                char ch = colDef[pos + col_length];
+                if ((ch == ' ') || (ch == ',') || (ch == ')'))
+                {
+                    stringstream ss;
+                    ss << "\"" << schema << "\""
+                       << "." << tblName << "." << colName;
+                    colDef.replace(pos, col_length, ss.str());
+                    ss.str("");
+                }
+                updatedCols.push_back(std::move(colDef));
+            }
+        }
+        return updatedCols;
+    };
+
     static auto getCols = [](unordered_map<string, string> cols)
     {
         vector<string> col_name = {};
