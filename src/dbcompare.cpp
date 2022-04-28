@@ -83,6 +83,16 @@ namespace Kaco
             col_name.push_back(str.first);
         return col_name;
     };
+
+    static auto mergeColNameConstraint = [](vector<string> cols, vector<string> constraints)
+    {
+        int col_size = cols.size();
+        vector<string> column_constrain(col_size + constraints.size());
+        column_constrain.assign(cols.begin(), cols.end());
+        column_constrain.insert(column_constrain.begin() + col_size, constraints.begin(), constraints.end());
+        return column_constrain;
+    };
+
     static auto getColsAndConstraints = [](vector<string> colsCons)
     {
         unordered_map<string, string> cols = {};
