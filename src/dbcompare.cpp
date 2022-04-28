@@ -502,14 +502,12 @@ namespace Kaco
 
     void DbCompare::testCreateNewTbl()
     {
-#ifdef DEBUG
-        auto sql = createNewTbl("countrySettingCfg");
-        auto sql = createNewTbl("accounts");
-#endif
-        auto sql = createNewTbl("inv");
-        cout << endl
-             << "create table: " << endl
-             << sql << endl;
+        string sql;
+        // sql = createNewTbl("inv");
+        sql = createNewTbl("countrySettingCfg");
+        // sql = createNewTbl("accounts");
+        // sql = createNewTbl("invCfg");
+        print<vector<string>>("-> create table", {sql});
     }
 
     void DbCompare::initDbTables()
@@ -550,46 +548,49 @@ namespace Kaco
         string sql = "";
 
         // db1: target, db2: reference
-        auto targetCmd = m_db1->getCreateTblSQL(tblName);
-        auto targetCols = splitCreateTblCmd(targetCmd);
+        auto targetCtCmd = m_db1->getCreateTblCmd(tblName);
+        auto refCtCmd = m_db2->getCreateTblCmd(tblName);
 
-        auto refCmd = m_db2->getCreateTblSQL(tblName);
-        auto refCols = splitCreateTblCmd(refCmd);
+        print<vector<string>>("-> targetCtCmd", {targetCtCmd});
+        print<vector<string>>("-> refCtCmd", {refCtCmd});
 
-        auto extras = checkColExtra(targetCols, refCols);
+        // columns and constraints
+        auto targetColsCons = splitCreateTblCmd(targetCtCmd);
+        auto refColsCons = splitCreateTblCmd(refCtCmd);
 
-// #ifdef DEBUG
-        cout << "target cmd is: " << endl
-             << targetCmd << endl;
-        cout << endl
-             << "targetCols are: " << endl;
-        for (auto str : targetCols)
-            cout << str << endl;
-        cout << endl
-             << "refCmd is: " << endl
-             << refCmd << endl;
-        cout << endl
-             << "refCols are:" << endl;
-        for (auto str : refCols)
-            cout << str << endl;
-        cout << endl
-             << "extra cols in target: " << endl;
-        for (auto str : extras.first)
-            cout << str << endl;
-        cout << endl
-             << "extra cols in ref: " << endl;
-        for (auto str : extras.second)
-            cout << str << endl;
-// #endif
+        print<vector<string>>("-> targetColsCons", targetColsCons);
+        print<vector<string>>("-> refColsCons", refColsCons);
 
-        stringstream ss;
-        ss << "CREATE TABLE " << tblName << "_tmp (";
-        for (auto const &col : targetCols)
-            ss << col << ", ";
-        for (auto const &col : extras.second)
-            ss << col << ", ";
-        ss << ")";
-        sql = ss.str();
+        auto diffColsCons = getColsConsDiff(targetColsCons, refColsCons);
+        auto diffTargetColsCons = diffColsCons.first;
+        auto diffRefColsCons = diffColsCons.second;
+        auto sharedColsCons = getColsConsIntersect(targetColsCons, refColsCons);
+
+        print("-> diffTargetColsCons", diffTargetColsCons);
+        print("-> diffRefColsCons", diffRefColsCons);
+        print("-> sharedColsCons", sharedColsCons);
+
+        // split columns and constraints 
+        auto splitTargetColsCons = getColsAndConstraints(targetColsCons);
+        auto splitRefColsCons = getColsAndConstraints(refColsCons);
+
+        // TODO: update this part by paying attention to the value that have been read from json config file, 
+        // for now it is considered as true
+        bool keepColConst = true;
+
+        stringstream ss_ct;
+        string newTblName = tblName + "_tmp";
+        ss_ct << "CREATE TABLE " << newTblName << " (";
+        for (auto const &col : refColsCons)
+            ss_ct << col << ", ";
+        // check for the cols which are in the target but not in ref 
+        for (auto const &field : diffTargetColsCons)
+        {
+            if(keepColConst)
+                ss_ct << field << ", ";
+        }
+        ss_ct << ")";
+        sql = ss_ct.str();
         auto pos = sql.find_last_of(",");
         sql.replace(pos, 2, "");
 
