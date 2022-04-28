@@ -79,30 +79,35 @@ namespace Kaco
         }
     };
 
-    static auto updateRefTable = [](string ctCmd, string schema)
+    static auto updateRefTable = [](const vector<string> &cols, string schema)
     {
-        size_t pos = ctCmd.find(CT_REF);
+        vector<string> updated_cols = {};
+        for (auto rec : cols)
+        {
+            size_t pos = rec.find(CT_REF);
         int ctref_size = ((string)CT_REF).length();
         while (pos != string::npos)
         {
             int index = pos + ctref_size + 1; // right on the beginning of the table name
-            pos = ctCmd.find_first_of(" ", index);
-            if(pos != string::npos)
+                pos = rec.find_first_of(" ", index);
+                if (pos != string::npos)
             {
                 int tblname_len = pos - index;
-                auto tblName = ctCmd.substr(index, tblname_len);
+                    auto tblName = rec.substr(index, tblname_len);
                 stringstream ss;
-                ss << "\"" << schema << "\"" << "." << tblName;
+                    ss << "\"" << schema << "\""
+                       << "." << tblName;
                 auto newtbl_name = ss.str();
                 int newtblname_size = newtbl_name.size();
-                ctCmd.replace(index, tblname_len, newtbl_name);
-                pos = ctCmd.find(CT_REF, index + newtblname_size);
+                    rec.replace(index, tblname_len, newtbl_name);
+                    pos = rec.find(CT_REF, index + newtblname_size);
             }
             else
                 break;
-
         }
-        return ctCmd;
+            updated_cols.push_back(std::move(rec));
+        }
+        return updated_cols;
     };
 
     static auto updateColsNames = [](unordered_map<string, string> cols, string schema, string tblName)
@@ -131,7 +136,7 @@ namespace Kaco
         return updatedCols;
     };
 
-    static auto updateColNameInConstraints = [](vector<string> constraints, unordered_set<string> cols, string schema, string tblName)
+    static auto updateColNameInConstraints = [](vector<string> constraints, vector<string> cols, string schema, string tblName)
     {
         vector<string> updated_constraints = {};
         for (auto constraint : constraints)
@@ -177,7 +182,7 @@ namespace Kaco
         return col_name;
     };
 
-    static auto mergeColNameConstraint = [](vector<string> cols, vector<string> constraints)
+    static auto mergeColsAndConstraint = [](vector<string> cols, vector<string> constraints)
     {
         int col_size = cols.size();
         vector<string> column_constrain(col_size + constraints.size());
@@ -571,8 +576,8 @@ namespace Kaco
         print("-> sharedColsCons", sharedColsCons);
 
         // split columns and constraints 
-        auto splitTargetColsCons = getColsAndConstraints(targetColsCons);
-        auto splitRefColsCons = getColsAndConstraints(refColsCons);
+        auto pairTargetColsCons = getColsAndConstraints(targetColsCons);
+        auto pairRefColsCons = getColsAndConstraints(refColsCons);
 
         // TODO: update this part by paying attention to the value that have been read from json config file, 
         // for now it is considered as true
@@ -593,6 +598,17 @@ namespace Kaco
         sql = ss_ct.str();
         auto pos = sql.find_last_of(",");
         sql.replace(pos, 2, "");
+        
+        auto umapRefCols = pairRefColsCons.first;
+        auto refConstraints = pairRefColsCons.second;
+        auto detailedRefCols = updateColsNames(umapRefCols, SCHEMA_REF, tblName);
+        detailedRefCols = updateRefTable(detailedRefCols, SCHEMA_REF);
+        auto refColNames = getCols(umapRefCols);
+        auto detailedRefCons = updateColNameInConstraints(refConstraints, refColNames, SCHEMA_REF, tblName);
+        auto detailedRefColsCons = mergeColsAndConstraint(detailedRefCols, detailedRefCons);
+        
+        print<vector<string>>("-> detailedRefColsCons", detailedRefColsCons); 
+        
 
         return sql;
     }
