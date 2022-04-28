@@ -55,6 +55,15 @@ using namespace std;
 
 namespace Kaco
 {
+    template <typename T>
+    static void print(string message, T data)
+    {
+        cout << endl
+             << "\"" << message << "\"" << endl;
+        for (const auto &str : data)
+            cout << str << endl;
+    }
+
     static auto getColsAndConstraints = [](vector<string> colsCons)
     {
         unordered_map<string, string> cols = {};
