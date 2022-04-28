@@ -174,12 +174,16 @@ namespace Kaco
         return updated_constraints;
     };    
 
-    static auto getCols = [](unordered_map<string, string> cols)
+    static auto getColNamesDetails = [](unordered_map<string, string> cols)
     {
         vector<string> col_name = {};
+        vector<string> col_detail = {};
         for (const auto &str : cols)
+        {
             col_name.push_back(str.first);
-        return col_name;
+            col_detail.push_back(str.second);
+        }
+        return make_pair(col_name, col_detail);
     };
 
     static auto mergeColsAndConstraint = [](vector<string> cols, vector<string> constraints)
@@ -575,10 +579,6 @@ namespace Kaco
         print("-> diffRefColsCons", diffRefColsCons);
         print("-> sharedColsCons", sharedColsCons);
 
-        // split columns and constraints 
-        auto pairTargetColsCons = getColsAndConstraints(targetColsCons);
-        auto pairRefColsCons = getColsAndConstraints(refColsCons);
-
         // TODO: update this part by paying attention to the value that have been read from json config file, 
         // for now it is considered as true
         bool keepColConst = true;
@@ -588,12 +588,30 @@ namespace Kaco
         ss_ct << "CREATE TABLE " << newTblName << " (";
         for (auto const &col : refColsCons)
             ss_ct << col << ", ";
-        // check for the cols which are in the target but not in ref 
-        for (auto const &field : diffTargetColsCons)
+
+        auto pairDiffTargetColsCons = getColsAndConstraints(diffTargetColsCons);
+        auto umapDiffTargetColsCons = pairDiffTargetColsCons.first;
+        auto diffTargetColNamesDetails = getColNamesDetails(umapDiffTargetColsCons);
+        auto diffTargetColNames = diffTargetColNamesDetails.first;
+        auto diffTargetColDetails = diffTargetColNamesDetails.second;
+        auto diffTargetContraints = pairDiffTargetColsCons.second;
+
+        // check for the columns which are in the target but not in ref
+        int diffcols_size = diffTargetColNames.size();
+        for (auto i = 0; i < diffcols_size; i++)
+        {
+            if (keepColConst)
+                ss_ct << diffTargetColDetails[i] << ", ";
+        }
+
+        // check for the constraints which are in the target but not in ref
+        int diffconst_size = diffTargetContraints.size();
+        for (auto i = 0; i < diffconst_size; i++)
         {
             if(keepColConst)
-                ss_ct << field << ", ";
+                ss_ct << diffTargetContraints[i] << ", ";
         }
+
         ss_ct << ")";
         sql = ss_ct.str();
         auto pos = sql.find_last_of(",");
