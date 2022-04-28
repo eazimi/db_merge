@@ -64,6 +64,18 @@ namespace Kaco
             cout << str << endl;
     }
 
+    // true: print value, false: print key
+    static auto mprint = [](string message, unordered_map<string, string> data, bool keyVal = true)
+    {
+        cout << endl
+             << message << endl;
+        for (const auto &str : data)
+        {
+            auto val = (keyVal) ? str.second : str.first;
+            cout << val << endl;
+        }
+    };
+
     static auto getColsAndConstraints = [](vector<string> colsCons)
     {
         unordered_map<string, string> cols = {};
