@@ -281,40 +281,7 @@ namespace Kaco
         return cols;
     }
 
-    static vector<string> splitString(string input, char startChr, char endChr, char delimiter)
-    {
-        vector<string> splitCols = {};
-        auto firstPos = input.find(startChr);
-        auto lastPos = input.find_last_of(endChr);
-        auto columns = input.substr(firstPos + 1, lastPos - firstPos - 1);
-        char *pch = strtok(const_cast<char *>(columns.c_str()), &delimiter);
-        bool wait = false;
-        stringstream ss;
-        while (pch != nullptr)
-        {
-            if (pch[0] == ' ')
-                pch = &pch[1];
-            bool matched = checkForMatch(pch);
-            if (matched)
-                splitCols.push_back(std::move(pch));
-            else if (wait)
-            {
-                ss << pch;
-                splitCols.push_back(std::move(ss.str()));
-                wait = false;
-                ss.str("");
-            }
-            else
-            {
-                wait = true;
-                ss << pch << ", ";
-            }
-            pch = strtok(nullptr, &delimiter);
-        }
-        return splitCols;
-    }
-
-    static pair<vector<string>, vector<string>> checkColExtra(vector<string> targetCols, vector<string> refCols)
+    static pair<vector<string>, vector<string>> getColsConsDiff(vector<string> targetCols, vector<string> refCols)
     {
         vector<string> targetDiff = {};
         vector<string> refDiff = {};
@@ -323,25 +290,16 @@ namespace Kaco
         set_difference(targetCols.begin(), targetCols.end(), refCols.begin(), refCols.end(), back_inserter(targetDiff));
         set_difference(refCols.begin(), refCols.end(), targetCols.begin(), targetCols.end(), back_inserter(refDiff));
         return {targetDiff, refDiff};
+    }
 
-        // a replacment implementation that might be useful
-        /*
-        vector<string> targetExtra = {};
-        vector<string> refExtra = {};
-        for (const auto &str : refCols)
+    static vector<string> getColsConsIntersect(vector<string> targetCols, vector<string> refCols)
         {
-            bool found = (find(targetCols.begin(), targetCols.end(), str) != targetCols.end());
-            if (!found)
-                refExtra.push_back(str);
-        }
-        for (const auto &str : targetCols)
-        {
-            bool found = (find(refCols.begin(), refCols.end(), str) != refCols.end());
-            if(!found)
-                targetExtra.push_back(str);
-        }
-        return {targetExtra, refExtra};
-        */
+        vector<string> intersect = {};
+        sort(targetCols.begin(), targetCols.end());
+        sort(refCols.begin(), refCols.end());
+        set_intersection(targetCols.begin(), targetCols.end(), refCols.begin(), refCols.end(), 
+            std::inserter(intersect, intersect.begin()));
+        return intersect;
     }
 
     static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db, const vector<string> &tables)
