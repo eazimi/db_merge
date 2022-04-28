@@ -128,7 +128,8 @@ int main(int argc, char *argv[])
     else
         cout << "can't open " << dbpath_pds2 << endl;
 
-    unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
+    // unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
+    unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb2, pdb1);
 
     bool initialized = false;
 

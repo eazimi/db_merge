@@ -110,7 +110,7 @@ namespace Kaco
         return updated_cols;
     };
 
-    static auto updateColsNames = [](unordered_map<string, string> cols, string schema, string tblName)
+    static auto updateColNames = [](unordered_map<string, string> cols, string schema, string tblName)
     {
         vector<string> updatedCols = {};
         for (auto col : cols)
@@ -590,8 +590,8 @@ namespace Kaco
             ss_ct << col << ", ";
 
         auto pairDiffTargetColsCons = getColsAndConstraints(diffTargetColsCons);
-        auto umapDiffTargetColsCons = pairDiffTargetColsCons.first;
-        auto diffTargetColNamesDetails = getColNamesDetails(umapDiffTargetColsCons);
+        auto umapDiffTargetCols = pairDiffTargetColsCons.first;
+        auto diffTargetColNamesDetails = getColNamesDetails(umapDiffTargetCols);
         auto diffTargetColNames = diffTargetColNamesDetails.first;
         auto diffTargetColDetails = diffTargetColNamesDetails.second;
         auto diffTargetContraints = pairDiffTargetColsCons.second;
@@ -617,16 +617,25 @@ namespace Kaco
         auto pos = sql.find_last_of(",");
         sql.replace(pos, 2, "");
         
+        // split columns and constraints 
+        auto pairRefColsCons = getColsAndConstraints(refColsCons);
         auto umapRefCols = pairRefColsCons.first;
         auto refConstraints = pairRefColsCons.second;
-        auto detailedRefCols = updateColsNames(umapRefCols, SCHEMA_REF, tblName);
+        auto detailedRefCols = updateColNames(umapRefCols, SCHEMA_REF, tblName);
         detailedRefCols = updateRefTable(detailedRefCols, SCHEMA_REF);
-        auto refColNames = getCols(umapRefCols);
+        auto refColNames = getColNamesDetails(umapRefCols).first;
         auto detailedRefCons = updateColNameInConstraints(refConstraints, refColNames, SCHEMA_REF, tblName);
         auto detailedRefColsCons = mergeColsAndConstraint(detailedRefCols, detailedRefCons);
         
         print<vector<string>>("-> detailedRefColsCons", detailedRefColsCons); 
         
+        auto detailedDiffTargetCols = updateColNames(umapDiffTargetCols, SCHEMA_MAIN, tblName);
+        detailedDiffTargetCols = updateRefTable(detailedDiffTargetCols, SCHEMA_MAIN);
+        auto detailedDiffTargetCons = updateColNameInConstraints(diffTargetContraints, diffTargetColNames, SCHEMA_MAIN, tblName);
+        auto detailedDiffTargetColsCons = mergeColsAndConstraint(detailedDiffTargetCols, detailedDiffTargetCons);
+
+        print<vector<string>>("-> detailedDiffTargetColsCons", detailedDiffTargetColsCons);
+
 
         return sql;
     }
