@@ -20,6 +20,13 @@ namespace Kaco
         return true;
     }
 
+    int DbReader::attachDb(string dbPath)
+    {
+        stringstream ss;
+        ss << "ATTACH '" << dbPath << "' AS ref"; 
+        return sql_exec(ss.str(), nullptr);
+    }
+
     int DbReader::sql_exec(string sql, ExecCallback cb)
     {
         char *zErrMsg = 0;

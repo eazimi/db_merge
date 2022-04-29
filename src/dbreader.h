@@ -23,6 +23,7 @@ namespace Kaco
             ~DbReader();
 
             bool connect(string dbPath);
+            int attachDb(string dbPath);
             int sql_exec(string sql, ExecCallback cb);
             vector<string> sql_exec(string cmd);
             int dbDump(char *fileName);

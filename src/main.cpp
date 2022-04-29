@@ -128,6 +128,15 @@ int main(int argc, char *argv[])
     else
         cout << "can't open " << dbpath_pds2 << endl;
 
+#define DB_ATTACH
+#ifdef DB_ATTACH
+    NEW_LINE;
+    auto rc = pdb1->attachDb(dbpath_pds2);
+    cout << endl
+         << "-> attachDb" << endl
+         << ((SQLITE_OK == rc) ? "true" : "false") << endl;
+#endif
+
     unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
     // unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb2, pdb1);
 

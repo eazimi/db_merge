@@ -5,17 +5,20 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 namespace Kaco
 {
     class IDbReader
     {
     public:
-        virtual bool connect(std::string dbPath) = 0;
-        virtual std::vector<std::string> getTables() = 0;
-        virtual std::vector<std::string> getTableSchema(std::string tableName) = 0;
-        virtual std::vector<std::string> getIndices(std::string tableName) = 0;
-        virtual std::vector<std::pair<std::string, std::string>> getTriggers(std::string tableName) = 0;
-        virtual std::string getCreateTblCmd(std::string tblName) = 0;
+        virtual bool connect(string dbPath) = 0;
+        virtual int attachDb(string dbPath) = 0;
+        virtual vector<string> getTables() = 0;
+        virtual vector<string> getTableSchema(string tableName) = 0;
+        virtual vector<string> getIndices(string tableName) = 0;
+        virtual vector<pair<string, string>> getTriggers(string tableName) = 0;
+        virtual string getCreateTblCmd(string tblName) = 0;
     };
 
 } // namespace Kaco
