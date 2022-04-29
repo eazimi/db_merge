@@ -19,6 +19,15 @@ constexpr char dbpath_pds2[] = "../files/config-psd2.db3";
 
 int main(int argc, char *argv[])
 {
+    if (argc != 3)
+    {
+        cout << "try it like this:" 
+             << endl 
+             << "./db_merge [PATH_TO_DB1] [PATH_TO_DB2]"
+             << endl;
+        return 0;
+    }
+
 // #define LEGACY
 #ifdef LEGACY
     DbReader dbreader_app;
