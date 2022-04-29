@@ -19,6 +19,8 @@ namespace Kaco
             // std::vector<std::string> compareSchema(std::string tableName);
             bool initialize();
             std::string compareAndMerge();
+            void testDbDump();
+            void testGetTables();
             void testTableSchema();
             void testTableIndices();
             void testTableTriggers();

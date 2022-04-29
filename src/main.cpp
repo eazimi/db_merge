@@ -11,8 +11,8 @@ using namespace std;
 using boost::property_tree::ptree;
 using namespace Kaco;
 
-constexpr char dbpath_app[] = "../files/config-app.db3";
-constexpr char dbpath_pds2[] = "../files/config-psd2.db3";
+// constexpr char dbpath_app[] = "../files/config-app.db3";
+// constexpr char dbpath_pds2[] = "../files/config-psd2.db3";
 
 #define NEW_LINE \
     cout << endl;
@@ -125,19 +125,21 @@ int main(int argc, char *argv[])
     shared_ptr<DbReader> pdb1 = make_shared<DbReader>();
     shared_ptr<DbReader> pdb2 = make_shared<DbReader>();
 
+    auto dbpath_app = argv[1];
     bool db_connected = pdb1->connect(dbpath_app);
     if (db_connected)
         cout << "opened " << dbpath_app << " successfully" << endl;
     else
         cout << "can't open " << dbpath_app << endl;
 
-    db_connected = pdb2->connect(dbpath_pds2);
+    auto dbpath_pds2 = argv[2];
+    db_connected = pdb2->connect(argv[2]);
     if (db_connected)
         cout << "opened " << dbpath_pds2 << " successfully" << endl;
     else
         cout << "can't open " << dbpath_pds2 << endl;
 
-#define DB_ATTACH
+// #define DB_ATTACH
 #ifdef DB_ATTACH
     NEW_LINE;
     auto rc = pdb1->attachDb(dbpath_pds2);
@@ -154,7 +156,7 @@ int main(int argc, char *argv[])
 #define FIRST_INIT
 #ifdef FIRST_INIT
     NEW_LINE;
-    cout << "first call to initialize()" << endl;
+    cout << "-> initialize" << endl;
     initialized = dbCompare->initialize();
     cout << "initialized: " << initialized << endl;
 #endif
@@ -204,10 +206,19 @@ int main(int argc, char *argv[])
     dbCompare->compareAndMerge();
 #endif
 
-#define CREATE_NEW_TBL
+// #define CREATE_NEW_TBL
 #ifdef CREATE_NEW_TBL
     NEW_LINE;
     dbCompare->testCreateNewTbl();
+#endif
+
+#define V0
+#ifdef V0
+    dbCompare->testDbDump();
+    dbCompare->testGetTables();
+    dbCompare->testTableSchema();
+    dbCompare->testTableIndices();
+    dbCompare->testTableTriggers();
 #endif
 
 #endif

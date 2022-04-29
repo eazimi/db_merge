@@ -67,16 +67,12 @@ namespace Kaco
             cout << str << endl;
     }
 
-    // true: print value, false: print key
-    static auto mprint = [](string message, unordered_map<string, string> data, bool keyVal = true)
+    static auto mprint = [](string message, map<string, string> data)
     {
         cout << endl
-             << message << endl;
+             << "\"" << message << "\"" << endl;
         for (const auto &str : data)
-        {
-            auto val = (keyVal) ? str.second : str.first;
-            cout << val << endl;
-        }
+            cout << str.first << ": " << str.second << endl;
     };
 
     static auto updateRefTable = [](const vector<string> &cols, string schema)
@@ -455,37 +451,39 @@ namespace Kaco
         return result;
     }
 
+    void DbCompare::testDbDump()
+    {
+        cout << endl
+             << "-> dumping db1 in ./dump_db1.sql" << endl;
+        m_db1->dbDump((char *)"./dump_db1.sql");
+        cout << "-> dumping db2 in ./dump_db2.sql" << endl;
+        m_db2->dbDump((char *)"./dump_db2.sql");
+    }
+
+    void DbCompare::testGetTables()
+    {
+        auto db1_tables = m_db1->getTables();
+        auto db2_tables = m_db2->getTables();
+        print<vector<string>>("-> tables in db1", db1_tables);
+        print<vector<string>>("-> tables in db2", db2_tables);
+    }
+
     void DbCompare::testTableSchema()
     {
-        cout << "db1 all the table schemas: " << endl;
-        for (auto str : m_db1TblSchema)
-            cout << str.first << ": " << str.second << endl;
-        cout << endl
-             << "db2 all the table schemas: " << endl;
-        for (auto str : m_db2TblSchema)
-            cout << str.first << ": " << str.second << endl;
+        mprint("-> db1 all the table schemas", m_db1TblSchema);
+        mprint("-> db2 all the table schemas", m_db2TblSchema);
     }
 
     void DbCompare::testTableIndices()
     {
-        cout << "db1 all the table indices: " << endl;
-        for (auto str : m_db1TblIndices)
-            cout << str.first << ": " << str.second << endl;
-        cout << endl
-             << "db2 all the table indices: " << endl;
-        for (auto str : m_db2TblIndices)
-            cout << str.first << ": " << str.second << endl;
+        mprint("-> db1 all the table indices", m_db1TblIndices);
+        mprint("-> db2 all the table indices", m_db2TblIndices);
     }
 
     void DbCompare::testTableTriggers()
     {
-        cout << "db1 all the table triggers: " << endl;
-        for (auto str : m_db1TblTriggers)
-            cout << str.first << ": " << str.second << endl;
-        cout << endl
-             << "db2 all the table triggers: " << endl;
-        for (auto str : m_db2TblTriggers)
-            cout << str.first << ": " << str.second << endl;
+        mprint("-> db1 all the table triggers", m_db1TblTriggers);
+        mprint("-> db2 all the table triggers", m_db2TblTriggers);
     }
 
     void DbCompare::testTableTriggers(string tableName)
