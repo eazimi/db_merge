@@ -110,28 +110,16 @@ namespace Kaco
         return updated_cols;
     };
 
-    static auto updateColNames = [](unordered_map<string, string> cols, string schema, string tblName)
+    static auto updateColNames = [](vector<string> cols, string schema, string tblName)
     {
         vector<string> updatedCols = {};
+        stringstream ss;
         for (auto col : cols)
         {
-            auto colName = col.first;
-            auto colDef = col.second;
-            size_t pos = colDef.find(colName);
-            if (pos != string::npos)
-            {
-                int col_length = colName.length();
-                char ch = colDef[pos + col_length];
-                if ((ch == ' ') || (ch == ',') || (ch == ')'))
-                {
-                    stringstream ss;
-                    ss << "\"" << schema << "\""
-                       << "." << tblName << "." << colName;
-                    colDef.replace(pos, col_length, ss.str());
-                    ss.str("");
-                }
-                updatedCols.push_back(std::move(colDef));
-            }
+            ss << "\"" << schema << "\""
+               << "." << tblName << "." << col;            
+            updatedCols.push_back(std::move(ss.str()));
+            ss.str("");
         }
         return updatedCols;
     };
@@ -621,22 +609,72 @@ namespace Kaco
         auto pairRefColsCons = getColsAndConstraints(refColsCons);
         auto umapRefCols = pairRefColsCons.first;
         auto refConstraints = pairRefColsCons.second;
-        auto detailedRefCols = updateColNames(umapRefCols, SCHEMA_REF, tblName);
-        detailedRefCols = updateRefTable(detailedRefCols, SCHEMA_REF);
-        auto refColNames = getColNamesDetails(umapRefCols).first;
-        auto detailedRefConst = updateColNameInConstraints(refConstraints, refColNames, SCHEMA_REF, tblName);
-        detailedRefConst = updateRefTable(detailedRefConst, SCHEMA_REF);
-        auto detailedRefColsCons = mergeColsAndConstraint(detailedRefCols, detailedRefConst);
-        
-        print<vector<string>>("-> detailedRefColsCons", detailedRefColsCons); 
-        
-        auto detailedDiffTargetCols = updateColNames(umapDiffTargetCols, SCHEMA_MAIN, tblName);
-        detailedDiffTargetCols = updateRefTable(detailedDiffTargetCols, SCHEMA_MAIN);
-        auto detailedDiffTargetConst = updateColNameInConstraints(diffTargetContraints, diffTargetColNames, SCHEMA_MAIN, tblName);
-        detailedDiffTargetConst = updateRefTable(detailedDiffTargetConst, SCHEMA_MAIN);
-        auto detailedDiffTargetColsCons = mergeColsAndConstraint(detailedDiffTargetCols, detailedDiffTargetConst);
 
-        print<vector<string>>("-> detailedDiffTargetColsCons", detailedDiffTargetColsCons);
+        auto refColNames = getColNamesDetails(umapRefCols).first;
+        auto detailedRefCols = updateColNames(refColNames, SCHEMA_REF, tblName);
+
+        print<vector<string>>("-> detailedRefCols", detailedRefCols);
+
+        auto detailedDiffTargetCols = updateColNames(diffTargetColNames, SCHEMA_MAIN, tblName);
+        
+        print<vector<string>>("-> detailedDiffTargetCols", detailedDiffTargetCols);
+        
+        stringstream ss_sel;
+        ss_sel << "SELECT ";
+        for (const auto &rec : detailedRefCols)
+            ss_sel << rec << ", ";
+
+        // check for the columns which are in the target but not in ref
+        for (auto i = 0; i < diffcols_size; i++)
+        {
+            if (keepColConst)
+                ss_sel << detailedDiffTargetCols[i] << ", ";
+        }
+        
+        auto partialInsCmd = ss_sel.str();
+        ss_sel.str("");
+        auto virgool_pos = partialInsCmd.find_last_of(",");
+        partialInsCmd.replace(virgool_pos, 1, "");
+
+        ss_sel << partialInsCmd << "FROM "
+               << "\"" << SCHEMA_REF << "\"" << "." << tblName << " ";
+
+        if (!sharedColsCons.empty())
+        {
+            auto sharedCols = getColsAndConstraints(sharedColsCons).first;
+            auto sharedColNames = getColNamesDetails(sharedCols).first;
+            stringstream ss_shared_cols;
+            for (auto col : sharedColNames)
+            {
+                ss_shared_cols << "\"" << SCHEMA_REF << "\"" << "." << tblName << "." 
+                               << col << " = " 
+                               << "\"" << SCHEMA_MAIN << "\"" << "." << tblName << "."
+                               << col << " AND ";
+            }
+            auto join = ss_shared_cols.str();
+            ss_shared_cols.str("");
+            if(!sharedColNames.empty())
+            {
+                auto and_pos = join.find_last_of("AND");
+                join.replace(and_pos - 3, 5, ""); // remove " AND "
+            }
+
+            ss_sel << "LEFT JOIN " << "\"" << SCHEMA_MAIN << "\"" << "." << tblName
+                   << " ON " << join << ";";
+        }
+        else
+        {
+            auto sel = ss_sel.str();
+            ss_sel.str("");         
+            auto space_pos = sel.find_last_of(" ");
+            sel.replace(space_pos, 1, "");
+            ss_sel << sel << ";";
+        }
+
+        stringstream ss_ins;
+        ss_ins << "INSERT INTO " << newTblName << " " << ss_sel.str();
+
+        print<vector<string>>("-> insert command", {ss_ins.str()});
 
         return sql;
     }
