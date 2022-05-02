@@ -227,6 +227,7 @@ int main(int argc, char *argv[])
     dbCompare->testTableTriggers();
 #elif VER == 11
     dbCompare->testDiffTableNames();
+    dbCompare->testDiffTableSchemas();
 #endif
 
 #endif

@@ -4,7 +4,7 @@
 #include <cstring>
 #include <algorithm>
 #include <unordered_map>
-
+#include <unordered_set>
 #include "dbcompare_funcs.hpp"
 
 using namespace std;
@@ -48,19 +48,19 @@ namespace Kaco
 
         string result{};
         // db1: source -> db2: target
-        for (auto tblName_schema : m_db1TblSchema)
+        for (auto tblName_schema : m_mainTblSchema)
         {
             auto srcTblName = tblName_schema.first;
-            // bool targetTblFound = (m_db2TblSchema.find(srcTblName) != m_db2TblSchema.end());
+            // bool targetTblFound = (m_refTblSchema.find(srcTblName) != m_refTblSchema.end());
             bool targetTblFound = false;
-            auto targetTblSchema = m_db2TblSchema[srcTblName];
+            auto targetTblSchema = m_refTblSchema[srcTblName];
             if (targetTblSchema != "")
                 targetTblFound = true;
             if (targetTblFound)
             {
                 // check for schemas
                 auto srcTblSchema = tblName_schema.second;
-                auto targetTblSchema = m_db2TblSchema[srcTblName];
+                auto targetTblSchema = m_refTblSchema[srcTblName];
                 if (srcTblSchema == targetTblSchema)
                 {
                     // check for the indices
@@ -127,8 +127,8 @@ namespace Kaco
 
     void DbCompare::testTableSchema()
     {
-        mprint("-> db1 all the table schemas", m_db1TblSchema);
-        mprint("-> db2 all the table schemas", m_db2TblSchema);
+        mprint("-> db1 all the table schemas", m_mainTblSchema);
+        mprint("-> db2 all the table schemas", m_refTblSchema);
     }
 
     void DbCompare::testTableIndices()
@@ -169,6 +169,12 @@ namespace Kaco
         print<vector<string>>("-> table [names] in db2 but not in db1", diff_tbls.second);
     }
 
+    void DbCompare::testDiffTableSchemas()
+    {
+        auto diff_schema = diffTblSchemas();
+        print("-> diffrence in schemas", "shcema in main db", "schema in ref db", diff_schema);
+    }
+
     void DbCompare::initDbTables()
     {
         m_mainTbls = m_db1->getTables();
@@ -178,10 +184,10 @@ namespace Kaco
     void DbCompare::initDbTableSchema()
     {
         auto tblSchema1 = initTablesSchema(m_db1, m_mainTbls);
-        m_db1TblSchema = std::move(tblSchema1);
+        m_mainTblSchema = std::move(tblSchema1);
 
         auto tblSchema2 = initTablesSchema(m_db2, m_refTbls);
-        m_db2TblSchema = std::move(tblSchema2);
+        m_refTblSchema = std::move(tblSchema2);
     }
 
     void DbCompare::initDbTableIndices()
@@ -350,4 +356,22 @@ namespace Kaco
         return {diff_tbls.first, diff_tbls.second};
     }
 
+    // 0: table name, 1: table schema in main db, 2: table schema in ref db
+    vector<TUPLE_ALL_STR> DbCompare::diffTblSchemas() 
+    {        
+        vector<TUPLE_ALL_STR> diff_schema = {};
+        auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
+        for (auto str : common_tbls)
+        {
+            auto mainTblSchema = m_mainTblSchema[str];
+            auto refTblSchema = m_refTblSchema[str];
+            bool isEqual = (mainTblSchema == refTblSchema);
+            if (!isEqual)
+            {
+                auto diff = make_tuple(str, mainTblSchema, refTblSchema);
+                diff_schema.push_back(std::move(diff));
+            }
+        }
+        return diff_schema;
+    }
 } // namespace Kaco

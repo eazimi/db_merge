@@ -9,12 +9,13 @@
 #include <sstream>
 #include <stack>
 #include <memory>
+#include <tuple>
 #include <algorithm>
 #include "IDbReader.hpp"
 #include "dbcompare_defines.hpp"
 
 using namespace std;
-
+using TUPLE_ALL_STR = tuple<string, string, string>;
 namespace Kaco
 {
     template <typename T>
@@ -24,6 +25,18 @@ namespace Kaco
              << "\"" << message << "\"" << endl;
         for (const auto &str : data)
             cout << str << endl;
+    }
+
+    static void print(string main_msg, string aux_msg1, string aux_msg2, vector<TUPLE_ALL_STR> data)
+    {
+        cout << endl
+             << "\"" << main_msg << "\"" << endl;
+        for (const auto &str : data)
+            cout << "'[" << get<0>(str) << "]'" << endl
+                 << "'# " << aux_msg1 << "'" << endl 
+                 << get<1>(str) << endl
+                 << "'# " << aux_msg2 << "'" << endl
+                 << get<2>(str) << endl;
     }
 
     static auto mprint = [](string message, map<string, string> data)
@@ -262,6 +275,17 @@ namespace Kaco
         sort(refCols.begin(), refCols.end());
         set_intersection(targetCols.begin(), targetCols.end(), refCols.begin(), refCols.end(),
                          std::inserter(intersect, intersect.begin()));
+        return intersect;
+    }
+
+    static vector<string> getIntersect(vector<string> main, vector<string> ref)
+    {
+        vector<string> intersect = {};
+        sort(main.begin(), main.end());
+        sort(ref.begin(), ref.end());
+        set_intersection(main.begin(), main.end(), ref.begin(), ref.end(),
+                         std::back_inserter(intersect));
+        sort(intersect.begin(), intersect.end());
         return intersect;
     }
 

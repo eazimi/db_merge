@@ -22,14 +22,14 @@
     m_refTbls = {};
 
 #define INIT_MAPS                               \
-    m_db1TblSchema = {};                        \
-    m_db2TblSchema = {};                        \
+    m_mainTblSchema = {};                        \
+    m_refTblSchema = {};                        \
     m_db1TblIndices = {}, m_db2TblIndices = {}; \
     m_db1TblTriggers = {}, m_db2TblTriggers = {};
 
 #define CLEAR_MAPS            \
-    m_db1TblSchema.clear();   \
-    m_db2TblSchema.clear();   \
+    m_mainTblSchema.clear();   \
+    m_refTblSchema.clear();   \
     m_db1TblIndices.clear();  \
     m_db2TblIndices.clear();  \
     m_db1TblTriggers.clear(); \

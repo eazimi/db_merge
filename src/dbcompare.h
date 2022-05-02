@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "IDBReader.hpp"
+#include "IDbReader.hpp"
 
 namespace Kaco
 {
@@ -27,11 +27,12 @@ namespace Kaco
             void testTableTriggers(std::string tableName);
             void testCreateNewTbl();
             void testDiffTableNames();
+            void testDiffTableSchemas();
 
         private:
             std::shared_ptr<IDbReader> m_db1, m_db2;
             std::vector<std::string> m_mainTbls, m_refTbls;
-            std::map<std::string, std::string> m_db1TblSchema, m_db2TblSchema;
+            std::map<std::string, std::string> m_mainTblSchema, m_refTblSchema;
             std::map<std::string, std::string> m_db1TblIndices, m_db2TblIndices;
             std::map<std::string, std::string> m_db1TblTriggers, m_db2TblTriggers;
             bool m_initialized;
@@ -42,6 +43,7 @@ namespace Kaco
             void initDbTableTriggers();
             std::string createNewTbl(std::string tblName);
             pair<vector<string>, vector<string>> diffTblNames();
+            vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
     };
 
 } // namespace Kaco
