@@ -21,7 +21,8 @@ ADD_EXECUTABLE(${PROJECT}
     src/dbreader.h
     src/dbcompare.cpp
     src/dbcompare.h
-    src/dbcompare_defines.hpp    
+    src/dbcompare_defines.hpp  
+    src/dbcompare_funcs.hpp  
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT} ${SQLite3_LIBRARIES})
