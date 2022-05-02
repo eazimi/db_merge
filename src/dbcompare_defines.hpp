@@ -18,8 +18,8 @@
 #define CT_FOREIGN "FOREIGN"
 
 #define INIT_VECTORS  \
-    m_db1Tables = {}; \
-    m_db2Tables = {};
+    m_mainTbls = {}; \
+    m_refTbls = {};
 
 #define INIT_MAPS                               \
     m_db1TblSchema = {};                        \

@@ -162,43 +162,43 @@ namespace Kaco
         print<vector<string>>("-> create table", {sql});
     }
 
-    void DbCompare::testDiffTables()
+    void DbCompare::testDiffTableNames()
     {
-        auto diff_tbls = diffTables();
-        print<vector<string>>("-> tables in db1 but not in db2", diff_tbls.first);
-        print<vector<string>>("-> tables in db2 but not in db1", diff_tbls.second);
+        auto diff_tbls = diffTblNames();
+        print<vector<string>>("-> table [names] in db1 but not in db2", diff_tbls.first);
+        print<vector<string>>("-> table [names] in db2 but not in db1", diff_tbls.second);
     }
 
     void DbCompare::initDbTables()
     {
-        m_db1Tables = m_db1->getTables();
-        m_db2Tables = m_db2->getTables();
+        m_mainTbls = m_db1->getTables();
+        m_refTbls = m_db2->getTables();
     }
 
     void DbCompare::initDbTableSchema()
     {
-        auto tblSchema1 = initTablesSchema(m_db1, m_db1Tables);
+        auto tblSchema1 = initTablesSchema(m_db1, m_mainTbls);
         m_db1TblSchema = std::move(tblSchema1);
 
-        auto tblSchema2 = initTablesSchema(m_db2, m_db2Tables);
+        auto tblSchema2 = initTablesSchema(m_db2, m_refTbls);
         m_db2TblSchema = std::move(tblSchema2);
     }
 
     void DbCompare::initDbTableIndices()
     {
-        auto tableIndices1 = initTableIndices(m_db1, m_db1Tables);
+        auto tableIndices1 = initTableIndices(m_db1, m_mainTbls);
         m_db1TblIndices = std::move(tableIndices1);
 
-        auto tableIndices2 = initTableIndices(m_db2, m_db2Tables);
+        auto tableIndices2 = initTableIndices(m_db2, m_refTbls);
         m_db2TblIndices = std::move(tableIndices2);
     }
 
     void DbCompare::initDbTableTriggers()
     {
-        auto tableTriggers1 = initTableTriggers(m_db1, m_db1Tables);
+        auto tableTriggers1 = initTableTriggers(m_db1, m_mainTbls);
         m_db1TblTriggers = std::move(tableTriggers1);
 
-        auto tableTriggers2 = initTableTriggers(m_db2, m_db2Tables);
+        auto tableTriggers2 = initTableTriggers(m_db2, m_refTbls);
         m_db2TblTriggers = std::move(tableTriggers2);
     }
 
@@ -341,12 +341,9 @@ namespace Kaco
         return sql;
     }
 
-    pair<vector<string>, vector<string>> DbCompare::diffTables()
+    pair<vector<string>, vector<string>> DbCompare::diffTblNames()
     {        
-        auto main_tbls = m_db1->getTables();
-        auto ref_tbls = m_db2->getTables();
-
-        auto diff_tbls = getDiff(main_tbls, ref_tbls);   
+        auto diff_tbls = getDiff(m_mainTbls, m_refTbls);
 
         // first: tables in the main db but not in the ref db
         // second: tables in the ref db but not in the main db

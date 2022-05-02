@@ -26,11 +26,11 @@ namespace Kaco
             void testTableTriggers();
             void testTableTriggers(std::string tableName);
             void testCreateNewTbl();
-            void testDiffTables();
+            void testDiffTableNames();
 
         private:
             std::shared_ptr<IDbReader> m_db1, m_db2;
-            std::vector<std::string> m_db1Tables, m_db2Tables;
+            std::vector<std::string> m_mainTbls, m_refTbls;
             std::map<std::string, std::string> m_db1TblSchema, m_db2TblSchema;
             std::map<std::string, std::string> m_db1TblIndices, m_db2TblIndices;
             std::map<std::string, std::string> m_db1TblTriggers, m_db2TblTriggers;
@@ -41,7 +41,7 @@ namespace Kaco
             void initDbTableIndices();
             void initDbTableTriggers();
             std::string createNewTbl(std::string tblName);
-            pair<vector<string>, vector<string>> diffTables();
+            pair<vector<string>, vector<string>> diffTblNames();
     };
 
 } // namespace Kaco
