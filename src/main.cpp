@@ -11,22 +11,30 @@ using namespace std;
 using boost::property_tree::ptree;
 using namespace Kaco;
 
-// constexpr char dbpath_app[] = "../files/config-app.db3";
-// constexpr char dbpath_pds2[] = "../files/config-psd2.db3";
+#define DEFAULT_DB
+#ifdef DEFAULT_DB
+constexpr char dbpath_app[] = "../files/config-app.db3";
+constexpr char dbpath_pds2[] = "../files/config-psd2.db3";
+#endif
 
 #define NEW_LINE \
     cout << endl;
 
 int main(int argc, char *argv[])
 {
+
+#ifndef DEFAULT_DB
     if (argc != 3)
     {
-        cout << "try it like this:" 
-             << endl 
+        cout << "-> try it like this:"
+             << endl
              << "./db_merge [PATH_TO_DB1] [PATH_TO_DB2]"
              << endl;
         return 0;
     }
+    auto dbpath_app = argv[1];
+    auto dbpath_pds2 = argv[2];
+#endif
 
 // #define LEGACY
 #ifdef LEGACY
@@ -125,15 +133,13 @@ int main(int argc, char *argv[])
     shared_ptr<DbReader> pdb1 = make_shared<DbReader>();
     shared_ptr<DbReader> pdb2 = make_shared<DbReader>();
 
-    auto dbpath_app = argv[1];
     bool db_connected = pdb1->connect(dbpath_app);
     if (db_connected)
         cout << "opened " << dbpath_app << " successfully" << endl;
     else
         cout << "can't open " << dbpath_app << endl;
-
-    auto dbpath_pds2 = argv[2];
-    db_connected = pdb2->connect(argv[2]);
+    
+    db_connected = pdb2->connect(dbpath_pds2);
     if (db_connected)
         cout << "opened " << dbpath_pds2 << " successfully" << endl;
     else
@@ -206,13 +212,13 @@ int main(int argc, char *argv[])
     dbCompare->compareAndMerge();
 #endif
 
-// #define CREATE_NEW_TBL
+#define CREATE_NEW_TBL
 #ifdef CREATE_NEW_TBL
     NEW_LINE;
     dbCompare->testCreateNewTbl();
 #endif
 
-#define V0
+// #define V0
 #ifdef V0
     dbCompare->testDbDump();
     dbCompare->testGetTables();
