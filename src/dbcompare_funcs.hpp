@@ -244,6 +244,17 @@ namespace Kaco
         return {targetDiff, refDiff};
     }
 
+    static pair<vector<string>, vector<string>> getDiff(vector<string> main, vector<string> ref)
+    {
+        vector<string> main_diff = {};
+        vector<string> ref_diff = {};
+        sort(main.begin(), main.end());
+        sort(ref.begin(), ref.end());
+        set_difference(main.begin(), main.end(), ref.begin(), ref.end(), back_inserter(main_diff));
+        set_difference(ref.begin(), ref.end(), main.begin(), main.end(), back_inserter(ref_diff));
+        return {main_diff, ref_diff};
+    }
+
     static vector<string> getColsConsIntersect(vector<string> targetCols, vector<string> refCols)
     {
         vector<string> intersect = {};

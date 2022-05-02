@@ -212,19 +212,21 @@ int main(int argc, char *argv[])
     dbCompare->compareAndMerge();
 #endif
 
-#define CREATE_NEW_TBL
+// #define CREATE_NEW_TBL
 #ifdef CREATE_NEW_TBL
     NEW_LINE;
     dbCompare->testCreateNewTbl();
 #endif
 
-// #define V0
-#ifdef V0
+#define VER 11
+#if VER == 10
     dbCompare->testDbDump();
     dbCompare->testGetTables();
     dbCompare->testTableSchema();
     dbCompare->testTableIndices();
     dbCompare->testTableTriggers();
+#elif VER == 11
+    dbCompare->testDiffTables();
 #endif
 
 #endif

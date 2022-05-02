@@ -162,6 +162,13 @@ namespace Kaco
         print<vector<string>>("-> create table", {sql});
     }
 
+    void DbCompare::testDiffTables()
+    {
+        auto diff_tbls = diffTables();
+        print<vector<string>>("-> tables in db1 but not in db2", diff_tbls.first);
+        print<vector<string>>("-> tables in db2 but not in db1", diff_tbls.second);
+    }
+
     void DbCompare::initDbTables()
     {
         m_db1Tables = m_db1->getTables();
@@ -332,6 +339,18 @@ namespace Kaco
         print<vector<string>>("-> insert command", {ss_ins.str()});
 
         return sql;
+    }
+
+    pair<vector<string>, vector<string>> DbCompare::diffTables()
+    {        
+        auto main_tbls = m_db1->getTables();
+        auto ref_tbls = m_db2->getTables();
+
+        auto diff_tbls = getDiff(main_tbls, ref_tbls);   
+
+        // first: tables in the main db but not in the ref db
+        // second: tables in the ref db but not in the main db
+        return {diff_tbls.first, diff_tbls.second};
     }
 
 } // namespace Kaco
