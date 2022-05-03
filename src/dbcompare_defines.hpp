@@ -25,15 +25,15 @@
     m_mainTblSchema = {};                        \
     m_refTblSchema = {};                        \
     m_db1TblIndices = {}, m_db2TblIndices = {}; \
-    m_db1TblTriggers = {}, m_db2TblTriggers = {};
+    m_mainTblTriggers = {}, m_refTblTriggers = {};
 
 #define CLEAR_MAPS            \
     m_mainTblSchema.clear();   \
     m_refTblSchema.clear();   \
     m_db1TblIndices.clear();  \
     m_db2TblIndices.clear();  \
-    m_db1TblTriggers.clear(); \
-    m_db2TblTriggers.clear();
+    m_mainTblTriggers.clear(); \
+    m_refTblTriggers.clear();
 
 #define CHECK_INITIALIZED(x, message, r) \
     if ((x))                             \

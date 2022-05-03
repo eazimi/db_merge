@@ -245,6 +245,7 @@ namespace Kaco
         return sql;
     }
 
+    // return pair<trigger_name, trigger_sql_command>
     vector<pair<string, string>> DbReader::getTriggers(string tableName)
     {
         stringstream ss;

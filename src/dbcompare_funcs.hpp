@@ -39,6 +39,15 @@ namespace Kaco
                  << get<2>(str) << endl;
     }
 
+    static void print(string main_msg, string aux_msg, map<string, string> data)
+    {
+        cout << endl
+             << "\"" << main_msg << "\"" << endl;
+        for (const auto &str : data)
+            cout << "'# " << aux_msg  << " [" << get<0>(str) << "]'" << endl
+                 << get<1>(str) << endl;
+    }
+
     static auto mprint = [](string message, map<string, string> data)
     {
         cout << endl
@@ -329,6 +338,7 @@ namespace Kaco
         return result;
     }
 
+    // returns pair<tbl_name, trigger_name|trigger_sql_command>
     static map<string, string> initTableTriggers(const shared_ptr<IDbReader> &db, const vector<string> &tables)
     {
         map<string, string> result{};

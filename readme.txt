@@ -6,7 +6,9 @@ Version 1.0
 - Lists all the database table schemas
 - Lists all the database table triggers
 - Lists all the database table indices
-- Lists all the tables differences between two input databases
+- Lists all the tables which are in one database but not in the other one 
+- Lists all the schema differences between the common tables 
+- Lists all the trigger differences between the common tables
 
 * How to run
 1- go to the destination folder on your pc
