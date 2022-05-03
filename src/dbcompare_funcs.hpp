@@ -44,9 +44,42 @@ namespace Kaco
         cout << endl
              << "\"" << main_msg << "\"" << endl;
         for (const auto &str : data)
-            cout << "'# " << aux_msg  << " [" << get<0>(str) << "]'" << endl
+            cout << "'# " << aux_msg << " [" << get<0>(str) << "]'" << endl
                  << get<1>(str) << endl;
     }
+
+    static void print(string message, map<string, vector<pair<string, string>>> data)
+    {
+        cout << endl
+             << "\"" << message << "\"" << endl;
+        for (auto const &rec : data)
+        {
+            auto tbl_name = rec.first;
+            auto vec_triggers = rec.second;
+            for (auto const &trigger : vec_triggers)
+            {
+                auto trigger_name = trigger.first;
+                auto trigger_sql = trigger.second;
+                cout << endl << "'[" << tbl_name 
+                     << "::" << trigger_name << "]'" << endl
+                     << trigger_sql << endl;
+            }
+        }
+    };
+
+    static void print(string message, vector<pair<string, string>> data)
+    {
+        cout << endl
+             << "\"" << message << "\"" << endl;
+        for (auto const &vec : data)
+        {
+            auto trigger_name = vec.first;
+            auto trigger_sql = vec.second;
+            cout << endl
+                 << "'[" << trigger_name << "]'" << endl
+                 << trigger_sql << endl;
+        }
+    };
 
     static auto mprint = [](string message, map<string, string> data)
     {
@@ -358,6 +391,19 @@ namespace Kaco
 
         return result;
     }
+
+    static map<string, vector<pair<string, string>>> initTblTriggers(const shared_ptr<IDbReader> &db, const vector<string> &tables)
+    {
+        map<string, vector<pair<string, string>>> tbl_triggers = {};
+        for (auto tbl : tables)
+        {
+            auto triggers = db->getTriggers(tbl);
+            auto pair_tbl_triggers = make_pair(tbl, triggers);
+            tbl_triggers.insert(std::move(pair_tbl_triggers));
+        }
+        return tbl_triggers;
+    }
+
 } // namespace Kaco
 
 #endif

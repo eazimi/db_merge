@@ -37,6 +37,7 @@ namespace Kaco
         initDbTableSchema();
         initDbTableIndices();
         initDbTableTriggers();
+        initDbTableTriggers2();
 
         m_initialized = true;
         return m_initialized;
@@ -143,6 +144,12 @@ namespace Kaco
         mprint("-> db2 all the table triggers", m_refTblTriggers);
     }
 
+    void DbCompare::testTableTriggers2()
+    {
+        print("-> main db, all the table triggers 2", m_mainTblTriggers2);
+        print("-> ref db, all the table triggers 2", m_refTblTriggers2);
+    }
+
     void DbCompare::testTableTriggers(string tableName)
     {
         cout << "db1::" << tableName << " table triggers: " << endl;
@@ -150,6 +157,19 @@ namespace Kaco
         cout << endl
              << "db2::" << tableName << " table triggers: " << endl;
         cout << m_refTblTriggers[tableName] << endl;
+    }
+
+    void DbCompare::testTableTriggers2(string tableName)
+    {
+        auto vec_triggers = m_mainTblTriggers2[tableName];
+        stringstream ss;
+        ss << "-> triggers of [main::" << tableName << "] table";
+        print(ss.str(), vec_triggers);
+
+        vec_triggers = m_refTblTriggers2[tableName];
+        ss.str("");
+        ss << "-> triggers of [ref::" << tableName << "] table";
+        print(ss.str(), vec_triggers);
     }
 
     void DbCompare::testCreateNewTbl()
@@ -212,6 +232,15 @@ namespace Kaco
 
         auto tableTriggers2 = initTableTriggers(m_db2, m_refTbls);
         m_refTblTriggers = std::move(tableTriggers2);
+    }
+
+    void DbCompare::initDbTableTriggers2()
+    {
+        auto tbl_triggers = initTblTriggers(m_db1, m_mainTbls);
+        m_mainTblTriggers2 = std::move(tbl_triggers);
+
+        tbl_triggers = initTblTriggers(m_db2, m_refTbls);
+        m_refTblTriggers2 = std::move(tbl_triggers);
     }
 
     string DbCompare::createNewTbl(std::string tblName)

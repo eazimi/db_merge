@@ -7,6 +7,8 @@
 #include <map>
 #include "IDbReader.hpp"
 
+using namespace std;
+
 namespace Kaco
 {
     class DbCompare
@@ -16,33 +18,36 @@ namespace Kaco
             DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2);
             ~DbCompare();
 
-            // std::vector<std::string> compareSchema(std::string tableName);
             bool initialize();
-            std::string compareAndMerge();
+            string compareAndMerge();
             void testDbDump();
             void testGetTables();
             void testTableSchema();
             void testTableIndices();
             void testTableTriggers();
-            void testTableTriggers(std::string tableName);
+            void testTableTriggers2();
+            void testTableTriggers(string tableName);
+            void testTableTriggers2(string tableName);
             void testCreateNewTbl();
             void testDiffTableNames();
             void testDiffTableSchemas();
             void testDiffTableTriggers();
 
         private:
-            std::shared_ptr<IDbReader> m_db1, m_db2;
-            std::vector<std::string> m_mainTbls, m_refTbls;
-            std::map<std::string, std::string> m_mainTblSchema, m_refTblSchema;
-            std::map<std::string, std::string> m_db1TblIndices, m_db2TblIndices;
-            std::map<std::string, std::string> m_mainTblTriggers, m_refTblTriggers;
+            shared_ptr<IDbReader> m_db1, m_db2;
+            vector<string> m_mainTbls, m_refTbls;
+            map<string, string> m_mainTblSchema, m_refTblSchema;
+            map<string, string> m_db1TblIndices, m_db2TblIndices;
+            map<string, string> m_mainTblTriggers, m_refTblTriggers;
+            map<string, vector<pair<string, string>>> m_mainTblTriggers2, m_refTblTriggers2;
             bool m_initialized;
 
             void initDbTables();
             void initDbTableSchema();
             void initDbTableIndices();
             void initDbTableTriggers();
-            std::string createNewTbl(std::string tblName);
+            void initDbTableTriggers2();
+            string createNewTbl(string tblName);
             pair<vector<string>, vector<string>> diffTblNames();
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
             map<string, string> diffTblTriggers(); // returns pair<tbl_name, ref_triggers>

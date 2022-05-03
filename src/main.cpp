@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
     dbCompare->testCreateNewTbl();
 #endif
 
-#define VER 11
+#define VER 12
 #if VER == 10
     dbCompare->testDbDump();
     dbCompare->testGetTables();
@@ -229,6 +229,9 @@ int main(int argc, char *argv[])
     dbCompare->testDiffTableNames();
     dbCompare->testDiffTableSchemas();
     dbCompare->testDiffTableTriggers();
+#elif VER == 12
+    dbCompare->testTableTriggers2();
+    dbCompare->testTableTriggers2("accounts");
 #endif
 
 #endif
