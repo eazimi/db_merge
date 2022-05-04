@@ -235,9 +235,9 @@ int main(int argc, char *argv[])
     dbCompare->testTableTriggers2("accounts");
 #elif VER == 13 || RELEASE
     dbCompare->testDiffTableTriggers2();
-    dbCompare->testDiffTableTriggers2("accounts");
-    dbCompare->testDiffTableTriggers2("sunsModelCfg");
-    dbCompare->testDiffTableTriggers2("menuTree");
+    // dbCompare->testDiffTableTriggers2("accounts");
+    // dbCompare->testDiffTableTriggers2("sunsModelCfg");
+    // dbCompare->testDiffTableTriggers2("menuTree");
 #endif
 
 #endif

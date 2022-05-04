@@ -455,29 +455,13 @@ namespace Kaco
         auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
         for (auto str : common_tbls)
         {
-            auto mainTblTriggers = m_mainTblTriggers2[str];          
-            auto refTblTriggers = m_refTblTriggers2[str];
-            vector<string> vec_main_formatted_triggers, vec_ref_formatted_triggers;
-
-            // tuple<trigger_name, trigger_sql, formatted_trigger_sql>
-            // get the formatted trigger in the second parameter of formatTriggers()
-            vector<tuple<string, string, string>> mainTblTriggers_formatted = formatTriggers(mainTblTriggers, vec_main_formatted_triggers);
-            vector<tuple<string, string, string>> refTblTriggers_formatted = formatTriggers(refTblTriggers, vec_ref_formatted_triggers);
-
-            auto diff = getDiff(vec_main_formatted_triggers, vec_ref_formatted_triggers);
-
-            if(!diff.first.empty() && !mainTblTriggers_formatted.empty())
-            {
-                // vector<pair<trigger_name, trigger_sql>>
-                auto main_trigger_vec = retrieveTriggers(mainTblTriggers_formatted, diff.first);
+            auto main_trigger_vec = diffTblTriggers2(str).first;
+            if (!main_trigger_vec.empty())
                 diff_triggers_main.insert({str, main_trigger_vec});
-            }
-            if(!diff.second.empty() && !refTblTriggers_formatted.empty())
-            {
-                // vector<pair<trigger_name, trigger_sql>>
-                auto ref_trigger_vec = retrieveTriggers(refTblTriggers_formatted, diff.second);
+
+            auto ref_trigger_vec = diffTblTriggers2(str).second;
+            if (!ref_trigger_vec.empty())
                 diff_triggers_ref.insert({str, ref_trigger_vec});
-            }
         }
         return {diff_triggers_main, diff_triggers_ref};
     }
