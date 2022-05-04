@@ -36,7 +36,6 @@ namespace Kaco
         initDbTables();
         initDbTableSchema();
         initDbTableIndices();
-        initDbTableTriggers();
         initDbTableTriggers2();
 
         m_initialized = true;
@@ -70,19 +69,19 @@ namespace Kaco
                     if (srcTblIndices == targetTblIndices)
                     {
                         // check for triggers
-                        auto srcTblTriggers = m_mainTblTriggers[srcTblName];
-                        auto targetTblTriggers = m_refTblTriggers[srcTblName];
-                        if (srcTblTriggers == targetTblTriggers)
-                        {
-                            // TODO: complete it
-                            // check for data
-                        }
-                        else
-                        {
-                            // TODO: complete it
-                            // different triggers
-                            cout << srcTblName << " is different in triggers" << endl;
-                        }
+                        // auto srcTblTriggers = m_mainTblTriggers[srcTblName];
+                        // auto targetTblTriggers = m_refTblTriggers[srcTblName];
+                        // if (srcTblTriggers == targetTblTriggers)
+                        // {
+                        //     // TODO: complete it
+                        //     // check for data
+                        // }
+                        // else
+                        // {
+                        //     // TODO: complete it
+                        //     // different triggers
+                        //     cout << srcTblName << " is different in triggers" << endl;
+                        // }
                     }
                     else
                     {
@@ -138,33 +137,22 @@ namespace Kaco
         print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
-    void DbCompare::testTableTriggers()
-    {
-        print(m_mainTblTriggers, "-> db1 all the table triggers");
-        print(m_refTblTriggers, "-> db2 all the table triggers");
-    }
-
     void DbCompare::testTableTriggers2()
     {
         print(m_mainTblTriggers2, "-> main db, all the table triggers 2", "main");
         print(m_refTblTriggers2, "-> ref db, all the table triggers 2", "ref");
     }
 
-    void DbCompare::testTableTriggers(string tableName)
-    {
-        cout << "db1::" << tableName << " table triggers: " << endl;
-        cout << m_mainTblTriggers[tableName] << endl;
-        cout << endl
-             << "db2::" << tableName << " table triggers: " << endl;
-        cout << m_refTblTriggers[tableName] << endl;
-    }
-
     void DbCompare::testTableTriggers2(string tableName)
     {
         auto triggers_main = m_mainTblTriggers2[tableName];
         auto triggers_ref = m_refTblTriggers2[tableName];
-        print(triggers_main, "-> triggers of ", "main", tableName);
-        print(triggers_ref, "-> triggers of ", "ref", tableName);
+        stringstream ss;
+        ss << "-> triggers of " << tableName << " table in the main db";
+        print(triggers_main, ss.str(), "main", tableName);
+        ss.str("");
+        ss << "-> triggers of " << tableName << " table in the ref db";
+        print(triggers_ref, ss.str(), "ref", tableName);
     }
 
     void DbCompare::testCreateNewTbl()
@@ -188,12 +176,6 @@ namespace Kaco
     {
         auto diff_schema = diffTblSchemas();
         print(diff_schema, "-> difference in schemas", "shcema in main db", "schema in ref db");
-    }
-
-    void DbCompare::testDiffTableTriggers()
-    {
-        auto diff_trigger = diffTblTriggers();
-        print("-> difference in triggers", "trigger difference in table", diff_trigger);
     }
 
     void DbCompare::testDiffTableTriggers2()
@@ -236,15 +218,6 @@ namespace Kaco
 
         auto tableIndices2 = initTableIndices(m_db2, m_refTbls);
         m_db2TblIndices = std::move(tableIndices2);
-    }
-
-    void DbCompare::initDbTableTriggers()
-    {
-        auto tableTriggers1 = initTableTriggers(m_db1, m_mainTbls);
-        m_mainTblTriggers = std::move(tableTriggers1);
-
-        auto tableTriggers2 = initTableTriggers(m_db2, m_refTbls);
-        m_refTblTriggers = std::move(tableTriggers2);
     }
 
     void DbCompare::initDbTableTriggers2()
@@ -422,26 +395,6 @@ namespace Kaco
             }
         }
         return diff_schema;
-    }
-
-    // returns pair<tbl_name, ref_triggers>
-    // returns the result of trigger comparison between common tables
-    map<string, string> DbCompare::diffTblTriggers()
-    {
-        map<string, string> diff_triggers = {};
-        auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
-        for (auto str : common_tbls)
-        {
-            auto mainTblTrigger = m_mainTblTriggers[str];
-            auto refTblTrigger = m_refTblTriggers[str];
-            bool isEqual = (mainTblTrigger == refTblTrigger);
-            if(!isEqual)
-            {
-                auto diff = make_pair(str, refTblTrigger);
-                diff_triggers.insert(std::move(diff));
-            }
-        }
-        return diff_triggers;
     }
 
     // returns diff in triggers in the form of a pair
