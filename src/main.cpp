@@ -197,13 +197,13 @@ int main(int argc, char *argv[])
 // #define TEST_TABLE_TRIGGERS
 #ifdef TEST_TABLE_TRIGGERS
     NEW_LINE;
-    dbCompare->testTableTriggers2();    
+    dbCompare->testTableTriggers();    
 #endif
 
 // #define TEST_INDIVIDUAL_TABLE_TRIGGERS
 #ifdef TEST_INDIVIDUAL_TABLE_TRIGGERS
     NEW_LINE;
-    dbCompare->testTableTriggers2("accounts");    
+    dbCompare->testTableTriggers("accounts");    
 #endif
 
 // #define COMPARE_AND_MERGE
@@ -231,14 +231,14 @@ int main(int argc, char *argv[])
     dbCompare->testDiffTableSchemas();
 #endif    
 #if VER == 12 || RELEASE
-    dbCompare->testTableTriggers2();
-    dbCompare->testTableTriggers2("accounts");
+    dbCompare->testTableTriggers();
+    dbCompare->testTableTriggers("accounts");
 #endif    
 #if VER == 13 || RELEASE
-    dbCompare->testDiffTableTriggers2();
-    dbCompare->testDiffTableTriggers2("accounts");
-    dbCompare->testDiffTableTriggers2("sunsModelCfg");
-    dbCompare->testDiffTableTriggers2("menuTree");
+    dbCompare->testDiffTableTriggers();
+    dbCompare->testDiffTableTriggers("accounts");
+    dbCompare->testDiffTableTriggers("sunsModelCfg");
+    dbCompare->testDiffTableTriggers("menuTree");
 #endif
 #endif
 

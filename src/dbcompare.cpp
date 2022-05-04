@@ -36,7 +36,7 @@ namespace Kaco
         initDbTables();
         initDbTableSchema();
         initDbTableIndices();
-        initDbTableTriggers2();
+        initDbTableTriggers();
 
         m_initialized = true;
         return m_initialized;
@@ -137,16 +137,16 @@ namespace Kaco
         print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
-    void DbCompare::testTableTriggers2()
+    void DbCompare::testTableTriggers()
     {
-        print(m_mainTblTriggers2, "-> main db, all the table triggers 2", "main");
-        print(m_refTblTriggers2, "-> ref db, all the table triggers 2", "ref");
+        print(m_mainTblTriggers, "-> main db, all the table triggers 2", "main");
+        print(m_refTblTriggers, "-> ref db, all the table triggers 2", "ref");
     }
 
-    void DbCompare::testTableTriggers2(string tableName)
+    void DbCompare::testTableTriggers(string tableName)
     {
-        auto triggers_main = m_mainTblTriggers2[tableName];
-        auto triggers_ref = m_refTblTriggers2[tableName];
+        auto triggers_main = m_mainTblTriggers[tableName];
+        auto triggers_ref = m_refTblTriggers[tableName];
         stringstream ss;
         ss << "-> triggers of " << tableName << " table in the main db";
         print(triggers_main, ss.str(), "main", tableName);
@@ -178,16 +178,16 @@ namespace Kaco
         print(diff_schema, "-> difference in schemas", "shcema in main db", "schema in ref db");
     }
 
-    void DbCompare::testDiffTableTriggers2()
+    void DbCompare::testDiffTableTriggers()
     {
-        auto diff_trigger = diffTblTriggers2();
+        auto diff_trigger = diffTblTriggers();
         print(diff_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
         print(diff_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
     }
 
-    void DbCompare::testDiffTableTriggers2(string table_name)
+    void DbCompare::testDiffTableTriggers(string table_name)
     {
-        auto diff_trigger = diffTblTriggers2(table_name);
+        auto diff_trigger = diffTblTriggers(table_name);
         stringstream ss;
         ss << "-> trigger in the main::" << table_name << " but not in the ref::" << table_name;
         print(diff_trigger.first, ss.str(), "main", table_name, false);
@@ -220,13 +220,13 @@ namespace Kaco
         m_db2TblIndices = std::move(tableIndices2);
     }
 
-    void DbCompare::initDbTableTriggers2()
+    void DbCompare::initDbTableTriggers()
     {
         auto tbl_triggers = initTblTriggers(m_db1, m_mainTbls);
-        m_mainTblTriggers2 = std::move(tbl_triggers);
+        m_mainTblTriggers = std::move(tbl_triggers);
 
         tbl_triggers = initTblTriggers(m_db2, m_refTbls);
-        m_refTblTriggers2 = std::move(tbl_triggers);
+        m_refTblTriggers = std::move(tbl_triggers);
     }
 
     string DbCompare::createNewTbl(std::string tblName)
@@ -401,18 +401,18 @@ namespace Kaco
     // first: triggers in the main db but not in the ref db
     // second: triggers in the ref db but not in the main db
     // MAP_STR_VPS2: map<tbl_name, vector<pair<trigger_name, trigger_sql>>>
-    PA_MAP_SVPS2 DbCompare::diffTblTriggers2()     
+    PA_MAP_SVPS2 DbCompare::diffTblTriggers()     
     {
         PA_MAP_SVPS2 diff_triggers = {};
         MAP_STR_VPS2 diff_triggers_main, diff_triggers_ref;
         auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
         for (auto str : common_tbls)
         {
-            auto main_trigger_vec = diffTblTriggers2(str).first;
+            auto main_trigger_vec = diffTblTriggers(str).first;
             if (!main_trigger_vec.empty())
                 diff_triggers_main.insert({str, main_trigger_vec});
 
-            auto ref_trigger_vec = diffTblTriggers2(str).second;
+            auto ref_trigger_vec = diffTblTriggers(str).second;
             if (!ref_trigger_vec.empty())
                 diff_triggers_ref.insert({str, ref_trigger_vec});
         }
@@ -423,12 +423,12 @@ namespace Kaco
     // returns pair<vector<pair<trigger_name, trigger_sql>>, vector<pair<trigger_name, trigger_sql>>>
     // first: triggers which are in the main::table but not in the ref::table
     // second: triggers which are in the ref::table but not in the main::table
-    PA_VEC_PS2 DbCompare::diffTblTriggers2(string table_name)
+    PA_VEC_PS2 DbCompare::diffTblTriggers(string table_name)
     {
         VEC_PS2 diff_triggers_main = {}, diff_triggers_ref = {}; // vector<pair<trigger_name, trigger_sql>>
 
-        auto mainTblTriggers = m_mainTblTriggers2[table_name];
-        auto refTblTriggers = m_refTblTriggers2[table_name];
+        auto mainTblTriggers = m_mainTblTriggers[table_name];
+        auto refTblTriggers = m_refTblTriggers[table_name];
         vector<string> vec_main_formatted_triggers, vec_ref_formatted_triggers;
 
         // tuple<trigger_name, trigger_sql, formatted_trigger_sql>

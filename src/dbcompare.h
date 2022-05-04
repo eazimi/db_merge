@@ -25,31 +25,31 @@ namespace Kaco
             void testGetTables();
             void testTableSchema();
             void testTableIndices();
-            void testTableTriggers2();
-            void testTableTriggers2(string tableName);
+            void testTableTriggers();
+            void testTableTriggers(string tableName);
             void testCreateNewTbl();
             void testDiffTableNames();
             void testDiffTableSchemas();
-            void testDiffTableTriggers2();
-            void testDiffTableTriggers2(string table_name);
+            void testDiffTableTriggers();
+            void testDiffTableTriggers(string table_name);
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2;
             vector<string> m_mainTbls, m_refTbls;
             map<string, string> m_mainTblSchema, m_refTblSchema;
             map<string, string> m_db1TblIndices, m_db2TblIndices;
-            MAP_STR_VPS2 m_mainTblTriggers2, m_refTblTriggers2;
+            MAP_STR_VPS2 m_mainTblTriggers, m_refTblTriggers;
             bool m_initialized;
 
             void initDbTables();
             void initDbTableSchema();
             void initDbTableIndices();
-            void initDbTableTriggers2();
+            void initDbTableTriggers();
             string createNewTbl(string tblName);
             pair<vector<string>, vector<string>> diffTblNames();
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
-            PA_MAP_SVPS2 diffTblTriggers2(); // returns diff in triggers
-            PA_VEC_PS2 diffTblTriggers2(string table_name); // returns triggers diff for a particular table 
+            PA_MAP_SVPS2 diffTblTriggers(); // returns diff in triggers
+            PA_VEC_PS2 diffTblTriggers(string table_name); // returns triggers diff for a particular table 
     };
 
 } // namespace Kaco
