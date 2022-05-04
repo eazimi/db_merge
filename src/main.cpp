@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
     dbCompare->testCreateNewTbl();
 #endif
 
-#define RELEASE false
+#define RELEASE true
 #define VER 13
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
@@ -226,20 +226,22 @@ int main(int argc, char *argv[])
     dbCompare->testTableSchema();
     dbCompare->testTableIndices();
     dbCompare->testTableTriggers();
-#elif VER == 11 || RELEASE
+#endif
+#if VER == 11 || RELEASE
     dbCompare->testDiffTableNames();
     dbCompare->testDiffTableSchemas();
     dbCompare->testDiffTableTriggers();
-#elif VER == 12 || RELEASE
+#endif    
+#if VER == 12 || RELEASE
     dbCompare->testTableTriggers2();
     dbCompare->testTableTriggers2("accounts");
-#elif VER == 13 || RELEASE
+#endif    
+#if VER == 13 || RELEASE
     dbCompare->testDiffTableTriggers2();
-    // dbCompare->testDiffTableTriggers2("accounts");
-    // dbCompare->testDiffTableTriggers2("sunsModelCfg");
-    // dbCompare->testDiffTableTriggers2("menuTree");
+    dbCompare->testDiffTableTriggers2("accounts");
+    dbCompare->testDiffTableTriggers2("sunsModelCfg");
+    dbCompare->testDiffTableTriggers2("menuTree");
 #endif
-
 #endif
 
     return 0;
