@@ -34,6 +34,7 @@ namespace Kaco
             void testDiffTableSchemas();
             void testDiffTableTriggers();
             void testDiffTableTriggers2();
+            void testDiffTableTriggers2(string table_name);
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2;
@@ -54,6 +55,7 @@ namespace Kaco
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
             map<string, string> diffTblTriggers(); // returns pair<tbl_name, ref_triggers>
             PA_MAP_SVPS2 diffTblTriggers2(); // returns diff in triggers
+            PA_VEC_PS2 diffTblTriggers2(string table_name); // returns triggers diff for a particular table 
     };
 
 } // namespace Kaco

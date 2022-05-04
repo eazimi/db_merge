@@ -218,21 +218,26 @@ int main(int argc, char *argv[])
     dbCompare->testCreateNewTbl();
 #endif
 
-#define VER 12
-#if VER == 10
+#define RELEASE false
+#define VER 13
+#if VER == 10 || RELEASE
     dbCompare->testDbDump();
     dbCompare->testGetTables();
     dbCompare->testTableSchema();
     dbCompare->testTableIndices();
     dbCompare->testTableTriggers();
-#elif VER == 11
+#elif VER == 11 || RELEASE
     dbCompare->testDiffTableNames();
     dbCompare->testDiffTableSchemas();
     dbCompare->testDiffTableTriggers();
-#elif VER == 12
-    // dbCompare->testTableTriggers2();
-    // dbCompare->testTableTriggers2("accounts");
+#elif VER == 12 || RELEASE
+    dbCompare->testTableTriggers2();
+    dbCompare->testTableTriggers2("accounts");
+#elif VER == 13 || RELEASE
     dbCompare->testDiffTableTriggers2();
+    dbCompare->testDiffTableTriggers2("accounts");
+    dbCompare->testDiffTableTriggers2("sunsModelCfg");
+    dbCompare->testDiffTableTriggers2("menuTree");
 #endif
 
 #endif

@@ -161,15 +161,10 @@ namespace Kaco
 
     void DbCompare::testTableTriggers2(string tableName)
     {
-        auto vec_triggers = m_mainTblTriggers2[tableName];
-        stringstream ss;
-        ss << "-> triggers of [main::" << tableName << "] table";
-        print(vec_triggers, ss.str());
-
-        vec_triggers = m_refTblTriggers2[tableName];
-        ss.str("");
-        ss << "-> triggers of [ref::" << tableName << "] table";
-        print(vec_triggers, ss.str());
+        auto triggers_main = m_mainTblTriggers2[tableName];
+        auto triggers_ref = m_refTblTriggers2[tableName];
+        print(triggers_main, "-> triggers of ", "main", tableName);
+        print(triggers_ref, "-> triggers of ", "ref", tableName);
     }
 
     void DbCompare::testCreateNewTbl()
@@ -206,6 +201,17 @@ namespace Kaco
         auto diff_trigger = diffTblTriggers2();
         print(diff_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
         print(diff_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
+    }
+
+    void DbCompare::testDiffTableTriggers2(string table_name)
+    {
+        auto diff_trigger = diffTblTriggers2(table_name);
+        stringstream ss;
+        ss << "-> trigger in the main::" << table_name << " but not in the ref::" << table_name;
+        print(diff_trigger.first, ss.str(), "main", table_name, false);
+        ss.str("");
+        ss << "-> trigger in the ref::" << table_name << " but not in the main::" << table_name;
+        print(diff_trigger.second, ss.str(), "ref", table_name, false); 
     }
 
     void DbCompare::initDbTables()
@@ -454,7 +460,7 @@ namespace Kaco
             vector<string> vec_main_formatted_triggers, vec_ref_formatted_triggers;
 
             // tuple<trigger_name, trigger_sql, formatted_trigger_sql>
-            // get just the formatted trigger in second parameter of formatTriggers()
+            // get the formatted trigger in the second parameter of formatTriggers()
             vector<tuple<string, string, string>> mainTblTriggers_formatted = formatTriggers(mainTblTriggers, vec_main_formatted_triggers);
             vector<tuple<string, string, string>> refTblTriggers_formatted = formatTriggers(refTblTriggers, vec_ref_formatted_triggers);
 
@@ -474,6 +480,33 @@ namespace Kaco
             }
         }
         return {diff_triggers_main, diff_triggers_ref};
+    }
+
+    // returns triggers diff for a particular table
+    // returns pair<vector<pair<trigger_name, trigger_sql>>, vector<pair<trigger_name, trigger_sql>>>
+    // first: triggers which are in the main::table but not in the ref::table
+    // second: triggers which are in the ref::table but not in the main::table
+    PA_VEC_PS2 DbCompare::diffTblTriggers2(string table_name)
+    {
+        VEC_PS2 diff_triggers_main = {}, diff_triggers_ref = {}; // vector<pair<trigger_name, trigger_sql>>
+
+        auto mainTblTriggers = m_mainTblTriggers2[table_name];
+        auto refTblTriggers = m_refTblTriggers2[table_name];
+        vector<string> vec_main_formatted_triggers, vec_ref_formatted_triggers;
+
+        // tuple<trigger_name, trigger_sql, formatted_trigger_sql>
+        // get the formatted trigger in the second parameter of formatTriggers()
+        vector<tuple<string, string, string>> mainTblTriggers_formatted = formatTriggers(mainTblTriggers, vec_main_formatted_triggers);
+        vector<tuple<string, string, string>> refTblTriggers_formatted = formatTriggers(refTblTriggers, vec_ref_formatted_triggers);
+
+        auto diff = getDiff(vec_main_formatted_triggers, vec_ref_formatted_triggers);
+
+        if (!diff.first.empty() && !mainTblTriggers_formatted.empty())
+            diff_triggers_main = retrieveTriggers(mainTblTriggers_formatted, diff.first);
+        if (!diff.second.empty() && !refTblTriggers_formatted.empty())
+            diff_triggers_ref = retrieveTriggers(refTblTriggers_formatted, diff.second);
+
+        return make_pair(diff_triggers_main, diff_triggers_ref);
     }
 
 } // namespace Kaco

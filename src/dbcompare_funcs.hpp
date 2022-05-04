@@ -75,7 +75,11 @@ namespace Kaco
         }
     }
 
-    static void print(vector<pair<string, string>> data, string message)
+    static void print(vector<pair<string, string>> data,
+                      string message,
+                      string schema,
+                      string tbl_name,
+                      bool print_sql = true)
     {
         cout << endl
              << "\"" << message << "\"" << endl;
@@ -83,9 +87,14 @@ namespace Kaco
         {
             auto trigger_name = vec.first;
             auto trigger_sql = vec.second;
-            cout << endl
-                 << "'[" << trigger_name << "]'" << endl
-                 << trigger_sql << endl;
+            if (print_sql)
+                cout << endl
+                     << "'[" << schema << "::" << tbl_name
+                     << "::" << trigger_name << "]'" << endl
+                     << trigger_sql << endl;
+            else
+                cout << "'[" << schema << "::" << tbl_name
+                     << "::" << trigger_name << "]'" << endl;
         }
     }
 
