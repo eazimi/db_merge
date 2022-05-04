@@ -230,8 +230,9 @@ int main(int argc, char *argv[])
     dbCompare->testDiffTableSchemas();
     dbCompare->testDiffTableTriggers();
 #elif VER == 12
-    dbCompare->testTableTriggers2();
-    dbCompare->testTableTriggers2("accounts");
+    // dbCompare->testTableTriggers2();
+    // dbCompare->testTableTriggers2("accounts");
+    dbCompare->testDiffTableTriggers2();
 #endif
 
 #endif

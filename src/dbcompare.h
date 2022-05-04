@@ -8,7 +8,7 @@
 #include "IDbReader.hpp"
 
 using namespace std;
-
+using MAP_TBL_VEC_TRI = map<string, vector<pair<string, string>>>;
 namespace Kaco
 {
     class DbCompare
@@ -32,6 +32,7 @@ namespace Kaco
             void testDiffTableNames();
             void testDiffTableSchemas();
             void testDiffTableTriggers();
+            void testDiffTableTriggers2();
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2;
@@ -39,7 +40,7 @@ namespace Kaco
             map<string, string> m_mainTblSchema, m_refTblSchema;
             map<string, string> m_db1TblIndices, m_db2TblIndices;
             map<string, string> m_mainTblTriggers, m_refTblTriggers;
-            map<string, vector<pair<string, string>>> m_mainTblTriggers2, m_refTblTriggers2;
+            MAP_TBL_VEC_TRI m_mainTblTriggers2, m_refTblTriggers2;
             bool m_initialized;
 
             void initDbTables();
@@ -51,6 +52,7 @@ namespace Kaco
             pair<vector<string>, vector<string>> diffTblNames();
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
             map<string, string> diffTblTriggers(); // returns pair<tbl_name, ref_triggers>
+            pair<MAP_TBL_VEC_TRI, MAP_TBL_VEC_TRI> diffTblTriggers2(); // returns diff in triggers 
     };
 
 } // namespace Kaco

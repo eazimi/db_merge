@@ -27,7 +27,7 @@ namespace Kaco
             cout << str << endl;
     }
 
-    static void print(string main_msg, string aux_msg1, string aux_msg2, vector<TUPLE_ALL_STR> data)
+    static void print(vector<TUPLE_ALL_STR> data, string main_msg, string aux_msg1, string aux_msg2)
     {
         cout << endl
              << "\"" << main_msg << "\"" << endl;
@@ -48,7 +48,10 @@ namespace Kaco
                  << get<1>(str) << endl;
     }
 
-    static void print(string message, map<string, vector<pair<string, string>>> data)
+    static void print(map<string, vector<pair<string, string>>> data,
+                      string message,
+                      string schema,
+                      bool print_sql = true)
     {
         cout << endl
              << "\"" << message << "\"" << endl;
@@ -60,14 +63,19 @@ namespace Kaco
             {
                 auto trigger_name = trigger.first;
                 auto trigger_sql = trigger.second;
-                cout << endl << "'[" << tbl_name 
-                     << "::" << trigger_name << "]'" << endl
-                     << trigger_sql << endl;
+                if(print_sql)
+                    cout << endl
+                         << "'[" << schema << "::" << tbl_name
+                         << "::" << trigger_name << "]'" << endl
+                         << trigger_sql << endl;
+                else
+                    cout << "'[" << schema << "::" << tbl_name
+                         << "::" << trigger_name << "]'" << endl;
             }
         }
-    };
+    }
 
-    static void print(string message, vector<pair<string, string>> data)
+    static void print(vector<pair<string, string>> data, string message)
     {
         cout << endl
              << "\"" << message << "\"" << endl;
@@ -79,15 +87,15 @@ namespace Kaco
                  << "'[" << trigger_name << "]'" << endl
                  << trigger_sql << endl;
         }
-    };
+    }
 
-    static auto mprint = [](string message, map<string, string> data)
+    static void print(map<string, string> data, string message)
     {
         cout << endl
              << "\"" << message << "\"" << endl;
         for (const auto &str : data)
             cout << str.first << ": " << str.second << endl;
-    };
+    }
 
     static auto updateRefTable = [](const vector<string> &cols, string schema)
     {
@@ -403,6 +411,79 @@ namespace Kaco
         }
         return tbl_triggers;
     }
+
+    // return vector<trigger_name, trigger_sql>
+    static auto getTriggerVec = [](const vector<string> &data)
+    {
+        vector<pair<string, string>> trigger_vec = {};
+        const string TOKEN = "TRIGGER";
+        const int TOKEN_LEN = TOKEN.length();
+        for (auto trigger : data)
+        {
+            size_t start_name = trigger.find(TOKEN);
+            if (start_name != string::npos)
+            {
+                start_name = start_name + TOKEN_LEN + 1; 
+                size_t end_name = trigger.find(" ", start_name);
+                auto trigger_name = trigger.substr(start_name, end_name - start_name);
+                if (end_name != string::npos)
+                    trigger_vec.push_back({trigger_name, trigger});
+            }
+        }
+        return trigger_vec;
+    };
+
+    static auto formatString = [](string data)
+    {
+        stringstream ss;
+        size_t input_len = data.length();
+        for(auto i=0; i<input_len; i++)
+        {
+            if((data[i] != '\n') && (data[i] != ' '))
+                ss << data[i];
+        }
+        return ss.str();
+    };
+
+    // TODO: check to create a class for trigger if it's required
+    // data: vector<pair<trigger_name, trigger_sql>>>
+    // returns vector<tuple<trigger_name, trigger_sql, formatted_trigger_sql>>
+    static auto formatTriggers = [](const vector<pair<string, string>> &data, vector<string>& vec_formatted_triggers)
+    {
+        vector<tuple<string, string, string>> formatted_triggers = {};
+        for (auto vec : data)
+        {
+            auto formatted = formatString(vec.second); // format the trigger
+            vec_formatted_triggers.push_back(formatted);
+            formatted_triggers.push_back({vec.first, vec.second, formatted});
+        }
+        return formatted_triggers;
+    };
+
+    // tuple<trigger_name, trigger_sql, formatted_trigger_sql>
+    // retruns vector<pair<trigger_name, trigger_sql>>
+    static auto retrieveTriggers = [](vector<tuple<string, string, string>> data, vector<string> vec_formatted_triggers)
+    {
+        auto sortBy3rd = [](const tuple<string, string, string> &a, tuple<string, string, string> b)
+        {
+            bool comparison = get<2>(a) < get<2>(b);
+            return comparison;
+        };
+        vector<pair<string, string>> triggers;
+        sort(vec_formatted_triggers.begin(), vec_formatted_triggers.end());
+        sort(data.begin(), data.end(), sortBy3rd);        
+        auto j = 0;
+        int data_size = data.size();
+        for (auto i = 0; i < data_size; i++)
+        {
+            if (get<2>(data[i]) == vec_formatted_triggers[j])
+            {
+                triggers.push_back(make_pair(get<0>(data[i]), get<1>(data[i])));
+                j++;
+            }
+        }
+        return triggers;
+    };
 
 } // namespace Kaco
 

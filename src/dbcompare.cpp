@@ -128,26 +128,26 @@ namespace Kaco
 
     void DbCompare::testTableSchema()
     {
-        mprint("-> db1 all the table schemas", m_mainTblSchema);
-        mprint("-> db2 all the table schemas", m_refTblSchema);
+        print(m_mainTblSchema, "-> db1 all the table schemas");
+        print(m_refTblSchema, "-> db2 all the table schemas");
     }
 
     void DbCompare::testTableIndices()
     {
-        mprint("-> db1 all the table indices", m_db1TblIndices);
-        mprint("-> db2 all the table indices", m_db2TblIndices);
+        print(m_db1TblIndices, "-> db1 all the table indices");
+        print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
     void DbCompare::testTableTriggers()
     {
-        mprint("-> db1 all the table triggers", m_mainTblTriggers);
-        mprint("-> db2 all the table triggers", m_refTblTriggers);
+        print(m_mainTblTriggers, "-> db1 all the table triggers");
+        print(m_refTblTriggers, "-> db2 all the table triggers");
     }
 
     void DbCompare::testTableTriggers2()
     {
-        print("-> main db, all the table triggers 2", m_mainTblTriggers2);
-        print("-> ref db, all the table triggers 2", m_refTblTriggers2);
+        print(m_mainTblTriggers2, "-> main db, all the table triggers 2", "main");
+        print(m_refTblTriggers2, "-> ref db, all the table triggers 2", "ref");
     }
 
     void DbCompare::testTableTriggers(string tableName)
@@ -164,12 +164,12 @@ namespace Kaco
         auto vec_triggers = m_mainTblTriggers2[tableName];
         stringstream ss;
         ss << "-> triggers of [main::" << tableName << "] table";
-        print(ss.str(), vec_triggers);
+        print(vec_triggers, ss.str());
 
         vec_triggers = m_refTblTriggers2[tableName];
         ss.str("");
         ss << "-> triggers of [ref::" << tableName << "] table";
-        print(ss.str(), vec_triggers);
+        print(vec_triggers, ss.str());
     }
 
     void DbCompare::testCreateNewTbl()
@@ -192,13 +192,20 @@ namespace Kaco
     void DbCompare::testDiffTableSchemas()
     {
         auto diff_schema = diffTblSchemas();
-        print("-> difference in schemas", "shcema in main db", "schema in ref db", diff_schema);
+        print(diff_schema, "-> difference in schemas", "shcema in main db", "schema in ref db");
     }
 
     void DbCompare::testDiffTableTriggers()
     {
         auto diff_trigger = diffTblTriggers();
         print("-> difference in triggers", "trigger difference in table", diff_trigger);
+    }
+
+    void DbCompare::testDiffTableTriggers2()
+    {
+        auto diff_trigger = diffTblTriggers2();
+        print(diff_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
+        print(diff_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
     }
 
     void DbCompare::initDbTables()
@@ -266,9 +273,9 @@ namespace Kaco
         auto diffRefColsCons = diffColsCons.second;
         auto sharedColsCons = getColsConsIntersect(targetColsCons, refColsCons);
 
-        print("-> diffTargetColsCons", diffTargetColsCons);
-        print("-> diffRefColsCons", diffRefColsCons);
-        print("-> sharedColsCons", sharedColsCons);
+        print<vector<string>>("-> diffTargetColsCons", diffTargetColsCons);
+        print<vector<string>>("-> diffRefColsCons", diffRefColsCons);
+        print<vector<string>>("-> sharedColsCons", sharedColsCons);
 
         // TODO: update this part by paying attention to the value that have been read from json config file, 
         // for now it is considered as true
@@ -429,6 +436,44 @@ namespace Kaco
             }
         }
         return diff_triggers;
+    }
+
+    // returns diff in triggers in the form of a pair
+    // first: triggers in the main db but not in the ref db
+    // second: triggers in the ref db but not in the main db
+    // MAP_TBL_VEC_TRI: map<tbl_name, vector<pair<trigger_name, trigger_sql>>>
+    pair<MAP_TBL_VEC_TRI, MAP_TBL_VEC_TRI> DbCompare::diffTblTriggers2() 
+    {
+        pair<MAP_TBL_VEC_TRI, MAP_TBL_VEC_TRI> diff_triggers = {};
+        MAP_TBL_VEC_TRI diff_triggers_main, diff_triggers_ref;
+        auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
+        for (auto str : common_tbls)
+        {
+            auto mainTblTriggers = m_mainTblTriggers2[str];          
+            auto refTblTriggers = m_refTblTriggers2[str];
+            vector<string> vec_main_formatted_triggers, vec_ref_formatted_triggers;
+
+            // tuple<trigger_name, trigger_sql, formatted_trigger_sql>
+            // get just the formatted trigger in second parameter of formatTriggers()
+            vector<tuple<string, string, string>> mainTblTriggers_formatted = formatTriggers(mainTblTriggers, vec_main_formatted_triggers);
+            vector<tuple<string, string, string>> refTblTriggers_formatted = formatTriggers(refTblTriggers, vec_ref_formatted_triggers);
+
+            auto diff = getDiff(vec_main_formatted_triggers, vec_ref_formatted_triggers);
+
+            if(!diff.first.empty() && !mainTblTriggers_formatted.empty())
+            {
+                // vector<pair<trigger_name, trigger_sql>>
+                auto main_trigger_vec = retrieveTriggers(mainTblTriggers_formatted, diff.first);
+                diff_triggers_main.insert({str, main_trigger_vec});
+            }
+            if(!diff.second.empty() && !refTblTriggers_formatted.empty())
+            {
+                // vector<pair<trigger_name, trigger_sql>>
+                auto ref_trigger_vec = retrieveTriggers(refTblTriggers_formatted, diff.second);
+                diff_triggers_ref.insert({str, ref_trigger_vec});
+            }
+        }
+        return {diff_triggers_main, diff_triggers_ref};
     }
 
 } // namespace Kaco
