@@ -441,11 +441,11 @@ namespace Kaco
     // returns diff in triggers in the form of a pair
     // first: triggers in the main db but not in the ref db
     // second: triggers in the ref db but not in the main db
-    // MAP_TBL_VEC_TRI: map<tbl_name, vector<pair<trigger_name, trigger_sql>>>
-    pair<MAP_TBL_VEC_TRI, MAP_TBL_VEC_TRI> DbCompare::diffTblTriggers2() 
+    // MAP_STR_VPS2: map<tbl_name, vector<pair<trigger_name, trigger_sql>>>
+    PA_MAP_SVPS2 DbCompare::diffTblTriggers2()     
     {
-        pair<MAP_TBL_VEC_TRI, MAP_TBL_VEC_TRI> diff_triggers = {};
-        MAP_TBL_VEC_TRI diff_triggers_main, diff_triggers_ref;
+        PA_MAP_SVPS2 diff_triggers = {};
+        MAP_STR_VPS2 diff_triggers_main, diff_triggers_ref;
         auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
         for (auto str : common_tbls)
         {

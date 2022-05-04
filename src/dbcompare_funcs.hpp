@@ -446,6 +446,7 @@ namespace Kaco
     };
 
     // TODO: check to create a class for trigger if it's required
+    // TODO: create a class for any available object in db
     // data: vector<pair<trigger_name, trigger_sql>>>
     // returns vector<tuple<trigger_name, trigger_sql, formatted_trigger_sql>>
     static auto formatTriggers = [](const vector<pair<string, string>> &data, vector<string>& vec_formatted_triggers)

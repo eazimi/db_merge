@@ -15,6 +15,7 @@ FIND_PACKAGE(Boost REQUIRED )
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 ADD_EXECUTABLE(${PROJECT} 
+    src/data_types.hpp
     src/main.cpp
     src/IDbReader.hpp
     src/dbreader.cpp
