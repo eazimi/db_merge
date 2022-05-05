@@ -24,16 +24,13 @@
 #define INIT_MAPS                               \
     m_mainTblSchema = {};                        \
     m_refTblSchema = {};                        \
-    m_db1TblIndices = {}, m_db2TblIndices = {}; \
-    m_mainTblTriggers = {}, m_refTblTriggers = {};
+    m_db1TblIndices = {}, m_db2TblIndices = {};
 
 #define CLEAR_MAPS            \
     m_mainTblSchema.clear();   \
     m_refTblSchema.clear();   \
     m_db1TblIndices.clear();  \
-    m_db2TblIndices.clear();  \
-    m_mainTblTriggers.clear(); \
-    m_refTblTriggers.clear();
+    m_db2TblIndices.clear(); 
 
 #define CHECK_INITIALIZED(x, message, r) \
     if ((x))                             \

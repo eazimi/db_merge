@@ -26,11 +26,11 @@ namespace Kaco
             void testGetTables();
             void testTableSchema();
             void testTableIndices();
-            void testTableTriggers();
-            void testTableTriggers(string tableName);
             void testCreateNewTbl();
             void testDiffTableNames();
             void testDiffTableSchemas();
+            void test_readDbTriggers();
+            void test_readSingleTblTriggers(string table_name);
             void test_diffTriggerDb();
             void test_diffTriggerSingleTbl(string table_name);
 
@@ -40,13 +40,11 @@ namespace Kaco
             vector<string> m_mainTbls, m_refTbls;
             map<string, string> m_mainTblSchema, m_refTblSchema;
             map<string, string> m_db1TblIndices, m_db2TblIndices;
-            MAP_STR_VPS2 m_mainTblTriggers, m_refTblTriggers;
             bool m_initialized;
 
             void initDbTables();
             void initDbTableSchema();
             void initDbTableIndices();
-            void initDbTableTriggers();
             string createNewTbl(string tblName);
             pair<vector<string>, vector<string>> diffTblNames();
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db

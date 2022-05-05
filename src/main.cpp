@@ -197,13 +197,13 @@ int main(int argc, char *argv[])
 // #define TEST_TABLE_TRIGGERS
 #ifdef TEST_TABLE_TRIGGERS
     NEW_LINE;
-    dbCompare->testTableTriggers();    
+    dbCompare->test_readDbTriggers();    
 #endif
 
 // #define TEST_INDIVIDUAL_TABLE_TRIGGERS
 #ifdef TEST_INDIVIDUAL_TABLE_TRIGGERS
     NEW_LINE;
-    dbCompare->testTableTriggers("accounts");    
+    dbCompare->test_readSingleTblTriggers("accounts");    
 #endif
 
 // #define COMPARE_AND_MERGE
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 13
+#define VER 12
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     dbCompare->testGetTables();
@@ -231,8 +231,8 @@ int main(int argc, char *argv[])
     dbCompare->testDiffTableSchemas();
 #endif    
 #if VER == 12 || RELEASE
-    dbCompare->testTableTriggers();
-    dbCompare->testTableTriggers("accounts");
+    dbCompare->test_readDbTriggers();
+    dbCompare->test_readSingleTblTriggers("accounts");
 #endif    
 #if VER == 13 || RELEASE
     dbCompare->test_diffTriggerDb();

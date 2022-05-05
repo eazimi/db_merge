@@ -141,22 +141,22 @@ namespace Kaco
         print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
-    void DbCompare::testTableTriggers()
+    void DbCompare::test_readDbTriggers()
     {
-        print(m_mainTblTriggers, "-> main db, all the table triggers 2", "main");
-        print(m_refTblTriggers, "-> ref db, all the table triggers 2", "ref");
+        auto triggers_db = m_trigger->readDbTriggers();
+        print(triggers_db.first, "-> all the triggers in the main db", "main");
+        print(triggers_db.second, "-> all the triggers in the ref db", "ref");
     }
 
-    void DbCompare::testTableTriggers(string tableName)
+    void DbCompare::test_readSingleTblTriggers(string table_name)
     {
-        auto triggers_main = m_mainTblTriggers[tableName];
-        auto triggers_ref = m_refTblTriggers[tableName];
+        auto tbl_triggers = m_trigger->readSingleTblTriggers(table_name);
         stringstream ss;
-        ss << "-> triggers of " << tableName << " table in the main db";
-        print(triggers_main, ss.str(), "main", tableName);
+        ss << "-> triggers of " << table_name << " table in the main db";
+        print(tbl_triggers.first, ss.str(), "main", table_name);
         ss.str("");
-        ss << "-> triggers of " << tableName << " table in the ref db";
-        print(triggers_ref, ss.str(), "ref", tableName);
+        ss << "-> triggers of " << table_name << " table in the ref db";
+        print(tbl_triggers.second, ss.str(), "ref", table_name);
     }
 
     void DbCompare::testCreateNewTbl()
