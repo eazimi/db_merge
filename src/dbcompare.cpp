@@ -183,15 +183,11 @@ namespace Kaco
         print(diff_schema, "-> difference in schemas", "shcema in main db", "schema in ref db");
     }
 
-    void DbCompare::testDiffTableTriggers()
+    void DbCompare::test_diffTriggerDb()
     {
-        auto diff_trigger = diffTblTriggers();
-        print(diff_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
-        print(diff_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
-
         auto diff_m_trigger = m_trigger->diffTriggerDb(m_mainTbls, m_refTbls);
-        print(diff_m_trigger.first, "-> [m_trigger] trigger in the main db but not in the ref db", "main", false); 
-        print(diff_m_trigger.second, "-> [m_trigger] trigger in the ref db but not in the main db", "ref", false); 
+        print(diff_m_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
+        print(diff_m_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
     }
 
     void DbCompare::testDiffTableTriggers(string table_name)
@@ -412,28 +408,6 @@ namespace Kaco
             }
         }
         return diff_schema;
-    }
-
-    // returns diff in triggers in the form of a pair
-    // first: triggers in the main db but not in the ref db
-    // second: triggers in the ref db but not in the main db
-    // MAP_STR_VPS2: map<tbl_name, vector<pair<trigger_name, trigger_sql>>>
-    PA_MAP_SVPS2 DbCompare::diffTblTriggers()     
-    {
-        PA_MAP_SVPS2 diff_triggers = {};
-        MAP_STR_VPS2 diff_triggers_main, diff_triggers_ref;
-        auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
-        for (auto str : common_tbls)
-        {
-            auto main_trigger_vec = diffTblTriggers(str).first;
-            if (!main_trigger_vec.empty())
-                diff_triggers_main.insert({str, main_trigger_vec});
-
-            auto ref_trigger_vec = diffTblTriggers(str).second;
-            if (!ref_trigger_vec.empty())
-                diff_triggers_ref.insert({str, ref_trigger_vec});
-        }
-        return {diff_triggers_main, diff_triggers_ref};
     }
 
     // returns triggers diff for a particular table

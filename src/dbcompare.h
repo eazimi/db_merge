@@ -31,7 +31,7 @@ namespace Kaco
             void testCreateNewTbl();
             void testDiffTableNames();
             void testDiffTableSchemas();
-            void testDiffTableTriggers();
+            void test_diffTriggerDb();
             void testDiffTableTriggers(string table_name);
 
         private:
@@ -50,7 +50,6 @@ namespace Kaco
             string createNewTbl(string tblName);
             pair<vector<string>, vector<string>> diffTblNames();
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
-            PA_MAP_SVPS2 diffTblTriggers(); // returns diff in triggers
             PA_VEC_PS2 diffTblTriggers(string table_name); // returns triggers diff for a particular table 
     };
 
