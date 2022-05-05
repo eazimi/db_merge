@@ -190,22 +190,14 @@ namespace Kaco
         print(diff_m_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
     }
 
-    void DbCompare::testDiffTableTriggers(string table_name)
+    void DbCompare::test_diffTriggerSingleTbl(string table_name)
     {
-        auto diff_trigger = diffTblTriggers(table_name);
-        stringstream ss;
-        ss << "-> trigger in the main::" << table_name << " but not in the ref::" << table_name;
-        print(diff_trigger.first, ss.str(), "main", table_name, false);
-        ss.str("");
-        ss << "-> trigger in the ref::" << table_name << " but not in the main::" << table_name;
-        print(diff_trigger.second, ss.str(), "ref", table_name, false); 
-
         auto diff_m_trigger = m_trigger->diffTriggerSingleTbl(table_name);
         stringstream ss_trigger;
-        ss_trigger << "-> [m_trigger] trigger in the main::" << table_name << " but not in the ref::" << table_name;
+        ss_trigger << "-> trigger in the main::" << table_name << " but not in the ref::" << table_name;
         print(diff_m_trigger.first, ss_trigger.str(), "main", table_name, false);
         ss_trigger.str("");
-        ss_trigger << "-> [m_trigger] trigger in the ref::" << table_name << " but not in the main::" << table_name;
+        ss_trigger << "-> trigger in the ref::" << table_name << " but not in the main::" << table_name;
         print(diff_m_trigger.second, ss_trigger.str(), "ref", table_name, false); 
     }
 
@@ -408,33 +400,6 @@ namespace Kaco
             }
         }
         return diff_schema;
-    }
-
-    // returns triggers diff for a particular table
-    // returns pair<vector<pair<trigger_name, trigger_sql>>, vector<pair<trigger_name, trigger_sql>>>
-    // first: triggers which are in the main::table but not in the ref::table
-    // second: triggers which are in the ref::table but not in the main::table
-    PA_VEC_PS2 DbCompare::diffTblTriggers(string table_name)
-    {
-        VEC_PS2 diff_triggers_main = {}, diff_triggers_ref = {}; // vector<pair<trigger_name, trigger_sql>>
-
-        auto mainTblTriggers = m_mainTblTriggers[table_name];
-        auto refTblTriggers = m_refTblTriggers[table_name];
-        vector<string> vec_main_formatted_triggers, vec_ref_formatted_triggers;
-
-        // tuple<trigger_name, trigger_sql, formatted_trigger_sql>
-        // get the formatted trigger in the second parameter of formatTriggers()
-        vector<tuple<string, string, string>> mainTblTriggers_formatted = formatTriggers(mainTblTriggers, vec_main_formatted_triggers);
-        vector<tuple<string, string, string>> refTblTriggers_formatted = formatTriggers(refTblTriggers, vec_ref_formatted_triggers);
-
-        auto diff = getDiff(vec_main_formatted_triggers, vec_ref_formatted_triggers);
-
-        if (!diff.first.empty() && !mainTblTriggers_formatted.empty())
-            diff_triggers_main = retrieveTriggers(mainTblTriggers_formatted, diff.first);
-        if (!diff.second.empty() && !refTblTriggers_formatted.empty())
-            diff_triggers_ref = retrieveTriggers(refTblTriggers_formatted, diff.second);
-
-        return make_pair(diff_triggers_main, diff_triggers_ref);
     }
 
 } // namespace Kaco

@@ -235,10 +235,10 @@ int main(int argc, char *argv[])
     dbCompare->testTableTriggers("accounts");
 #endif    
 #if VER == 13 || RELEASE
-    dbCompare->test_diffTriggerDb();
-    // dbCompare->testDiffTableTriggers("accounts");
-    // dbCompare->testDiffTableTriggers("sunsModelCfg");
-    // dbCompare->testDiffTableTriggers("menuTree");
+    // dbCompare->test_diffTriggerDb();
+    dbCompare->test_diffTriggerSingleTbl("accounts");
+    dbCompare->test_diffTriggerSingleTbl("sunsModelCfg");
+    dbCompare->test_diffTriggerSingleTbl("menuTree");
 #endif
 #if VER == 14
 
