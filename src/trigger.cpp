@@ -22,7 +22,7 @@ namespace Kaco
     // TODO: create a class for any available object in db
     // data: vector<pair<trigger_name, trigger_sql>>>
     // returns vector<tuple<trigger_name, trigger_sql, formatted_trigger_sql>>
-    static auto formatTriggers = [](const vector<pair<string, string>> &data, vector<string> &vec_formatted_triggers)
+    static auto formatTriggers = [](const VEC_PS2 &data, vector<string> &vec_formatted_triggers)
     {
         vector<tuple<string, string, string>> formatted_triggers = {};
         for (auto vec : data)

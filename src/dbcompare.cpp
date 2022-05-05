@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "dbcompare_funcs.hpp"
+#include "global_funcs.hpp"
+#include "data_types.hpp"
 
 using namespace std;
 
@@ -394,9 +396,9 @@ namespace Kaco
 
     // 0: table name, 1: table schema in main db, 2: table schema in ref db
     // returns the result of schema comparison between common tables 
-    vector<TUPLE_ALL_STR> DbCompare::diffTblSchemas() 
+    VEC_TS3 DbCompare::diffTblSchemas() 
     {        
-        vector<TUPLE_ALL_STR> diff_schema = {};
+        VEC_TS3 diff_schema = {};
         auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
         for (auto str : common_tbls)
         {
