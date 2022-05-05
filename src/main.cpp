@@ -6,10 +6,12 @@
 
 #include "dbreader.h"
 #include "dbcompare.h"
+#include "test_funcs.hpp"
 
 using namespace std;
 using boost::property_tree::ptree;
 using namespace Kaco;
+using namespace Test;
 
 #define DEFAULT_DB
 #ifdef DEFAULT_DB
@@ -154,7 +156,7 @@ int main(int argc, char *argv[])
          << ((SQLITE_OK == rc) ? "true" : "false") << endl;
 #endif
 
-    unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb1, pdb2);
+    shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb1, pdb2);
     // unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb2, pdb1);
 
     bool initialized = false;
@@ -197,13 +199,13 @@ int main(int argc, char *argv[])
 // #define TEST_TABLE_TRIGGERS
 #ifdef TEST_TABLE_TRIGGERS
     NEW_LINE;
-    dbCompare->test_readDbTriggers();    
+    test_readDbTriggers(dbCompare);    
 #endif
 
 // #define TEST_INDIVIDUAL_TABLE_TRIGGERS
 #ifdef TEST_INDIVIDUAL_TABLE_TRIGGERS
     NEW_LINE;
-    dbCompare->test_readSingleTblTriggers("accounts");    
+    test_readSingleTblTriggers(dbCompare, "accounts");    
 #endif
 
 // #define COMPARE_AND_MERGE
@@ -219,7 +221,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 12
+#define VER 13
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     dbCompare->testGetTables();
@@ -230,15 +232,15 @@ int main(int argc, char *argv[])
     dbCompare->testDiffTableNames();
     dbCompare->testDiffTableSchemas();
 #endif    
-#if VER == 12 || RELEASE
-    dbCompare->test_readDbTriggers();
-    dbCompare->test_readSingleTblTriggers("accounts");
+#if VER == 12 || RELEASE    
+    test_readDbTriggers(dbCompare);
+    test_readSingleTblTriggers(dbCompare, "accounts");
 #endif    
 #if VER == 13 || RELEASE
-    dbCompare->test_diffTriggerDb();
-    // dbCompare->test_diffTriggerSingleTbl("accounts");
-    // dbCompare->test_diffTriggerSingleTbl("sunsModelCfg");
-    // dbCompare->test_diffTriggerSingleTbl("menuTree");
+    test_diffTriggerDb(dbCompare);
+    test_diffTriggerSingleTbl(dbCompare, "accounts");
+    test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
+    test_diffTriggerSingleTbl(dbCompare, "menuTree");
 #endif
 #if VER == 14
 

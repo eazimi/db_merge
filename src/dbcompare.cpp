@@ -141,14 +141,14 @@ namespace Kaco
         print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
-    void DbCompare::test_readDbTriggers()
+    void DbCompare::readDbTriggers()
     {
         auto triggers_db = m_trigger->readDbTriggers();
         print(triggers_db.first, "-> all the triggers in the main db", "main");
         print(triggers_db.second, "-> all the triggers in the ref db", "ref");
     }
 
-    void DbCompare::test_readSingleTblTriggers(string table_name)
+    void DbCompare::readSingleTblTriggers(string table_name)
     {
         auto tbl_triggers = m_trigger->readSingleTblTriggers(table_name);
         stringstream ss;
@@ -182,14 +182,14 @@ namespace Kaco
         print(diff_schema, "-> difference in schemas", "shcema in main db", "schema in ref db");
     }
 
-    void DbCompare::test_diffTriggerDb()
+    void DbCompare::diffTriggerDb()
     {
         auto diff_m_trigger = m_trigger->diffTriggerDb(m_mainTbls, m_refTbls);
         print(diff_m_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
         print(diff_m_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
     }
 
-    void DbCompare::test_diffTriggerSingleTbl(string table_name)
+    void DbCompare::diffTriggerSingleTbl(string table_name)
     {
         auto diff_m_trigger = m_trigger->diffTriggerSingleTbl(table_name);
         stringstream ss_trigger;

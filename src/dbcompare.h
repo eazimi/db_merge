@@ -29,10 +29,10 @@ namespace Kaco
             void testCreateNewTbl();
             void testDiffTableNames();
             void testDiffTableSchemas();
-            void test_readDbTriggers();
-            void test_readSingleTblTriggers(string table_name);
-            void test_diffTriggerDb();
-            void test_diffTriggerSingleTbl(string table_name);
+            void readDbTriggers();
+            void readSingleTblTriggers(string table_name);
+            void diffTriggerDb();
+            void diffTriggerSingleTbl(string table_name);
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2;
