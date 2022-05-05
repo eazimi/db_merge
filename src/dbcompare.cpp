@@ -39,6 +39,7 @@ namespace Kaco
         initDbTableSchema();
         initDbTableIndices();
         initDbTableTriggers();
+        m_trigger->initDbTriggers(m_mainTbls, m_refTbls);
 
         m_initialized = true;
         return m_initialized;
