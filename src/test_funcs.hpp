@@ -32,7 +32,9 @@ namespace Test
 
     static void test_diffTriggerDb(const shared_ptr<DbCompare> &db)
     {
-        db->diffTriggerDb();
+        auto diff_m_trigger = db->diffTriggerDb();
+        print(diff_m_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
+        print(diff_m_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
     }
 
     static void test_diffTriggerSingleTbl(const shared_ptr<DbCompare> &db, string table_name)
