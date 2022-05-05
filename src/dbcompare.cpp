@@ -186,6 +186,10 @@ namespace Kaco
         auto diff_trigger = diffTblTriggers();
         print(diff_trigger.first, "-> trigger in the main db but not in the ref db", "main", false); 
         print(diff_trigger.second, "-> trigger in the ref db but not in the main db", "ref", false); 
+
+        auto diff_m_trigger = m_trigger->diffTriggerDb(m_mainTbls, m_refTbls);
+        print(diff_m_trigger.first, "-> [m_trigger] trigger in the main db but not in the ref db", "main", false); 
+        print(diff_m_trigger.second, "-> [m_trigger] trigger in the ref db but not in the main db", "ref", false); 
     }
 
     void DbCompare::testDiffTableTriggers(string table_name)

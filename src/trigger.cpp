@@ -112,4 +112,26 @@ namespace Kaco
         return make_pair(diff_triggers_main, diff_triggers_ref);
     }
 
+    // returns all the trigger diffs in the dbs
+    // first: triggers in the main db but not in the ref db
+    // second: triggers in the ref db but not in the main db
+    // MAP_STR_VPS2: map<tbl_name, vector<pair<trigger_name, trigger_sql>>>
+    PA_MAP_SVPS2 Trigger::diffTriggerDb(const vector<string> &main_tbls, const vector<string> &ref_tbls)
+    {
+        PA_MAP_SVPS2 diff_triggers = {};
+        MAP_STR_VPS2 diff_triggers_main, diff_triggers_ref;
+        auto common_tbls = getIntersect(main_tbls, ref_tbls);
+        for (auto str : common_tbls)
+        {
+            auto main_trigger_vec = diffTriggerSingleTbl(str).first;
+            if (!main_trigger_vec.empty())
+                diff_triggers_main.insert({str, main_trigger_vec});
+
+            auto ref_trigger_vec = diffTriggerSingleTbl(str).second;
+            if (!ref_trigger_vec.empty())
+                diff_triggers_ref.insert({str, ref_trigger_vec});
+        }
+        return {diff_triggers_main, diff_triggers_ref};
+    }
+
 } // namespace Kaco
