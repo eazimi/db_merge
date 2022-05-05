@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
     dbCompare->testCreateNewTbl();
 #endif
 
-#define RELEASE true
+#define RELEASE false
 #define VER 13
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
@@ -239,6 +239,9 @@ int main(int argc, char *argv[])
     dbCompare->testDiffTableTriggers("accounts");
     dbCompare->testDiffTableTriggers("sunsModelCfg");
     dbCompare->testDiffTableTriggers("menuTree");
+#endif
+#if VER == 14
+
 #endif
 #endif
 
