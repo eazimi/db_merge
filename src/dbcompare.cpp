@@ -40,7 +40,6 @@ namespace Kaco
         initDbTables();
         initDbTableSchema();
         initDbTableIndices();
-        initDbTableTriggers();
         m_trigger->initDbTriggers(m_mainTbls, m_refTbls);
 
         m_initialized = true;
@@ -223,15 +222,6 @@ namespace Kaco
 
         auto tableIndices2 = initTableIndices(m_db2, m_refTbls);
         m_db2TblIndices = std::move(tableIndices2);
-    }
-
-    void DbCompare::initDbTableTriggers()
-    {
-        auto tbl_triggers = initTblTriggers(m_db1, m_mainTbls);
-        m_mainTblTriggers = std::move(tbl_triggers);
-
-        tbl_triggers = initTblTriggers(m_db2, m_refTbls);
-        m_refTblTriggers = std::move(tbl_triggers);
     }
 
     string DbCompare::createNewTbl(std::string tblName)
