@@ -22,7 +22,10 @@ namespace Kaco
             PA_VEC_PS2 diffTriggerSingleTbl(string tbl_name); // returns triggers diff for a particular table
             PA_MAP_SVPS2 diffTriggerDb(const vector<string> &main_tbls, const vector<string> &ref_tbls); // returns all the trigger diffs in the dbs
             inline PA_MAP_SVPS2 readDbTriggers() const { return make_pair(m_mainTriggers, m_refTriggers); }
-            inline PA_VEC_PS2 readSingleTblTriggers(string tbl_name) { return make_pair(m_mainTriggers[tbl_name], m_refTriggers[tbl_name]); }  
+            inline PA_VEC_PS2 readSingleTblTriggers(string tbl_name)
+            {
+                return make_pair(m_mainTriggers[tbl_name], m_refTriggers[tbl_name]);
+            }
     };
 } // namespace Kaco
 
