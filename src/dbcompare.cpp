@@ -14,14 +14,14 @@ namespace Kaco
 {
     DbCompare::DbCompare() : m_db1(nullptr), m_db2(nullptr), m_initialized(false)
     {
-        m_trigger = make_shared<Trigger>();
+        m_trigger = make_shared<Trigger>(nullptr, nullptr);
         INIT_VECTORS;
         INIT_MAPS;
     }
 
     DbCompare::DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2) : m_db1(db1), m_db2(db2), m_initialized(false)
     {
-        m_trigger = make_shared<Trigger>();
+        m_trigger = make_shared<Trigger>(db1, db2);
         INIT_VECTORS;
         INIT_MAPS;
     }
