@@ -39,7 +39,13 @@ namespace Test
 
     static void test_diffTriggerSingleTbl(const shared_ptr<DbCompare> &db, string table_name)
     {
-        db->diffTriggerSingleTbl(table_name);
+        auto diff_m_trigger = db->diffTriggerSingleTbl(table_name);
+        stringstream ss_trigger;
+        ss_trigger << "-> trigger in the main::" << table_name << " but not in the ref::" << table_name;
+        print(diff_m_trigger.first, ss_trigger.str(), "main", table_name, false);
+        ss_trigger.str("");
+        ss_trigger << "-> trigger in the ref::" << table_name << " but not in the main::" << table_name;
+        print(diff_m_trigger.second, ss_trigger.str(), "ref", table_name, false); 
     }
 
 } // namespace Test

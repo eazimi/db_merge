@@ -32,7 +32,7 @@ namespace Kaco
             inline PA_MAP_SVPS2 readDbTriggers() const { return m_trigger->readDbTriggers(); };
             PA_VEC_PS2 readSingleTblTriggers(string table_name) const;
             inline PA_MAP_SVPS2 diffTriggerDb() const { return m_trigger->diffTriggerDb(m_mainTbls, m_refTbls); }
-            void diffTriggerSingleTbl(string table_name);
+            PA_VEC_PS2 diffTriggerSingleTbl(string table_name) const;
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2;
