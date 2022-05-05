@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "dbcompare.h"
+#include "global_funcs.hpp"
 #include "IDbReader.hpp"
 
 using namespace std;
@@ -13,7 +14,9 @@ namespace Test
 {
     static void test_readDbTriggers(const shared_ptr<DbCompare> &db)
     {
-        db->readDbTriggers();
+        auto triggers_db = db->readDbTriggers();
+        print(triggers_db.first, "-> all the triggers in the main db", "main");
+        print(triggers_db.second, "-> all the triggers in the ref db", "ref");        
     }
 
     static void test_readSingleTblTriggers(const shared_ptr<DbCompare> &db, string table_name)

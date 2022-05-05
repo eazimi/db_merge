@@ -141,13 +141,6 @@ namespace Kaco
         print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
-    void DbCompare::readDbTriggers()
-    {
-        auto triggers_db = m_trigger->readDbTriggers();
-        print(triggers_db.first, "-> all the triggers in the main db", "main");
-        print(triggers_db.second, "-> all the triggers in the ref db", "ref");
-    }
-
     void DbCompare::readSingleTblTriggers(string table_name)
     {
         auto tbl_triggers = m_trigger->readSingleTblTriggers(table_name);

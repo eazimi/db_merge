@@ -29,7 +29,7 @@ namespace Kaco
             void testCreateNewTbl();
             void testDiffTableNames();
             void testDiffTableSchemas();
-            void readDbTriggers();
+            inline PA_MAP_SVPS2 readDbTriggers() const { return m_trigger->readDbTriggers(); };
             void readSingleTblTriggers(string table_name);
             void diffTriggerDb();
             void diffTriggerSingleTbl(string table_name);
