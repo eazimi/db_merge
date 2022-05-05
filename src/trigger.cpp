@@ -60,6 +60,24 @@ namespace Kaco
         return triggers;
     };
 
+    static auto findString = [](const VEC_PS2 &data, string str)
+    {
+        auto condition = [str](pair<string, string> p)
+        {
+            return (p.first == str);
+        };
+        auto it = find_if(data.begin(), data.end(), condition);
+        return (it != end(data)); 
+    };
+
+    static auto updateNameInTriggerSql = [](string trigger_name, string trigger_sql, string new_trigger_name)
+    {
+        size_t pos_trigger_name = trigger_sql.find(trigger_name);
+        if (pos_trigger_name != string::npos)
+            trigger_sql.replace(pos_trigger_name, trigger_name.length(), new_trigger_name);
+        return trigger_sql;
+    };
+
     Trigger::Trigger(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db) : m_main_db(main_db), m_ref_db(ref_db)
     {
     }
@@ -132,6 +150,37 @@ namespace Kaco
                 diff_triggers_ref.insert({str, ref_trigger_vec});
         }
         return {diff_triggers_main, diff_triggers_ref};
+    }
+
+    // returns vector<pair<trigger_name, trigger_sql>>
+    VEC_PS2 Trigger::updateTriggerSingleTbl(string tbl_name)
+    {
+        VEC_PS2 updated_triggers = {};
+        auto trigger_main = m_mainTriggers[tbl_name];
+        auto trigger_ref = m_refTriggers[tbl_name];
+        updated_triggers.assign(trigger_ref.begin(), trigger_ref.end());
+        auto trigger_diff_main = diffTriggerSingleTbl(tbl_name).first;
+        for (auto vec : trigger_diff_main)
+        {
+            if(vec.second.empty())
+                continue;
+            // TODO: do the following check according the values that are read from a config file
+            bool keep_trigger = true;
+            if (keep_trigger)
+            {
+                bool trigger_name_found = findString(trigger_ref, vec.first);
+                if (trigger_name_found)
+                {
+                    auto new_trigger_name = vec.first;
+                    new_trigger_name.append("_main");
+                    auto new_tigger_sql = updateNameInTriggerSql(vec.first, vec.second, new_trigger_name);
+                    updated_triggers.push_back(make_pair(new_trigger_name, new_tigger_sql));
+                    continue;   
+                }
+                updated_triggers.push_back(vec);
+            }
+        }
+        return updated_triggers;
     }
 
 } // namespace Kaco

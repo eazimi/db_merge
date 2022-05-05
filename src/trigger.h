@@ -26,6 +26,7 @@ namespace Kaco
             {
                 return make_pair(m_mainTriggers[tbl_name], m_refTriggers[tbl_name]);
             }
+            VEC_PS2 updateTriggerSingleTbl(string tbl_name);
     };
 } // namespace Kaco
 

@@ -19,15 +19,15 @@ namespace Test
         print(triggers_db.second, "-> all the triggers in the ref db", "ref");        
     }
 
-    static void test_readSingleTblTriggers(const shared_ptr<DbCompare> &db, string table_name)
+    static void test_readSingleTblTriggers(const shared_ptr<DbCompare> &db, string table_name, bool print_sql = true)
     {
         auto tbl_triggers = db->readSingleTblTriggers(table_name);
         stringstream ss;
         ss << "-> triggers of " << table_name << " table in the main db";
-        print(tbl_triggers.first, ss.str(), "main", table_name);
+        print(tbl_triggers.first, ss.str(), "main", table_name, print_sql);
         ss.str("");
         ss << "-> triggers of " << table_name << " table in the ref db";
-        print(tbl_triggers.second, ss.str(), "ref", table_name);
+        print(tbl_triggers.second, ss.str(), "ref", table_name, print_sql);
     }
 
     static void test_diffTriggerDb(const shared_ptr<DbCompare> &db)
@@ -46,6 +46,16 @@ namespace Test
         ss_trigger.str("");
         ss_trigger << "-> trigger in the ref::" << table_name << " but not in the main::" << table_name;
         print(diff_m_trigger.second, ss_trigger.str(), "ref", table_name, false); 
+    }
+
+    static void test_updateTriggerSingleTbl(const shared_ptr<DbCompare> &db, string table_name)
+    {
+        test_readSingleTblTriggers(db, table_name, false);
+        test_diffTriggerSingleTbl(db, table_name);
+        auto updated_triggers = db->updateTriggerSingleTbl(table_name);
+        stringstream ss;
+        ss << "-> updated trigger of table " << table_name;
+        print(updated_triggers, ss.str(), "main|ref", table_name, true);
     }
 
 } // namespace Test

@@ -174,6 +174,11 @@ namespace Kaco
         return m_trigger->diffTriggerSingleTbl(table_name);
     }
 
+    VEC_PS2 DbCompare::updateTriggerSingleTbl(string table_name) const
+    {
+        return m_trigger->updateTriggerSingleTbl(table_name);
+    }
+
     void DbCompare::initDbTables()
     {
         m_mainTbls = m_db1->getTables();

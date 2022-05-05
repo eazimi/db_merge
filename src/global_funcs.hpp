@@ -92,7 +92,7 @@ namespace Kaco
         }
     }
 
-    static void print(vector<pair<string, string>> data,
+    static void print(VEC_PS2 data,
                       string message,
                       string schema,
                       string tbl_name,
