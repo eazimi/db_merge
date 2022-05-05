@@ -5,6 +5,7 @@
 #include "data_types.hpp"
 #include "IDbReader.hpp"
 
+using namespace std;
 namespace Kaco
 {
     class Trigger
@@ -17,6 +18,7 @@ namespace Kaco
         public:
             Trigger(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db);
             void initDbTriggers(const vector<string> &main_tbls, const vector<string> &ref_tbls);
+            PA_VEC_PS2 diffTriggerSingleTbl(string tbl_name); // returns triggers diff for a particular table 
 
     };
 } // namespace Kaco

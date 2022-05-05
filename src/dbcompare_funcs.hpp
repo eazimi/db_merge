@@ -388,27 +388,6 @@ namespace Kaco
         return result;
     }
 
-    // returns pair<tbl_name, trigger_name|trigger_sql_command>
-    static map<string, string> initTableTriggers(const shared_ptr<IDbReader> &db, const vector<string> &tables)
-    {
-        map<string, string> result{};
-
-        for (auto table : tables)
-        {
-            auto tableTriggers = db->getTriggers(table);
-            stringstream ss;
-            for (auto i = 0; i < tableTriggers.size(); i++)
-            {
-                if (i)
-                    ss << STR_SEPERATOR;
-                ss << tableTriggers[i].first << VAL_SEPERATOR << tableTriggers[i].second;
-            }
-            result.insert({table, ss.str()});
-        }
-
-        return result;
-    }
-
     static map<string, vector<pair<string, string>>> initTblTriggers(const shared_ptr<IDbReader> &db, const vector<string> &tables)
     {
         map<string, vector<pair<string, string>>> tbl_triggers = {};

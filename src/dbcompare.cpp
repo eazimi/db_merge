@@ -197,6 +197,14 @@ namespace Kaco
         ss.str("");
         ss << "-> trigger in the ref::" << table_name << " but not in the main::" << table_name;
         print(diff_trigger.second, ss.str(), "ref", table_name, false); 
+
+        auto diff_m_trigger = m_trigger->diffTriggerSingleTbl(table_name);
+        stringstream ss_trigger;
+        ss_trigger << "-> [m_trigger] trigger in the main::" << table_name << " but not in the ref::" << table_name;
+        print(diff_m_trigger.first, ss_trigger.str(), "main", table_name, false);
+        ss_trigger.str("");
+        ss_trigger << "-> [m_trigger] trigger in the ref::" << table_name << " but not in the main::" << table_name;
+        print(diff_m_trigger.second, ss_trigger.str(), "ref", table_name, false); 
     }
 
     void DbCompare::initDbTables()
