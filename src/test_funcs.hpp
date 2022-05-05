@@ -21,7 +21,13 @@ namespace Test
 
     static void test_readSingleTblTriggers(const shared_ptr<DbCompare> &db, string table_name)
     {
-        db->readSingleTblTriggers(table_name);
+        auto tbl_triggers = db->readSingleTblTriggers(table_name);
+        stringstream ss;
+        ss << "-> triggers of " << table_name << " table in the main db";
+        print(tbl_triggers.first, ss.str(), "main", table_name);
+        ss.str("");
+        ss << "-> triggers of " << table_name << " table in the ref db";
+        print(tbl_triggers.second, ss.str(), "ref", table_name);
     }
 
     static void test_diffTriggerDb(const shared_ptr<DbCompare> &db)

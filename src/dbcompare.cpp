@@ -141,17 +141,6 @@ namespace Kaco
         print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
-    void DbCompare::readSingleTblTriggers(string table_name)
-    {
-        auto tbl_triggers = m_trigger->readSingleTblTriggers(table_name);
-        stringstream ss;
-        ss << "-> triggers of " << table_name << " table in the main db";
-        print(tbl_triggers.first, ss.str(), "main", table_name);
-        ss.str("");
-        ss << "-> triggers of " << table_name << " table in the ref db";
-        print(tbl_triggers.second, ss.str(), "ref", table_name);
-    }
-
     void DbCompare::testCreateNewTbl()
     {
         string sql;
@@ -167,6 +156,11 @@ namespace Kaco
         auto diff_tbls = diffTblNames();
         print<vector<string>>("-> table [names] in db1 but not in db2", diff_tbls.first);
         print<vector<string>>("-> table [names] in db2 but not in db1", diff_tbls.second);
+    }
+
+    PA_VEC_PS2 DbCompare::readSingleTblTriggers(string table_name) const
+    {
+        return m_trigger->readSingleTblTriggers(table_name);
     }
 
     void DbCompare::testDiffTableSchemas()
