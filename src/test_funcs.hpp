@@ -58,6 +58,20 @@ namespace Test
         print(updated_triggers, ss.str(), "main|ref", table_name, true);
     }
 
+    static void test_readDbTables(const shared_ptr<DbCompare> &db)
+    {
+        auto tables = db->readDbTables();
+        print<vector<string>>("-> tables in main db", tables.first);
+        print<vector<string>>("-> tables in ref db", tables.second);
+    }
+
+    static void test_readDbTblSchema(const shared_ptr<DbCompare> &db)
+    {
+        auto db_tbl_schema = db->readDbTblSchema();
+        print(db_tbl_schema.first, "-> main db all the table schemas");
+        print(db_tbl_schema.second, "-> ref db all the table schemas");
+    }
+    
 } // namespace Test
 
 #endif

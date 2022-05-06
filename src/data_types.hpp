@@ -29,6 +29,8 @@ namespace Kaco
     using PA_VEC_PS2 = pair<VEC_PS2, VEC_PS2>;
     using TS3 = tuple<string, string, string>;
     using VEC_TS3 = vector<TS3>;
+    using PA_VS2 = pair<vector<string>, vector<string>>;
+    using PA_MAP_S2 = pair<map<string, string>, map<string, string>>;
 
 } // namespace Kaco
 

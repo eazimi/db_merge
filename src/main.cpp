@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 14
+#define VER 15
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     dbCompare->testGetTables();
@@ -248,7 +248,11 @@ int main(int argc, char *argv[])
     test_updateTriggerSingleTbl(dbCompare, "invCfg");
 #endif
 #if VER == 15
-
+    dbCompare->testGetTables();
+    test_readDbTables(dbCompare);
+    
+    dbCompare->testTableSchema();
+    test_readDbTblSchema(dbCompare);
 #endif
 #endif
 
