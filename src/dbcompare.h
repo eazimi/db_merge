@@ -31,7 +31,7 @@ namespace Kaco
             inline VEC_TS3 diffSchemaDb() const { return m_table->diffSchemaDb(); }
             inline PA_MAP_SVPS2 readDbTriggers() const { return m_trigger->readDbTriggers(); };
             PA_VEC_PS2 readSingleTblTriggers(string table_name) const;
-            inline PA_MAP_SVPS2 diffTriggerDb() const { return m_trigger->diffTriggerDb(m_mainTbls, m_refTbls); }
+            PA_MAP_SVPS2 diffTriggerDb() const;
             PA_VEC_PS2 diffTriggerSingleTbl(string table_name) const;
             VEC_PS2 updateTriggerSingleTbl(string table_name) const;
 
@@ -39,11 +39,9 @@ namespace Kaco
             shared_ptr<IDbReader> m_db1, m_db2;
             shared_ptr<Trigger> m_trigger;
             shared_ptr<Table> m_table;
-            vector<string> m_mainTbls, m_refTbls;
             map<string, string> m_db1TblIndices, m_db2TblIndices;
             bool m_initialized;
 
-            void initDbTables();
             void initDbTableIndices();
             string createNewTbl(string tblName);
     };

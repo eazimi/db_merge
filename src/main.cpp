@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 15
+#define VER 13
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     test_readDbTables(dbCompare);

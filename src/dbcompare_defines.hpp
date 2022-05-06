@@ -17,10 +17,6 @@
 #define CT_CHECK "CHECK"
 #define CT_FOREIGN "FOREIGN"
 
-#define INIT_VECTORS  \
-    m_mainTbls = {}; \
-    m_refTbls = {};
-
 #define INIT_MAPS                               \
     m_db1TblIndices = {}, m_db2TblIndices = {};
 

@@ -18,7 +18,6 @@ namespace Kaco
     {
         m_trigger = make_shared<Trigger>(db1, db2);
         m_table = make_shared<Table>(db1, db2);
-        INIT_VECTORS;
         INIT_MAPS;
     }
 
@@ -30,13 +29,11 @@ namespace Kaco
     bool DbCompare::initialize()
     {
         CHECK_INITIALIZED(m_initialized, MSG_ALREADY_INIT, FALSE);
-
-        initDbTables();
-        initDbTableIndices();
-        m_trigger->initDbTriggers(m_mainTbls, m_refTbls);
         m_table->initDbTbls();
+        auto db_tbls = m_table->readDbTable();
+        m_trigger->initDbTriggers(db_tbls.first, db_tbls.second);
         m_table->initDbTblSchema();
-
+        initDbTableIndices();
         m_initialized = true;
         return m_initialized;
     }
@@ -149,6 +146,12 @@ namespace Kaco
         return m_trigger->readSingleTblTriggers(table_name);
     }
 
+    PA_MAP_SVPS2 DbCompare::diffTriggerDb() const
+    {
+        auto db_tbls = m_table->readDbTable();
+        return m_trigger->diffTriggerDb(db_tbls.first, db_tbls.second);
+    }
+
     PA_VEC_PS2 DbCompare::diffTriggerSingleTbl(string table_name) const
     {
         return m_trigger->diffTriggerSingleTbl(table_name);
@@ -159,18 +162,13 @@ namespace Kaco
         return m_trigger->updateTriggerSingleTbl(table_name);
     }
 
-    void DbCompare::initDbTables()
-    {
-        m_mainTbls = m_db1->getTables();
-        m_refTbls = m_db2->getTables();
-    }
-
     void DbCompare::initDbTableIndices()
     {
-        auto tableIndices1 = initTableIndices(m_db1, m_mainTbls);
+        auto db_tbls = m_table->readDbTable();
+        auto tableIndices1 = initTableIndices(m_db1, db_tbls.first);
         m_db1TblIndices = std::move(tableIndices1);
 
-        auto tableIndices2 = initTableIndices(m_db2, m_refTbls);
+        auto tableIndices2 = initTableIndices(m_db2, db_tbls.second);
         m_db2TblIndices = std::move(tableIndices2);
     }
 
