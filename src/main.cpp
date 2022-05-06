@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 #endif
 #if VER == 11 || RELEASE
     test_diffTblNameDb(dbCompare);
-    dbCompare->testDiffTableSchemas();
+    test_diffSchemaDb(dbCompare);
 #endif    
 #if VER == 12 || RELEASE    
     test_readDbTriggers(dbCompare);
@@ -248,7 +248,8 @@ int main(int argc, char *argv[])
     test_updateTriggerSingleTbl(dbCompare, "invCfg");
 #endif
 #if VER == 15
-    test_diffTblNameDb(dbCompare);
+    // test_diffTblNameDb(dbCompare);
+    test_diffSchemaDb(dbCompare);
 #endif
 #endif
 

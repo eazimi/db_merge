@@ -65,4 +65,29 @@ namespace Kaco
         return make_pair(diff_tbls.first, diff_tbls.second);
     }
 
+    // returns schema diff for a particular table
+    bool Table::diffSchemaSingleTbl(string tbl_name, pair<string, string> &schema)
+    {
+        auto shcema_main = m_main_tbl_schema[tbl_name];
+        auto schema_ref = m_ref_tbl_schema[tbl_name];
+        schema = make_pair(shcema_main, schema_ref);
+        return (shcema_main.compare(schema_ref) != 0);
+    }
+
+    // returns schema diff for a the tables in the dbs
+    // 0: table name, 1: table schema in the main db, 2: table schema in the ref db
+    VEC_TS3 Table::diffSchemaDb()
+    {
+        VEC_TS3 diff_schema = {};
+        auto common_tbls = getIntersect(m_main_tbls, m_ref_tbls);
+        for (auto tbl : common_tbls)
+        {
+            PS2 schema;
+            bool is_different = diffSchemaSingleTbl(tbl, schema);
+            if(is_different)
+                diff_schema.push_back(make_tuple(tbl, schema.first, schema.second));
+        }
+        return diff_schema;
+    }
+
 } // namespace Kaco

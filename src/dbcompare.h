@@ -26,9 +26,9 @@ namespace Kaco
             void testTableIndices();
             void testCreateNewTbl();
             inline PA_VS2 diffTblNameDb() const { return m_table->diffTblNameDb(); }
-            void testDiffTableSchemas();
             PA_VS2 readDbTables() const;
             PA_MAP_S2 readDbTblSchema() const;
+            inline VEC_TS3 diffSchemaDb() const { return m_table->diffSchemaDb(); }
             inline PA_MAP_SVPS2 readDbTriggers() const { return m_trigger->readDbTriggers(); };
             PA_VEC_PS2 readSingleTblTriggers(string table_name) const;
             inline PA_MAP_SVPS2 diffTriggerDb() const { return m_trigger->diffTriggerDb(m_mainTbls, m_refTbls); }
@@ -46,7 +46,6 @@ namespace Kaco
             void initDbTables();
             void initDbTableIndices();
             string createNewTbl(string tblName);
-            vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
     };
 
 } // namespace Kaco

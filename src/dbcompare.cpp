@@ -149,12 +149,6 @@ namespace Kaco
         return m_trigger->readSingleTblTriggers(table_name);
     }
 
-    void DbCompare::testDiffTableSchemas()
-    {
-        auto diff_schema = diffTblSchemas();
-        print(diff_schema, "-> difference in schemas", "shcema in main db", "schema in ref db");
-    }
-
     PA_VEC_PS2 DbCompare::diffTriggerSingleTbl(string table_name) const
     {
         return m_trigger->diffTriggerSingleTbl(table_name);
@@ -317,28 +311,6 @@ namespace Kaco
         print<vector<string>>("-> insert command", {ss_ins.str()});
 
         return sql;
-    }
-
-    // 0: table name, 1: table schema in main db, 2: table schema in ref db
-    // returns the result of schema comparison between common tables 
-    VEC_TS3 DbCompare::diffTblSchemas() 
-    {        
-        VEC_TS3 diff_schema = {};
-        auto main_schema = m_table->readDbTblSchema().first;
-        auto ref_schema = m_table->readDbTblSchema().second;
-        auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
-        for (auto str : common_tbls)
-        {
-            auto mainTblSchema = main_schema[str];
-            auto refTblSchema = ref_schema[str];
-            bool isEqual = (mainTblSchema == refTblSchema);
-            if (!isEqual)
-            {
-                auto diff = make_tuple(str, mainTblSchema, refTblSchema);
-                diff_schema.push_back(std::move(diff));
-            }
-        }
-        return diff_schema;
     }
 
 } // namespace Kaco

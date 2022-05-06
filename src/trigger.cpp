@@ -187,5 +187,5 @@ namespace Kaco
         }
         return updated_triggers;
     }
-    
+
 } // namespace Kaco
