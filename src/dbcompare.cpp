@@ -32,7 +32,6 @@ namespace Kaco
         CHECK_INITIALIZED(m_initialized, MSG_ALREADY_INIT, FALSE);
 
         initDbTables();
-        initDbTableSchema();
         initDbTableIndices();
         m_trigger->initDbTriggers(m_mainTbls, m_refTbls);
         m_table->initDbTbls();
@@ -46,21 +45,23 @@ namespace Kaco
     {
         CHECK_INITIALIZED(!m_initialized, MSG_NOT_INIT, STR_NULL);
 
-        string result{};
+        string result = {};
+        auto main_schema = m_table->readDbTblSchema().first;
+        auto ref_schema = m_table->readDbTblSchema().second;
         // db1: source -> db2: target
-        for (auto tblName_schema : m_mainTblSchema)
+        for (auto tblName_schema : main_schema)
         {
             auto srcTblName = tblName_schema.first;
             // bool targetTblFound = (m_refTblSchema.find(srcTblName) != m_refTblSchema.end());
             bool targetTblFound = false;
-            auto targetTblSchema = m_refTblSchema[srcTblName];
+            auto targetTblSchema = ref_schema[srcTblName];
             if (targetTblSchema != "")
                 targetTblFound = true;
             if (targetTblFound)
             {
                 // check for schemas
                 auto srcTblSchema = tblName_schema.second;
-                auto targetTblSchema = m_refTblSchema[srcTblName];
+                auto targetTblSchema = ref_schema[srcTblName];
                 if (srcTblSchema == targetTblSchema)
                 {
                     // check for the indices
@@ -168,15 +169,6 @@ namespace Kaco
     {
         m_mainTbls = m_db1->getTables();
         m_refTbls = m_db2->getTables();
-    }
-
-    void DbCompare::initDbTableSchema()
-    {
-        auto tblSchema1 = initTablesSchema(m_db1, m_mainTbls);
-        m_mainTblSchema = std::move(tblSchema1);
-
-        auto tblSchema2 = initTablesSchema(m_db2, m_refTbls);
-        m_refTblSchema = std::move(tblSchema2);
     }
 
     void DbCompare::initDbTableIndices()
@@ -332,11 +324,13 @@ namespace Kaco
     VEC_TS3 DbCompare::diffTblSchemas() 
     {        
         VEC_TS3 diff_schema = {};
+        auto main_schema = m_table->readDbTblSchema().first;
+        auto ref_schema = m_table->readDbTblSchema().second;
         auto common_tbls = getIntersect(m_mainTbls, m_refTbls);
         for (auto str : common_tbls)
         {
-            auto mainTblSchema = m_mainTblSchema[str];
-            auto refTblSchema = m_refTblSchema[str];
+            auto mainTblSchema = main_schema[str];
+            auto refTblSchema = ref_schema[str];
             bool isEqual = (mainTblSchema == refTblSchema);
             if (!isEqual)
             {

@@ -40,12 +40,10 @@ namespace Kaco
             shared_ptr<Trigger> m_trigger;
             shared_ptr<Table> m_table;
             vector<string> m_mainTbls, m_refTbls;
-            map<string, string> m_mainTblSchema, m_refTblSchema;
             map<string, string> m_db1TblIndices, m_db2TblIndices;
             bool m_initialized;
 
             void initDbTables();
-            void initDbTableSchema();
             void initDbTableIndices();
             string createNewTbl(string tblName);
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db

@@ -228,17 +228,6 @@ namespace Kaco
         return {targetDiff, refDiff};
     }
 
-    // static pair<vector<string>, vector<string>> getDiff(vector<string> main, vector<string> ref)
-    // {
-    //     vector<string> main_diff = {};
-    //     vector<string> ref_diff = {};
-    //     sort(main.begin(), main.end());
-    //     sort(ref.begin(), ref.end());
-    //     set_difference(main.begin(), main.end(), ref.begin(), ref.end(), back_inserter(main_diff));
-    //     set_difference(ref.begin(), ref.end(), main.begin(), main.end(), back_inserter(ref_diff));
-    //     return {main_diff, ref_diff};
-    // }
-
     static vector<string> getColsConsIntersect(vector<string> targetCols, vector<string> refCols)
     {
         vector<string> intersect = {};
@@ -247,37 +236,6 @@ namespace Kaco
         set_intersection(targetCols.begin(), targetCols.end(), refCols.begin(), refCols.end(),
                          std::inserter(intersect, intersect.begin()));
         return intersect;
-    }
-
-    // static vector<string> getIntersect(vector<string> main, vector<string> ref)
-    // {
-    //     vector<string> intersect = {};
-    //     sort(main.begin(), main.end());
-    //     sort(ref.begin(), ref.end());
-    //     set_intersection(main.begin(), main.end(), ref.begin(), ref.end(),
-    //                      std::back_inserter(intersect));
-    //     sort(intersect.begin(), intersect.end());
-    //     return intersect;
-    // }
-
-    static map<string, string> initTablesSchema(const shared_ptr<IDbReader> &db, const vector<string> &tables)
-    {
-        map<string, string> result{};
-
-        for (auto table : tables)
-        {
-            auto tableSchema = db->getTableSchema(table);
-            stringstream ss;
-            for (auto i = 0; i < tableSchema.size(); i++)
-            {
-                if (i)
-                    ss << STR_SEPERATOR;
-                ss << tableSchema[i];
-            }
-            result.insert({table, ss.str()});
-        }
-
-        return result;
     }
 
     static map<string, string> initTableIndices(const shared_ptr<IDbReader> &db, const vector<string> &tables)
