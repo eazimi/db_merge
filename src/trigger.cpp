@@ -152,6 +152,11 @@ namespace Kaco
         return {diff_triggers_main, diff_triggers_ref};
     }
 
+    PA_VEC_PS2 Trigger::readSingleTblTriggers(string tbl_name)
+    {
+        return make_pair(m_mainTriggers[tbl_name], m_refTriggers[tbl_name]);
+    }
+
     // returns vector<pair<trigger_name, trigger_sql>>
     VEC_PS2 Trigger::updateTriggerSingleTbl(string tbl_name)
     {
