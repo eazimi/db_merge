@@ -247,6 +247,9 @@ int main(int argc, char *argv[])
     test_updateTriggerSingleTbl(dbCompare, "language");
     test_updateTriggerSingleTbl(dbCompare, "invCfg");
 #endif
+#if VER == 15
+
+#endif
 #endif
 
     return 0;

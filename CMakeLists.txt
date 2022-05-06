@@ -27,7 +27,9 @@ ADD_EXECUTABLE(${PROJECT}
     src/trigger.cpp 
     src/trigger.h
     src/global_funcs.hpp
-    src/test_funcs.hpp 
+    src/test_funcs.hpp
+    src/table.cpp 
+    src/table.h 
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT} ${SQLite3_LIBRARIES})
