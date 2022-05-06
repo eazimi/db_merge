@@ -184,10 +184,10 @@ int main(int argc, char *argv[])
     cout << "initialized: " << initialized << endl;
 #endif
 
-// #define TEST_TABLES_SCHEMA
+#define TEST_TABLES_SCHEMA
 #ifdef TEST_TABLES_SCHEMA
     NEW_LINE;
-    dbCompare->testTableSchema();
+    test_readDbTblSchema(dbCompare);
 #endif
 
 // #define TEST_TABLES_INDICES
@@ -224,8 +224,8 @@ int main(int argc, char *argv[])
 #define VER 15
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
-    dbCompare->testGetTables();
-    dbCompare->testTableSchema();
+    test_readDbTables(dbCompare);
+    test_readDbTblSchema(dbCompare);
     dbCompare->testTableIndices();
 #endif
 #if VER == 11 || RELEASE
@@ -248,11 +248,8 @@ int main(int argc, char *argv[])
     test_updateTriggerSingleTbl(dbCompare, "invCfg");
 #endif
 #if VER == 15
-    dbCompare->testGetTables();
-    test_readDbTables(dbCompare);
     
-    dbCompare->testTableSchema();
-    test_readDbTblSchema(dbCompare);
+    
 #endif
 #endif
 

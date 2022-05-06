@@ -117,20 +117,6 @@ namespace Kaco
         m_db2->dbDump((char *)"./dump_db2.sql");
     }
 
-    void DbCompare::testGetTables()
-    {
-        auto db1_tables = m_db1->getTables();
-        auto db2_tables = m_db2->getTables();
-        print<vector<string>>("-> tables in db1", db1_tables);
-        print<vector<string>>("-> tables in db2", db2_tables);
-    }
-
-    void DbCompare::testTableSchema()
-    {
-        print(m_mainTblSchema, "-> db1 all the table schemas");
-        print(m_refTblSchema, "-> db2 all the table schemas");
-    }
-
     void DbCompare::testTableIndices()
     {
         print(m_db1TblIndices, "-> db1 all the table indices");

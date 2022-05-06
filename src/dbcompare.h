@@ -23,10 +23,6 @@ namespace Kaco
             bool initialize();
             string compareAndMerge();
             void testDbDump();
-
-            void testGetTables();
-            void testTableSchema();            
-
             void testTableIndices();
             void testCreateNewTbl();
             void testDiffTableNames();
