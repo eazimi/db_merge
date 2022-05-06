@@ -26,6 +26,7 @@ namespace Kaco
             void initDbTblSchema();
             PA_VS2 readDbTable() const;
             PA_MAP_S2 readDbTblSchema() const;
+            PA_VS2 diffTblNameDb() const;
     };
 
 } // namespace Kaco

@@ -2,6 +2,7 @@
 #include <sstream>
 #include <utility>
 #include "dbcompare_defines.hpp"
+#include "global_funcs.hpp"
 
 namespace Kaco
 {
@@ -54,6 +55,14 @@ namespace Kaco
             tbl_schema.insert(make_pair(tbl, ss.str()));
         }
         return tbl_schema;
+    }
+
+    // first: tables in the main db but not in the ref db
+    // second: tables in the ref db but not in the main db
+    PA_VS2 Table::diffTblNameDb() const
+    {
+        auto diff_tbls = getDiff(m_main_tbls, m_ref_tbls);
+        return make_pair(diff_tbls.first, diff_tbls.second);
     }
 
 } // namespace Kaco

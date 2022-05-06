@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
     cout << "initialized: " << initialized << endl;
 #endif
 
-#define TEST_TABLES_SCHEMA
+// #define TEST_TABLES_SCHEMA
 #ifdef TEST_TABLES_SCHEMA
     NEW_LINE;
     test_readDbTblSchema(dbCompare);
@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
     dbCompare->testTableIndices();
 #endif
 #if VER == 11 || RELEASE
-    dbCompare->testDiffTableNames();
+    test_diffTblNameDb(dbCompare);
     dbCompare->testDiffTableSchemas();
 #endif    
 #if VER == 12 || RELEASE    
@@ -248,8 +248,7 @@ int main(int argc, char *argv[])
     test_updateTriggerSingleTbl(dbCompare, "invCfg");
 #endif
 #if VER == 15
-    
-    
+    test_diffTblNameDb(dbCompare);
 #endif
 #endif
 

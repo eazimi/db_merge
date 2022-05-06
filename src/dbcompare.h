@@ -25,7 +25,7 @@ namespace Kaco
             void testDbDump();
             void testTableIndices();
             void testCreateNewTbl();
-            void testDiffTableNames();
+            inline PA_VS2 diffTblNameDb() const { return m_table->diffTblNameDb(); }
             void testDiffTableSchemas();
             PA_VS2 readDbTables() const;
             PA_MAP_S2 readDbTblSchema() const;
@@ -48,7 +48,6 @@ namespace Kaco
             void initDbTableSchema();
             void initDbTableIndices();
             string createNewTbl(string tblName);
-            pair<vector<string>, vector<string>> diffTblNames();
             vector<tuple<string, string, string>> diffTblSchemas(); // 0: table name, 1: table schema in main db, 2: table schema in ref db
     };
 
