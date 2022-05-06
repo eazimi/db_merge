@@ -60,7 +60,7 @@ namespace Kaco
         return triggers;
     };
 
-    static auto findString = [](const VEC_PS2 &data, string str)
+    static auto findTrigger = [](const VEC_PS2 &data, string str)
     {
         auto condition = [str](pair<string, string> p)
         {
@@ -168,7 +168,7 @@ namespace Kaco
             bool keep_trigger = true;
             if (keep_trigger)
             {
-                bool trigger_name_found = findString(trigger_ref, vec.first);
+                bool trigger_name_found = findTrigger(trigger_ref, vec.first);
                 if (trigger_name_found)
                 {
                     auto new_trigger_name = vec.first;
@@ -182,5 +182,5 @@ namespace Kaco
         }
         return updated_triggers;
     }
-
+    
 } // namespace Kaco
