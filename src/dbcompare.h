@@ -24,7 +24,7 @@ namespace Kaco
             string compareAndMerge();
             void testDbDump();
             void testTableIndices();
-            void testCreateNewTbl();
+            string createNewTbl(string tblName);
             inline PA_VS2 diffTblNameDb() const { return m_table->diffTblNameDb(); }
             PA_VS2 readDbTables() const;
             PA_MAP_S2 readDbTblSchema() const;
@@ -34,6 +34,7 @@ namespace Kaco
             PA_MAP_SVPS2 diffTriggerDb() const;
             PA_VEC_PS2 diffTriggerSingleTbl(string table_name) const;
             VEC_PS2 updateTriggerSingleTbl(string table_name) const;
+            inline string createTbl(string tbl_name) const { return m_table->createTbl(tbl_name); }
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2;
@@ -42,8 +43,7 @@ namespace Kaco
             map<string, string> m_db1TblIndices, m_db2TblIndices;
             bool m_initialized;
 
-            void initDbTableIndices();
-            string createNewTbl(string tblName);
+            void initDbTableIndices();            
     };
 
 } // namespace Kaco

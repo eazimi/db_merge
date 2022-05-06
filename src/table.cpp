@@ -1,11 +1,69 @@
 #include "table.h"
 #include <sstream>
 #include <utility>
+#include <stack>
+#include <unordered_map>
 #include "dbcompare_defines.hpp"
 #include "global_funcs.hpp"
 
 namespace Kaco
 {
+    // it assumes that there is no disparity between the number of '(' and ')'
+    static auto process_word = [](string word, stack<char> &stack)
+    {
+        bool stackIsEmpty = false;
+        bool virgool = false;
+        for (auto ch : word)
+        {
+            if (ch == '(')
+                stack.push('(');
+            else if (ch == ')')
+                stack.pop();
+            else if (ch == ',')
+            {
+                virgool = true;
+                stackIsEmpty = stack.empty();
+            }
+        }
+        return (stackIsEmpty && virgool);
+    };
+
+    static auto process_ct = [](string data)
+    {
+        vector<string> cols = {};
+        int space_pos = 0;
+        stack<char> stack;
+        stringstream ss;
+        space_pos = data.find_first_of(" ");
+        while (space_pos != string::npos)
+        {
+            auto word = data.substr(0, space_pos);
+            bool flush = process_word(word, stack);
+            if (flush)
+            {
+                ss << word.substr(0, word.length() - 1);
+                cols.push_back(std::move(ss.str()));
+                ss.str("");
+            }
+            else
+                ss << word << " ";
+            data = data.substr(space_pos + 1);
+            space_pos = data.find_first_of(" ");
+        }
+        ss << data;
+        cols.push_back(ss.str());
+        return cols;
+    };
+
+    static vector<string> split_ct(string cmd)
+    {
+        int first_pos = cmd.find_first_of("(");
+        int last_pos = cmd.find_last_of(")");
+        auto data = cmd.substr(first_pos + 1, last_pos - first_pos - 1);
+        auto cols = process_ct(data);
+        return cols;
+    }
+
     Table::Table(const shared_ptr<IDbReader> &main_db, const shared_ptr<IDbReader> &ref_db)
     {
         m_main_db = main_db;
@@ -89,5 +147,177 @@ namespace Kaco
         }
         return diff_schema;
     }
+
+    static auto split_cc = [](vector<string> col_con)
+    {
+        unordered_map<string, string> cols = {};
+        vector<string> cons = {};
+        for (auto cc : col_con)
+        {
+            int pos = cc.find_first_of(" ");
+            auto name = cc.substr(0, pos);
+            bool is_con = CHECK_IS_TBL_CONSTRAINT(name);
+            if (!is_con)
+                cols.insert({std::move(name), std::move(cc)});
+            else
+                cons.push_back(std::move(cc));
+        }
+        return make_pair(cols, cons);
+    };
+
+    static auto split_name_def = [](unordered_map<string, string> cols)
+    {
+        vector<string> col_name = {};
+        vector<string> col_def = {};
+        for (const auto &col : cols)
+        {
+            col_name.push_back(col.first);
+            col_def.push_back(col.second);
+        }
+        return make_pair(col_name, col_def);
+    };
+
+    static vector<string> get_cc_diff(string tbl_name,
+                                      const shared_ptr<IDbReader> &db_main,
+                                      const shared_ptr<IDbReader> &db_ref,
+                                      T_VS3 &cc_diff)
+    {
+        // db1: target, db2: reference
+        auto main_ct = db_main->getCreateTblCmd(tbl_name);
+        auto ref_ct = db_ref->getCreateTblCmd(tbl_name);
+        // columns and constraints
+        auto main_cc = split_ct(main_ct);
+        auto ref_cc = split_ct(ref_ct);
+
+        auto diff_cc = getDiff(main_cc, ref_cc);
+        auto diff_cc_main = diff_cc.first;
+        auto shared_cc = getIntersect(main_cc, ref_cc);
+        auto diff_cc_split = split_cc(diff_cc_main);
+        auto name_def_main = split_name_def(diff_cc_split.first);
+        auto diff_colname_main = name_def_main.first;
+        auto diff_coldef_main = name_def_main.second;
+        auto diff_const_main = diff_cc_split.second;
+        cc_diff = make_tuple(diff_colname_main, diff_coldef_main, diff_const_main);
+        return ref_cc;
+    }
+
+    static string generate_ct(vector<string> col_con, std::string tbl_name)
+    {
+        stringstream ss;
+        ss << "CREATE TABLE " << tbl_name.append("_tmp") << " (";
+        for (auto const &cc : col_con)
+            ss << cc << ", ";
+        return ss.str();
+    }
+
+    static string generate_str(vector<string> cc, bool keep_cc)
+    {
+        int cc_size = cc.size();
+        stringstream ss;
+        for (auto i = 0; i < cc_size; i++)
+        {
+            if (keep_cc)
+                ss << cc[i] << ", ";
+        }
+        return ss.str();
+    }
+
+    string Table::createTbl(std::string tbl_name)
+    {
+        string sql = "";
+        T_VS3 cc_diff;
+        auto ref_cc = get_cc_diff(tbl_name, m_main_db, m_ref_db, cc_diff); 
+        auto diff_colname_main = get<0>(cc_diff);
+        auto diff_coldef_main = get<1>(cc_diff);
+        auto diff_const_main = get<2>(cc_diff);
+
+        string ct = generate_ct(ref_cc, tbl_name);
+        // check for the columns which are in the target but not in ref
+        // TODO: update this part by paying attention to the value that have been read from json config file, 
+        // for now it is considered as true
+        bool keep_cc = true;
+        string cols = generate_str(diff_colname_main, keep_cc);
+        // check for the constraints which are in the target but not in ref
+        string consts = generate_str(diff_const_main, keep_cc);
+
+        stringstream ss_ct;
+        ss_ct << ct << cols << consts << ")";
+        sql = ss_ct.str();
+        auto pos = sql.find_last_of(",");
+        sql.replace(pos, 2, "");
+
+        return sql;
+    }    
+
+        // // split columns and constraints 
+        // auto pairRefColsCons = getColsAndConstraints(refColsCons);
+        // auto umapRefCols = pairRefColsCons.first;
+        // auto refConstraints = pairRefColsCons.second;
+
+        // auto refColNames = getColNamesDetails(umapRefCols).first;
+        // auto detailedRefCols = updateColNames(refColNames, SCHEMA_REF, tblName);
+
+        // print<vector<string>>("-> detailedRefCols", detailedRefCols);
+
+        // auto detailedDiffTargetCols = updateColNames(diffTargetColNames, SCHEMA_MAIN, tblName);
+        
+        // print<vector<string>>("-> detailedDiffTargetCols", detailedDiffTargetCols);
+        
+        // stringstream ss_sel;
+        // ss_sel << "SELECT ";
+        // for (const auto &rec : detailedRefCols)
+        //     ss_sel << rec << ", ";
+
+        // // check for the columns which are in the target but not in ref
+        // for (auto i = 0; i < diffcols_size; i++)
+        // {
+        //     if (keepColConst)
+        //         ss_sel << detailedDiffTargetCols[i] << ", ";
+        // }
+        
+        // auto partialInsCmd = ss_sel.str();
+        // ss_sel.str("");
+        // auto virgool_pos = partialInsCmd.find_last_of(",");
+        // partialInsCmd.replace(virgool_pos, 1, "");
+
+        // ss_sel << partialInsCmd << "FROM "
+        //        << "\"" << SCHEMA_REF << "\"" << "." << tblName << " ";
+
+        // if (!sharedColsCons.empty())
+        // {
+        //     auto sharedCols = getColsAndConstraints(sharedColsCons).first;
+        //     auto sharedColNames = getColNamesDetails(sharedCols).first;
+        //     stringstream ss_shared_cols;
+        //     for (auto col : sharedColNames)
+        //     {
+        //         ss_shared_cols << "\"" << SCHEMA_REF << "\"" << "." << tblName << "." 
+        //                        << col << " = " 
+        //                        << "\"" << SCHEMA_MAIN << "\"" << "." << tblName << "."
+        //                        << col << " AND ";
+        //     }
+        //     auto join = ss_shared_cols.str();
+        //     ss_shared_cols.str("");
+        //     if(!sharedColNames.empty())
+        //     {
+        //         auto and_pos = join.find_last_of("AND");
+        //         join.replace(and_pos - 3, 5, ""); // remove " AND "
+        //     }
+
+        //     ss_sel << "LEFT JOIN " << "\"" << SCHEMA_MAIN << "\"" << "." << tblName
+        //            << " ON " << join << ";";
+        // }
+        // else
+        // {
+        //     auto sel = ss_sel.str();
+        //     ss_sel.str("");         
+        //     auto space_pos = sel.find_last_of(" ");
+        //     sel.replace(space_pos, 1, "");
+        //     ss_sel << sel << ";";
+        // }
+
+        // stringstream ss_ins;
+        // ss_ins << "INSERT INTO " << newTblName << " " << ss_sel.str();
+
+        // print<vector<string>>("-> insert command", {ss_ins.str()});    
 
 } // namespace Kaco

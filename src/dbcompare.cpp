@@ -121,16 +121,6 @@ namespace Kaco
         print(m_db2TblIndices, "-> db2 all the table indices");
     }
 
-    void DbCompare::testCreateNewTbl()
-    {
-        string sql;
-        // sql = createNewTbl("inv");
-        // sql = createNewTbl("countrySettingCfg");
-        // sql = createNewTbl("accounts");
-        sql = createNewTbl("invCfg");
-        print<vector<string>>("-> create table", {sql});
-    }
-
     PA_VS2 DbCompare::readDbTables() const
     {
         return m_table->readDbTable();

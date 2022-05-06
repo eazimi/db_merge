@@ -85,6 +85,19 @@ namespace Test
         print(diff_schema, "-> difference in the schemas", "shcema in the main db", "schema in the ref db");
     }
 
+    static void test_createTbl(const shared_ptr<DbCompare> &db)
+    {
+        // auto tbl_name = "inv";
+        // auto tbl_name = "countrySettingCfg";
+        auto tbl_name = "accounts";
+        // auto tbl_name = "invCfg";
+        auto sql = db->createNewTbl(tbl_name);
+        print<vector<string>>("-> [dbcompare] create table", {sql});
+
+        string sql_m_table = db->createTbl(tbl_name);
+        print<vector<string>>("-> [table] create table", {sql_m_table});
+    }
+
 } // namespace Test
 
 #endif

@@ -29,6 +29,7 @@ namespace Kaco
             PA_VS2 diffTblNameDb() const;
             bool diffSchemaSingleTbl(string tbl_name, pair<string, string> &schema); // returns schema diff for a particular table
             VEC_TS3 diffSchemaDb(); // returns schema diff for a the tables in the dbs
+            string createTbl(string tbl_name);
     };
 
 } // namespace Kaco

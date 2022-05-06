@@ -214,14 +214,8 @@ int main(int argc, char *argv[])
     dbCompare->compareAndMerge();
 #endif
 
-// #define CREATE_NEW_TBL
-#ifdef CREATE_NEW_TBL
-    NEW_LINE;
-    dbCompare->testCreateNewTbl();
-#endif
-
-#define RELEASE false
-#define VER 13
+#define RELEASE true
+#define VER 16
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     test_readDbTables(dbCompare);
@@ -242,15 +236,19 @@ int main(int argc, char *argv[])
     test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
     test_diffTriggerSingleTbl(dbCompare, "menuTree");
 #endif
-#if VER == 14
+#if VER == 14 || RELEASE
     test_updateTriggerSingleTbl(dbCompare, "sunsModelCfg");
     test_updateTriggerSingleTbl(dbCompare, "language");
     test_updateTriggerSingleTbl(dbCompare, "invCfg");
 #endif
-#if VER == 15
-    // test_diffTblNameDb(dbCompare);
+#if VER == 15 || RELEASE
+    test_diffTblNameDb(dbCompare);
     test_diffSchemaDb(dbCompare);
 #endif
+#if VER == 16 || RELEASE
+    test_createTbl(dbCompare);
+#endif
+
 #endif
 
     return 0;
