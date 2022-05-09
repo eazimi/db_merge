@@ -88,10 +88,9 @@ namespace Kaco
         return make_pair(col_name, col_def);
     };
 
-    static vector<string> get_cc_diff(string tbl_name,
-                                      const shared_ptr<IDbReader> &db_main,
-                                      const shared_ptr<IDbReader> &db_ref,
-                                      T_VS3 &cc_diff)
+    static PA_VS2 get_cc(string tbl_name,
+                         const shared_ptr<IDbReader> &db_main,
+                         const shared_ptr<IDbReader> &db_ref)
     {
         // db1: target, db2: reference
         auto main_ct = db_main->getCreateTblCmd(tbl_name);
@@ -99,7 +98,13 @@ namespace Kaco
         // columns and constraints
         auto main_cc = split_ct(main_ct);
         auto ref_cc = split_ct(ref_ct);
+        return make_pair(main_cc, ref_cc);
+    }
 
+    static T_VS3 get_cc_diff(string tbl_name,
+                             const vector<string> &main_cc,
+                             const vector<string> &ref_cc)
+    {
         auto diff_cc = getDiff(main_cc, ref_cc);
         auto diff_cc_main = diff_cc.first;
         auto shared_cc = getIntersect(main_cc, ref_cc);
@@ -108,8 +113,7 @@ namespace Kaco
         auto diff_colname_main = name_def_main.first;
         auto diff_coldef_main = name_def_main.second;
         auto diff_const_main = diff_cc_split.second;
-        cc_diff = make_tuple(diff_colname_main, diff_coldef_main, diff_const_main);
-        return ref_cc;
+        return make_tuple(diff_colname_main, diff_coldef_main, diff_const_main);
     }
 
     static string generate_ct(vector<string> col_con, std::string tbl_name)

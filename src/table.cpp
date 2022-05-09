@@ -96,8 +96,10 @@ namespace Kaco
     string Table::createTbl(std::string tbl_name)
     {
         string sql = "";
-        T_VS3 cc_diff;
-        auto ref_cc = get_cc_diff(tbl_name, m_main_db, m_ref_db, cc_diff); 
+        auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
+        auto main_cc = cc.first;
+        auto ref_cc = cc.second;
+        auto cc_diff = get_cc_diff(tbl_name, main_cc, ref_cc); 
         auto diff_colname_main = get<0>(cc_diff);
         auto diff_coldef_main = get<1>(cc_diff);
         auto diff_const_main = get<2>(cc_diff);
@@ -118,7 +120,7 @@ namespace Kaco
         sql.replace(pos, 2, "");
 
         return sql;
-    }    
+    }
 
         // // split columns and constraints 
         // auto pairRefColsCons = getColsAndConstraints(refColsCons);
