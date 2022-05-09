@@ -1,6 +1,8 @@
 #ifndef TABLE_FUNCS
 #define TABLE_FUNCS
 
+#include "data_types.hpp"
+
 namespace Kaco
 {
     // it assumes that there is no disparity between the number of '(' and ')'
@@ -59,35 +61,6 @@ namespace Kaco
         return cols;
     }
 
-    static auto split_cc = [](vector<string> col_con)
-    {
-        unordered_map<string, string> cols = {};
-        vector<string> cons = {};
-        for (auto cc : col_con)
-        {
-            int pos = cc.find_first_of(" ");
-            auto name = cc.substr(0, pos);
-            bool is_con = CHECK_IS_TBL_CONSTRAINT(name);
-            if (!is_con)
-                cols.insert({std::move(name), std::move(cc)});
-            else
-                cons.push_back(std::move(cc));
-        }
-        return make_pair(cols, cons);
-    };
-
-    static auto split_name_def = [](unordered_map<string, string> cols)
-    {
-        vector<string> col_name = {};
-        vector<string> col_def = {};
-        for (const auto &col : cols)
-        {
-            col_name.push_back(col.first);
-            col_def.push_back(col.second);
-        }
-        return make_pair(col_name, col_def);
-    };
-
     static PA_VS2 get_cc(string tbl_name,
                          const shared_ptr<IDbReader> &db_main,
                          const shared_ptr<IDbReader> &db_ref)
@@ -101,19 +74,32 @@ namespace Kaco
         return make_pair(main_cc, ref_cc);
     }
 
-    static T_VS3 get_cc_diff(string tbl_name,
-                             const vector<string> &main_cc,
-                             const vector<string> &ref_cc)
+    static T_VS3 split_cc(vector<string> col_con)
     {
-        auto diff_cc = getDiff(main_cc, ref_cc);
-        auto diff_cc_main = diff_cc.first;
-        auto shared_cc = getIntersect(main_cc, ref_cc);
-        auto diff_cc_split = split_cc(diff_cc_main);
-        auto name_def_main = split_name_def(diff_cc_split.first);
-        auto diff_colname_main = name_def_main.first;
-        auto diff_coldef_main = name_def_main.second;
-        auto diff_const_main = diff_cc_split.second;
-        return make_tuple(diff_colname_main, diff_coldef_main, diff_const_main);
+        vector<string> col_name = {};
+        vector<string> col_detail = {};
+        vector<string> consts = {};
+        for (auto cc : col_con)
+        {
+            int pos = cc.find_first_of(" ");
+            auto name = cc.substr(0, pos);
+            bool is_const = CHECK_IS_TBL_CONSTRAINT(name);
+            if (!is_const)
+            {
+                col_name.push_back(std::move(name));
+                col_detail.push_back(std::move(cc));
+            }                
+            else
+                consts.push_back(std::move(cc));
+        }
+        return make_tuple(col_name, col_detail, consts);
+    }
+
+    static pair<T_VS3, T_VS3> split_cc_diff(const PA_VS2 &cc_diff)
+    {
+        auto cc_main_split = split_cc(cc_diff.first); // split cc_diff_main
+        auto cc_ref_split = split_cc(cc_diff.second); // split cc_diff_ref
+        return make_pair(cc_main_split, cc_ref_split);
     }
 
     static string generate_ct(vector<string> col_con, std::string tbl_name)
@@ -135,6 +121,20 @@ namespace Kaco
                 ss << cc[i] << ", ";
         }
         return ss.str();
+    }
+
+    static vector<string> colname_detailed(string tbl_name, vector<string> cols, string schema)
+    {
+        vector<string> detailed_cols = {};
+        stringstream ss;
+        for (auto col : cols)
+        {
+            ss << "\"" << schema << "\""
+               << "." << tbl_name << "." << col;
+            detailed_cols.push_back(std::move(ss.str()));
+            ss.str("");
+        }
+        return detailed_cols;
     }
 
 } // namespace Kaco

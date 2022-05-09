@@ -87,10 +87,10 @@ namespace Test
 
     static void test_createTbl(const shared_ptr<DbCompare> &db)
     {
-        auto tbl_name = "inv";
+        // auto tbl_name = "inv";
         // auto tbl_name = "countrySettingCfg";
         // auto tbl_name = "accounts";
-        // auto tbl_name = "invCfg";
+        auto tbl_name = "invCfg";
         auto sql = db->createNewTbl(tbl_name);
         print<vector<string>>("-> [dbcompare] create table", {sql});
 

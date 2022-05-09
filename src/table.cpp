@@ -97,14 +97,14 @@ namespace Kaco
     {
         string sql = "";
         auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
-        auto main_cc = cc.first;
-        auto ref_cc = cc.second;
-        auto cc_diff = get_cc_diff(tbl_name, main_cc, ref_cc); 
-        auto diff_colname_main = get<0>(cc_diff);
-        auto diff_coldef_main = get<1>(cc_diff);
-        auto diff_const_main = get<2>(cc_diff);
+        auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
+        auto split_diff = split_cc_diff(cc_diff);
+                
+        auto diff_colname_main = get<0>(split_diff.first);
+        auto diff_coldef_main = get<1>(split_diff.first);
+        auto diff_const_main = get<2>(split_diff.first);
 
-        string ct = generate_ct(ref_cc, tbl_name);
+        string ct = generate_ct(cc.second, tbl_name);
         // check for the columns which are in the target but not in ref
         // TODO: update this part by paying attention to the value that have been read from json config file, 
         // for now it is considered as true
