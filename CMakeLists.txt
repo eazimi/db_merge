@@ -29,7 +29,8 @@ ADD_EXECUTABLE(${PROJECT}
     src/global_funcs.hpp
     src/test_funcs.hpp
     src/table.cpp 
-    src/table.h 
+    src/table.h
+    src/table_funcs.hpp 
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT} ${SQLite3_LIBRARIES})
