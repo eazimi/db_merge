@@ -156,8 +156,8 @@ int main(int argc, char *argv[])
          << ((SQLITE_OK == rc) ? "true" : "false") << endl;
 #endif
 
-    shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb1, pdb2);
-    // unique_ptr<DbCompare> dbCompare = make_unique<DbCompare>(pdb2, pdb1);
+    // shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb1, pdb2);
+    shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb2, pdb1);
 
     bool initialized = false;
 
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
     dbCompare->compareAndMerge();
 #endif
 
-#define RELEASE true
+#define RELEASE false
 #define VER 16
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();

@@ -35,4 +35,17 @@
 #define CHECK_IS_TBL_CONSTRAINT(x) \
     (((x) == CT_CONSTRAINT) ? true : (((x) == CT_PRIMARY) ? true : (((x) == CT_UNIQUE) ? true : (((x) == CT_CHECK) ? true : (((x) == CT_FOREIGN) ? true : false)))))
 
+enum NDC
+{
+    name = 0,
+    definition,
+    constraint
+};
+
+enum DB
+{
+    main = 0,
+    ref
+};
+
 #endif

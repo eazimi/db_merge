@@ -95,11 +95,51 @@ namespace Kaco
         return make_tuple(col_name, col_detail, consts);
     }
 
-    static pair<T_VS3, T_VS3> split_cc_diff(const PA_VS2 &cc_diff)
+    // static pair<T_VS3, T_VS3> split_cc_diff(const PA_VS2 &cc_diff)
+    // {
+    //     auto cc_main_split = split_cc(cc_diff.first); // split cc_diff_main
+    //     auto cc_ref_split = split_cc(cc_diff.second); // split cc_diff_ref
+    //     return make_pair(cc_main_split, cc_ref_split);
+    // }
+
+    static vector<string> col_name_detailed(string tbl_name, vector<string> cols, string schema)
     {
-        auto cc_main_split = split_cc(cc_diff.first); // split cc_diff_main
-        auto cc_ref_split = split_cc(cc_diff.second); // split cc_diff_ref
-        return make_pair(cc_main_split, cc_ref_split);
+        vector<string> detailed_cols = {};
+        stringstream ss;
+        for (auto col : cols)
+        {
+            ss << "\"" << schema << "\""
+               << "." << tbl_name << "." << col;
+            detailed_cols.push_back(std::move(ss.str()));
+            ss.str("");
+        }
+        return detailed_cols;
+    }
+
+    // ndc: 0 -> col name, 1 -> col detail, 2 -> constraints
+    static vector<string> name_definition_const(PA_VS2 cc, DB main_ref, NDC ndc)
+    {
+        bool condition = (cc.first.empty() && (main_ref == DB::main)) ||
+                         (cc.second.empty() && (main_ref == DB::ref)) ||
+                         ((main_ref != DB::main) && (main_ref != DB::ref)) ||
+                         ((ndc != NDC::name) && (ndc != NDC::definition) && (ndc != NDC::constraint));
+        if (condition)
+            return {};
+        auto cc_picked = (main_ref == DB::main) ? cc.first : cc.second;
+        auto split = split_cc(cc_picked);
+        vector<string> data = (ndc == NDC::name) ? get<0>(split) : ((ndc == NDC::definition) ? get<1>(split) : get<2>(split));
+        return data;
+    }
+
+    // ndc: 0 -> col name, 1 -> col detail, 2 -> constraints 
+    static vector<string> name_definition_const(vector<string> cc, short ndc)
+    {
+        if (cc.empty() || ((ndc != NDC::name) && (ndc != NDC::definition) && (ndc != NDC::constraint)))
+            return {};
+        auto split = split_cc(cc);
+        vector<string> data = (ndc == NDC::name) ? get<0>(split) : 
+                              ((ndc == NDC::definition) ? get<1>(split) : get<2>(split));
+        return data;
     }
 
     static string generate_ct(vector<string> col_con, std::string tbl_name)
@@ -108,6 +148,29 @@ namespace Kaco
         ss << "CREATE TABLE " << tbl_name.append("_tmp") << " (";
         for (auto const &cc : col_con)
             ss << cc << ", ";
+        return ss.str();
+    }
+
+    static string generate_sel(vector<string> cols)
+    {
+        stringstream ss_sel;
+        ss_sel << "SELECT ";
+        for (auto col : cols)
+            ss_sel << col << ", ";
+        return ss_sel.str();
+    }
+
+    static string generate_from(string tbl_name, string sel, string cols)
+    {
+        stringstream ss;
+        ss << sel << cols;
+        string ss_str = ss.str();
+        ss.str("");
+        auto virgool_pos = ss_str.find_last_of(",");
+        ss_str.replace(virgool_pos, 1, "");
+        ss << ss_str << "FROM "
+           << "\"" << SCHEMA_REF << "\"" 
+           << "." << tbl_name << " ";
         return ss.str();
     }
 
@@ -123,18 +186,31 @@ namespace Kaco
         return ss.str();
     }
 
-    static vector<string> colname_detailed(string tbl_name, vector<string> cols, string schema)
+    static string generate_join(string tbl_name, vector<string> cc)
     {
-        vector<string> detailed_cols = {};
+        vector<string> col_names = name_definition_const(cc, NDC::name);
         stringstream ss;
-        for (auto col : cols)
+        for (auto cname : col_names)
         {
-            ss << "\"" << schema << "\""
-               << "." << tbl_name << "." << col;
-            detailed_cols.push_back(std::move(ss.str()));
-            ss.str("");
+            ss << "\"" << SCHEMA_REF << "\""
+               << "." << tbl_name << "."
+               << cname << " = "
+               << "\"" << SCHEMA_MAIN << "\""
+               << "." << tbl_name << "."
+               << cname << " AND ";
         }
-        return detailed_cols;
+        auto str_join = ss.str();        
+        if (str_join != "")
+        {
+            auto and_pos = str_join.find_last_of("AND");
+            str_join.replace(and_pos - 3, 5, ""); // remove " AND "
+        }
+        ss.str("");
+        ss << "LEFT JOIN "
+               << "\"" << SCHEMA_MAIN << "\""
+               << "." << tbl_name
+               << " ON " << str_join;
+        return ss.str();         
     }
 
 } // namespace Kaco

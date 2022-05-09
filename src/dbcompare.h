@@ -35,6 +35,7 @@ namespace Kaco
             PA_VEC_PS2 diffTriggerSingleTbl(string table_name) const;
             VEC_PS2 updateTriggerSingleTbl(string table_name) const;
             inline string createTbl(string tbl_name) const { return m_table->createTbl(tbl_name); }
+            inline string insertInto(string tbl_name) const { return m_table->insertInto(tbl_name); }
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2;

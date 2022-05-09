@@ -97,19 +97,21 @@ namespace Kaco
     {
         string sql = "";
         auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
-        auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
-        auto split_diff = split_cc_diff(cc_diff);
-                
-        auto diff_colname_main = get<0>(split_diff.first);
-        auto diff_coldef_main = get<1>(split_diff.first);
-        auto diff_const_main = get<2>(split_diff.first);
-
         string ct = generate_ct(cc.second, tbl_name);
+
+        auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
+        auto diff_cdef_main = name_definition_const(cc_diff, DB::main, NDC::definition);
+        auto diff_const_main = name_definition_const(cc_diff, DB::main, NDC::constraint);
+
+        print<vector<string>>("-> createTbl: diff_cdef_main", diff_cdef_main);
+        print<vector<string>>("-> createTbl: diff_const_main", diff_const_main);
+
+        
         // check for the columns which are in the target but not in ref
         // TODO: update this part by paying attention to the value that have been read from json config file, 
         // for now it is considered as true
         bool keep_cc = true;
-        string cols = generate_str(diff_colname_main, keep_cc);
+        string cols = generate_str(diff_cdef_main, keep_cc);
         // check for the constraints which are in the target but not in ref
         string consts = generate_str(diff_const_main, keep_cc);
 
@@ -122,75 +124,48 @@ namespace Kaco
         return sql;
     }
 
-        // // split columns and constraints 
-        // auto pairRefColsCons = getColsAndConstraints(refColsCons);
-        // auto umapRefCols = pairRefColsCons.first;
-        // auto refConstraints = pairRefColsCons.second;
+    string Table::insertInto(string tbl_name)
+    {
+        auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
+        auto cname_ref = name_definition_const(cc, DB::ref, NDC::name);
+        print<vector<string>>("-> [table] cname_ref", {cname_ref});
 
-        // auto refColNames = getColNamesDetails(umapRefCols).first;
-        // auto detailedRefCols = updateColNames(refColNames, SCHEMA_REF, tblName);
+        auto col_detailed = col_name_detailed(tbl_name, cname_ref, SCHEMA_REF);
 
-        // print<vector<string>>("-> detailedRefCols", detailedRefCols);
+        print<vector<string>>("-> [table] detailedRefCols", col_detailed);
 
-        // auto detailedDiffTargetCols = updateColNames(diffTargetColNames, SCHEMA_MAIN, tblName);
+        // return "";
+
+        auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
+        // auto split_diff = split_cc_diff(cc_diff);
+        auto diff_cname_main = name_definition_const(cc_diff, DB::main, NDC::name);
+        auto diff_cname_detailed = col_name_detailed(tbl_name, diff_cname_main, SCHEMA_MAIN); 
         
-        // print<vector<string>>("-> detailedDiffTargetCols", detailedDiffTargetCols);
+        print<vector<string>>("-> [table] diff_cname_detailed", diff_cname_detailed);
         
-        // stringstream ss_sel;
-        // ss_sel << "SELECT ";
-        // for (const auto &rec : detailedRefCols)
-        //     ss_sel << rec << ", ";
+        auto str_sel = generate_sel(col_detailed);
 
-        // // check for the columns which are in the target but not in ref
-        // for (auto i = 0; i < diffcols_size; i++)
-        // {
-        //     if (keepColConst)
-        //         ss_sel << detailedDiffTargetCols[i] << ", ";
-        // }
-        
-        // auto partialInsCmd = ss_sel.str();
-        // ss_sel.str("");
-        // auto virgool_pos = partialInsCmd.find_last_of(",");
-        // partialInsCmd.replace(virgool_pos, 1, "");
+        // check for the columns which are in the target but not in ref
+        // TODO: update this part by paying attention to the value that have been read from json config file, 
+        // for now it is considered as true
+        bool keep_cc = true;
+        auto cols_diff = generate_str(diff_cname_detailed, keep_cc);
+        string select_cmd = generate_from(tbl_name, str_sel, cols_diff); // SELECT [...] FROM [...]
 
-        // ss_sel << partialInsCmd << "FROM "
-        //        << "\"" << SCHEMA_REF << "\"" << "." << tblName << " ";
-
-        // if (!sharedColsCons.empty())
-        // {
-        //     auto sharedCols = getColsAndConstraints(sharedColsCons).first;
-        //     auto sharedColNames = getColNamesDetails(sharedCols).first;
-        //     stringstream ss_shared_cols;
-        //     for (auto col : sharedColNames)
-        //     {
-        //         ss_shared_cols << "\"" << SCHEMA_REF << "\"" << "." << tblName << "." 
-        //                        << col << " = " 
-        //                        << "\"" << SCHEMA_MAIN << "\"" << "." << tblName << "."
-        //                        << col << " AND ";
-        //     }
-        //     auto join = ss_shared_cols.str();
-        //     ss_shared_cols.str("");
-        //     if(!sharedColNames.empty())
-        //     {
-        //         auto and_pos = join.find_last_of("AND");
-        //         join.replace(and_pos - 3, 5, ""); // remove " AND "
-        //     }
-
-        //     ss_sel << "LEFT JOIN " << "\"" << SCHEMA_MAIN << "\"" << "." << tblName
-        //            << " ON " << join << ";";
-        // }
-        // else
-        // {
-        //     auto sel = ss_sel.str();
-        //     ss_sel.str("");         
-        //     auto space_pos = sel.find_last_of(" ");
-        //     sel.replace(space_pos, 1, "");
-        //     ss_sel << sel << ";";
-        // }
-
-        // stringstream ss_ins;
-        // ss_ins << "INSERT INTO " << newTblName << " " << ss_sel.str();
-
-        // print<vector<string>>("-> insert command", {ss_ins.str()});    
+        auto cc_shared = getIntersect(cc.first, cc.second);
+        if(!cc_shared.empty())
+        {
+            auto str_join = generate_join(tbl_name, cc_shared);
+            select_cmd.append(str_join);
+        }
+        else
+        {
+            auto space_pos = select_cmd.find_last_of(" ");
+            select_cmd.replace(space_pos, 1, "");
+        }
+        stringstream ss;
+        ss << "INSERT INTO " << tbl_name.append("_tmp") << " " << select_cmd << ";";
+        return ss.str();
+    } 
 
 } // namespace Kaco

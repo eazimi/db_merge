@@ -94,8 +94,10 @@ namespace Test
         auto sql = db->createNewTbl(tbl_name);
         print<vector<string>>("-> [dbcompare] create table", {sql});
 
-        string sql_m_table = db->createTbl(tbl_name);
-        print<vector<string>>("-> [table] create table", {sql_m_table});
+        string ct_sql = db->createTbl(tbl_name);
+        string insert_sql = db->insertInto(tbl_name);
+        print<vector<string>>("-> [table] create table", {ct_sql});
+        print<vector<string>>("-> [table] insert into table", {insert_sql});
     }
 
 } // namespace Test

@@ -296,7 +296,7 @@ namespace Kaco
         stringstream ss_ins;
         ss_ins << "INSERT INTO " << newTblName << " " << ss_sel.str();
 
-        print<vector<string>>("-> insert command", {ss_ins.str()});
+        print<vector<string>>("-> [dbcompare] insert command", {ss_ins.str()});
 
         return sql;
     }
