@@ -136,16 +136,18 @@ int main(int argc, char *argv[])
     shared_ptr<DbReader> pdb2 = make_shared<DbReader>();
 
     bool db_connected = pdb1->connect(dbpath_app);
-    if (db_connected)
-        cout << "opened " << dbpath_app << " successfully" << endl;
-    else
+    if (!db_connected)
+    {
         cout << "can't open " << dbpath_app << endl;
-    
+        exit(1);
+    }
+
     db_connected = pdb2->connect(dbpath_pds2);
-    if (db_connected)
-        cout << "opened " << dbpath_pds2 << " successfully" << endl;
-    else
+    if (!db_connected)
+    {
         cout << "can't open " << dbpath_pds2 << endl;
+        exit(1);
+    }
 
 // #define DB_ATTACH
 #ifdef DB_ATTACH
@@ -158,16 +160,7 @@ int main(int argc, char *argv[])
 
     // shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb1, pdb2);
     shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb2, pdb1);
-
-    bool initialized = false;
-
-#define FIRST_INIT
-#ifdef FIRST_INIT
-    NEW_LINE;
-    cout << "-> initialize" << endl;
-    initialized = dbCompare->initialize();
-    cout << "initialized: " << initialized << endl;
-#endif
+    dbCompare->initialize();
 
 // #define NEXT_INITS
 #ifdef NEXT_INITS

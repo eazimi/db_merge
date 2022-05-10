@@ -102,10 +102,6 @@ namespace Kaco
         auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
         auto diff_cdef_main = name_definition_const(cc_diff, DB::main, NDC::definition);
         auto diff_const_main = name_definition_const(cc_diff, DB::main, NDC::constraint);
-
-        print<vector<string>>("-> createTbl: diff_cdef_main", diff_cdef_main);
-        print<vector<string>>("-> createTbl: diff_const_main", diff_const_main);
-
         
         // check for the columns which are in the target but not in ref
         // TODO: update this part by paying attention to the value that have been read from json config file, 
@@ -128,21 +124,10 @@ namespace Kaco
     {
         auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
         auto cname_ref = name_definition_const(cc, DB::ref, NDC::name);
-        print<vector<string>>("-> [table] cname_ref", {cname_ref});
-
         auto col_detailed = col_name_detailed(tbl_name, cname_ref, SCHEMA_REF);
-
-        print<vector<string>>("-> [table] detailedRefCols", col_detailed);
-
-        // return "";
-
         auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
-        // auto split_diff = split_cc_diff(cc_diff);
         auto diff_cname_main = name_definition_const(cc_diff, DB::main, NDC::name);
         auto diff_cname_detailed = col_name_detailed(tbl_name, diff_cname_main, SCHEMA_MAIN); 
-        
-        print<vector<string>>("-> [table] diff_cname_detailed", diff_cname_detailed);
-        
         auto str_sel = generate_sel(col_detailed);
 
         // check for the columns which are in the target but not in ref
@@ -151,7 +136,6 @@ namespace Kaco
         bool keep_cc = true;
         auto cols_diff = generate_str(diff_cname_detailed, keep_cc);
         string select_cmd = generate_from(tbl_name, str_sel, cols_diff); // SELECT [...] FROM [...]
-
         auto cc_shared = getIntersect(cc.first, cc.second);
         if(!cc_shared.empty())
         {

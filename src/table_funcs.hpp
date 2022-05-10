@@ -95,13 +95,6 @@ namespace Kaco
         return make_tuple(col_name, col_detail, consts);
     }
 
-    // static pair<T_VS3, T_VS3> split_cc_diff(const PA_VS2 &cc_diff)
-    // {
-    //     auto cc_main_split = split_cc(cc_diff.first); // split cc_diff_main
-    //     auto cc_ref_split = split_cc(cc_diff.second); // split cc_diff_ref
-    //     return make_pair(cc_main_split, cc_ref_split);
-    // }
-
     static vector<string> col_name_detailed(string tbl_name, vector<string> cols, string schema)
     {
         vector<string> detailed_cols = {};

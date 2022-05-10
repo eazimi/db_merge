@@ -24,7 +24,6 @@ namespace Kaco
             string compareAndMerge();
             void testDbDump();
             void testTableIndices();
-            string createNewTbl(string tblName);
             inline PA_VS2 diffTblNameDb() const { return m_table->diffTblNameDb(); }
             PA_VS2 readDbTables() const;
             PA_MAP_S2 readDbTblSchema() const;

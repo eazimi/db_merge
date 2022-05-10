@@ -91,9 +91,6 @@ namespace Test
         // auto tbl_name = "countrySettingCfg";
         // auto tbl_name = "accounts";
         auto tbl_name = "invCfg";
-        auto sql = db->createNewTbl(tbl_name);
-        print<vector<string>>("-> [dbcompare] create table", {sql});
-
         string ct_sql = db->createTbl(tbl_name);
         string insert_sql = db->insertInto(tbl_name);
         print<vector<string>>("-> [table] create table", {ct_sql});
