@@ -23,6 +23,7 @@ ADD_EXECUTABLE(${PROJECT}
     src/dbcompare.cpp
     src/dbcompare.h
     src/global_defines.hpp  
+    src/trigger_funcs.hpp 
     src/trigger.cpp 
     src/trigger.h
     src/global_funcs.hpp
