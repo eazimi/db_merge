@@ -7,7 +7,7 @@
 #include <unordered_set>
 #include "global_funcs.hpp"
 #include "data_types.hpp"
-#include "dbcompare_defines.hpp"
+#include "global_defines.hpp"
 
 using namespace std;
 

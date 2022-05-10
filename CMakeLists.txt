@@ -22,7 +22,7 @@ ADD_EXECUTABLE(${PROJECT}
     src/dbreader.h
     src/dbcompare.cpp
     src/dbcompare.h
-    src/dbcompare_defines.hpp  
+    src/global_defines.hpp  
     src/trigger.cpp 
     src/trigger.h
     src/global_funcs.hpp

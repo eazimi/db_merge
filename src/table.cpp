@@ -3,7 +3,7 @@
 #include <utility>
 #include <stack>
 #include <unordered_map>
-#include "dbcompare_defines.hpp"
+#include "global_defines.hpp"
 #include "global_funcs.hpp"
 #include "table_funcs.hpp"
 
