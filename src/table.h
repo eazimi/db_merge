@@ -22,15 +22,15 @@ namespace Kaco
 
         public:
             Table(const shared_ptr<IDbReader> &main_db, const shared_ptr<IDbReader> &ref_db);
-            void initDbTbls();
-            void initDbTblSchema();
-            PA_VS2 readDbTable() const;
-            PA_MAP_S2 readDbTblSchema() const;
-            PA_VS2 diffTblNameDb() const;
-            bool diffSchemaSingleTbl(string tbl_name, pair<string, string> &schema); // returns schema diff for a particular table
-            VEC_TS3 diffSchemaDb(); // returns schema diff for a the tables in the dbs
-            string createTbl(string tbl_name);
-            string insertInto(string tbl_name);
+            void init_tbls();
+            void init_tbl_schema();
+            PA_VS2 read_tbl_db() const;
+            PA_MAP_S2 read_tschema_db() const;
+            PA_VS2 diff_tname_db() const;
+            bool diff_schema_tbl(string tbl_name, pair<string, string> &schema); // returns schema diff for a particular table
+            VEC_TS3 diff_schema_db(); // returns schema diff for a the tables in the dbs
+            string create_tbl(string tbl_name);
+            string insert_into(string tbl_name);
     };
 
 } // namespace Kaco

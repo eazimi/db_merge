@@ -18,12 +18,12 @@ namespace Kaco
 
         public:
             Trigger(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db);
-            void initDbTriggers(const vector<string> &main_tbls, const vector<string> &ref_tbls);
-            PA_VEC_PS2 diffTriggerSingleTbl(string tbl_name); // returns triggers diff for a particular table
-            PA_MAP_SVPS2 diffTriggerDb(const vector<string> &main_tbls, const vector<string> &ref_tbls); // returns all the trigger diffs in the dbs
-            inline PA_MAP_SVPS2 readDbTriggers() const { return make_pair(m_mainTriggers, m_refTriggers); }
-            PA_VEC_PS2 readSingleTblTriggers(string tbl_name);
-            VEC_PS2 updateTriggerSingleTbl(string tbl_name);
+            void init_triggers(const vector<string> &main_tbls, const vector<string> &ref_tbls);
+            PA_VEC_PS2 diff_trigger_tbl(string tbl_name); // returns triggers diff for a particular table
+            PA_MAP_SVPS2 diff_trigger_db(const vector<string> &main_tbls, const vector<string> &ref_tbls); // returns all the trigger diffs in the dbs
+            inline PA_MAP_SVPS2 read_trigger_db() const { return make_pair(m_mainTriggers, m_refTriggers); }
+            PA_VEC_PS2 read_trigger_tbl(string tbl_name);
+            VEC_PS2 update_trigger_tbl(string tbl_name);
     };
 } // namespace Kaco
 

@@ -12,7 +12,7 @@ namespace Kaco
     {
     }
 
-    void Trigger::initDbTriggers(const vector<string> &main_tbls, const vector<string> &ref_tbls)
+    void Trigger::init_triggers(const vector<string> &main_tbls, const vector<string> &ref_tbls)
     {
         auto main_triggers = getDbTriggers(m_main_db, main_tbls);
         m_mainTriggers = std::move(main_triggers);
@@ -37,7 +37,7 @@ namespace Kaco
     // returns pair<vector<pair<trigger_name, trigger_sql>>, vector<pair<trigger_name, trigger_sql>>>
     // first: triggers which are in the main::table but not in the ref::table
     // second: triggers which are in the ref::table but not in the main::table
-    PA_VEC_PS2 Trigger::diffTriggerSingleTbl(string tbl_name)
+    PA_VEC_PS2 Trigger::diff_trigger_tbl(string tbl_name)
     {
         VEC_PS2 diff_triggers_main = {}, diff_triggers_ref = {}; // vector<pair<trigger_name, trigger_sql>>
 
@@ -64,37 +64,37 @@ namespace Kaco
     // first: triggers in the main db but not in the ref db
     // second: triggers in the ref db but not in the main db
     // MAP_STR_VPS2: map<tbl_name, vector<pair<trigger_name, trigger_sql>>>
-    PA_MAP_SVPS2 Trigger::diffTriggerDb(const vector<string> &main_tbls, const vector<string> &ref_tbls)
+    PA_MAP_SVPS2 Trigger::diff_trigger_db(const vector<string> &main_tbls, const vector<string> &ref_tbls)
     {
         PA_MAP_SVPS2 diff_triggers = {};
         MAP_STR_VPS2 diff_triggers_main, diff_triggers_ref;
         auto common_tbls = getIntersect(main_tbls, ref_tbls);
         for (auto str : common_tbls)
         {
-            auto main_trigger_vec = diffTriggerSingleTbl(str).first;
+            auto main_trigger_vec = diff_trigger_tbl(str).first;
             if (!main_trigger_vec.empty())
                 diff_triggers_main.insert({str, main_trigger_vec});
 
-            auto ref_trigger_vec = diffTriggerSingleTbl(str).second;
+            auto ref_trigger_vec = diff_trigger_tbl(str).second;
             if (!ref_trigger_vec.empty())
                 diff_triggers_ref.insert({str, ref_trigger_vec});
         }
         return {diff_triggers_main, diff_triggers_ref};
     }
 
-    PA_VEC_PS2 Trigger::readSingleTblTriggers(string tbl_name)
+    PA_VEC_PS2 Trigger::read_trigger_tbl(string tbl_name)
     {
         return make_pair(m_mainTriggers[tbl_name], m_refTriggers[tbl_name]);
     }
 
     // returns vector<pair<trigger_name, trigger_sql>>
-    VEC_PS2 Trigger::updateTriggerSingleTbl(string tbl_name)
+    VEC_PS2 Trigger::update_trigger_tbl(string tbl_name)
     {
         VEC_PS2 updated_triggers = {};
         auto trigger_main = m_mainTriggers[tbl_name];
         auto trigger_ref = m_refTriggers[tbl_name];
         updated_triggers.assign(trigger_ref.begin(), trigger_ref.end());
-        auto trigger_diff_main = diffTriggerSingleTbl(tbl_name).first;
+        auto trigger_diff_main = diff_trigger_tbl(tbl_name).first;
         for (auto vec : trigger_diff_main)
         {
             if(vec.second.empty())

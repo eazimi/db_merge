@@ -47,10 +47,10 @@ namespace Kaco
     bool DbCompare::initialize()
     {
         CHECK_INITIALIZED(m_initialized, MSG_ALREADY_INIT, FALSE);
-        m_table->initDbTbls();
-        auto db_tbls = m_table->readDbTable();
-        m_trigger->initDbTriggers(db_tbls.first, db_tbls.second);
-        m_table->initDbTblSchema();
+        m_table->init_tbls();
+        auto db_tbls = m_table->read_tbl_db();
+        m_trigger->init_triggers(db_tbls.first, db_tbls.second);
+        m_table->init_tbl_schema();
         initDbTableIndices();
         m_initialized = true;
         return m_initialized;
@@ -61,8 +61,8 @@ namespace Kaco
         CHECK_INITIALIZED(!m_initialized, MSG_NOT_INIT, STR_NULL);
 
         string result = {};
-        auto main_schema = m_table->readDbTblSchema().first;
-        auto ref_schema = m_table->readDbTblSchema().second;
+        auto main_schema = m_table->read_tschema_db().first;
+        auto ref_schema = m_table->read_tschema_db().second;
         // db1: source -> db2: target
         for (auto tblName_schema : main_schema)
         {
@@ -141,38 +141,38 @@ namespace Kaco
 
     PA_VS2 DbCompare::readDbTables() const
     {
-        return m_table->readDbTable();
+        return m_table->read_tbl_db();
     }
 
     PA_MAP_S2 DbCompare::readDbTblSchema() const
     {
-        return m_table->readDbTblSchema();
+        return m_table->read_tschema_db();
     }
 
     PA_VEC_PS2 DbCompare::readSingleTblTriggers(string table_name) const
     {
-        return m_trigger->readSingleTblTriggers(table_name);
+        return m_trigger->read_trigger_tbl(table_name);
     }
 
     PA_MAP_SVPS2 DbCompare::diffTriggerDb() const
     {
-        auto db_tbls = m_table->readDbTable();
-        return m_trigger->diffTriggerDb(db_tbls.first, db_tbls.second);
+        auto db_tbls = m_table->read_tbl_db();
+        return m_trigger->diff_trigger_db(db_tbls.first, db_tbls.second);
     }
 
     PA_VEC_PS2 DbCompare::diffTriggerSingleTbl(string table_name) const
     {
-        return m_trigger->diffTriggerSingleTbl(table_name);
+        return m_trigger->diff_trigger_tbl(table_name);
     }
 
     VEC_PS2 DbCompare::updateTriggerSingleTbl(string table_name) const
     {
-        return m_trigger->updateTriggerSingleTbl(table_name);
+        return m_trigger->update_trigger_tbl(table_name);
     }
 
     void DbCompare::initDbTableIndices()
     {
-        auto db_tbls = m_table->readDbTable();
+        auto db_tbls = m_table->read_tbl_db();
         auto tableIndices1 = initTableIndices(m_db1, db_tbls.first);
         m_db1TblIndices = std::move(tableIndices1);
 

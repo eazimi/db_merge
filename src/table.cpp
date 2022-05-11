@@ -15,13 +15,13 @@ namespace Kaco
         m_ref_db = ref_db;
     }
 
-    void Table::initDbTbls()
+    void Table::init_tbls()
     {
         m_main_tbls = m_main_db->getTables();
         m_ref_tbls = m_ref_db->getTables();
     }
 
-    void Table::initDbTblSchema()
+    void Table::init_tbl_schema()
     {
         auto schema_main = get_tbl_schema(m_main_db, m_main_tbls);
         m_main_tbl_schema = std::move(schema_main);
@@ -30,12 +30,12 @@ namespace Kaco
         m_ref_tbl_schema = std::move(schema_ref);
     }
 
-    PA_VS2 Table::readDbTable() const
+    PA_VS2 Table::read_tbl_db() const
     {
         return make_pair(m_main_tbls, m_ref_tbls);
     }
 
-    PA_MAP_S2 Table::readDbTblSchema() const
+    PA_MAP_S2 Table::read_tschema_db() const
     {
         return make_pair(m_main_tbl_schema, m_ref_tbl_schema);
     }
@@ -62,14 +62,14 @@ namespace Kaco
 
     // first: tables in the main db but not in the ref db
     // second: tables in the ref db but not in the main db
-    PA_VS2 Table::diffTblNameDb() const
+    PA_VS2 Table::diff_tname_db() const
     {
         auto diff_tbls = getDiff(m_main_tbls, m_ref_tbls);
         return make_pair(diff_tbls.first, diff_tbls.second);
     }
 
     // returns schema diff for a particular table
-    bool Table::diffSchemaSingleTbl(string tbl_name, pair<string, string> &schema)
+    bool Table::diff_schema_tbl(string tbl_name, pair<string, string> &schema)
     {
         auto shcema_main = m_main_tbl_schema[tbl_name];
         auto schema_ref = m_ref_tbl_schema[tbl_name];
@@ -79,21 +79,21 @@ namespace Kaco
 
     // returns schema diff for a the tables in the dbs
     // 0: table name, 1: table schema in the main db, 2: table schema in the ref db
-    VEC_TS3 Table::diffSchemaDb()
+    VEC_TS3 Table::diff_schema_db()
     {
         VEC_TS3 diff_schema = {};
         auto common_tbls = getIntersect(m_main_tbls, m_ref_tbls);
         for (auto tbl : common_tbls)
         {
             PS2 schema;
-            bool is_different = diffSchemaSingleTbl(tbl, schema);
+            bool is_different = diff_schema_tbl(tbl, schema);
             if(is_different)
                 diff_schema.push_back(make_tuple(tbl, schema.first, schema.second));
         }
         return diff_schema;
     }
 
-    string Table::createTbl(std::string tbl_name)
+    string Table::create_tbl(std::string tbl_name)
     {
         string sql = "";
         auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
@@ -120,7 +120,7 @@ namespace Kaco
         return sql;
     }
 
-    string Table::insertInto(string tbl_name)
+    string Table::insert_into(string tbl_name)
     {
         auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
         auto cname_ref = name_definition_const(cc, DB::ref, NDC::name);
