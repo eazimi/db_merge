@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
 #endif    
 #if VER == 13 || RELEASE
     // test_diffTriggerDb(dbCompare);
-    // test_diffTriggerSingleTbl(dbCompare, "accounts");
+    test_diffTriggerSingleTbl(dbCompare, "accounts");
     test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
     // test_diffTriggerSingleTbl(dbCompare, "menuTree");
 #endif

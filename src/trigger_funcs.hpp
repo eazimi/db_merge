@@ -23,7 +23,9 @@ namespace Kaco
                 else ss << data[i];
             }
         }
-        return ss.str();
+        auto str_ss = ss.str();
+        transform(str_ss.begin(), str_ss.end(), str_ss.begin(), ::tolower);
+        return str_ss;
     };
 
     // TODO: create a class for any available object in db

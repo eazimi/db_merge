@@ -48,6 +48,7 @@ namespace Kaco
         // get the formatted trigger in the second parameter of formatTriggers()
         VEC_TS3 mainTblTriggers_formatted = formatTriggers(mainTblTriggers, vec_main_formatted_triggers);
         VEC_TS3 refTblTriggers_formatted = formatTriggers(refTblTriggers, vec_ref_formatted_triggers);
+        // auto diff = getDiff(vec_main_formatted_triggers, vec_ref_formatted_triggers);
         auto diff = diff_by_hash(vec_main_formatted_triggers, vec_ref_formatted_triggers);
         if (!diff.first.empty() && !mainTblTriggers_formatted.empty())
             diff_triggers_main = retrieveTriggers(mainTblTriggers_formatted, diff.first);
