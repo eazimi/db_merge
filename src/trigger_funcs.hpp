@@ -17,7 +17,11 @@ namespace Kaco
         for (auto i = 0; i < input_len; i++)
         {
             if ((data[i] != '\n') && (data[i] != ' '))
-                ss << data[i];
+            {
+                if (data[i] == '\"')
+                    ss << "'"; 
+                else ss << data[i];
+            }
         }
         return ss.str();
     };
@@ -30,9 +34,9 @@ namespace Kaco
         vector<tuple<string, string, string>> formatted_triggers = {};
         for (auto vec : data)
         {
-            auto formatted = formatString(vec.second); // format the trigger
-            vec_formatted_triggers.push_back(formatted);
-            formatted_triggers.push_back({vec.first, vec.second, formatted});
+            auto str_formatted = formatString(vec.second); // format the trigger
+            vec_formatted_triggers.push_back(str_formatted);
+            formatted_triggers.push_back({vec.first, vec.second, str_formatted});
         }
         return formatted_triggers;
     };

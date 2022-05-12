@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 16
+#define VER 13
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     test_readDbTables(dbCompare);
@@ -220,14 +220,14 @@ int main(int argc, char *argv[])
     test_diffSchemaDb(dbCompare);
 #endif    
 #if VER == 12 || RELEASE    
-    test_readDbTriggers(dbCompare);
-    test_readSingleTblTriggers(dbCompare, "accounts");
+    // test_readDbTriggers(dbCompare);
+    test_readSingleTblTriggers(dbCompare, "sunsModelCfg");
 #endif    
 #if VER == 13 || RELEASE
-    test_diffTriggerDb(dbCompare);
-    test_diffTriggerSingleTbl(dbCompare, "accounts");
+    // test_diffTriggerDb(dbCompare);
+    // test_diffTriggerSingleTbl(dbCompare, "accounts");
     test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
-    test_diffTriggerSingleTbl(dbCompare, "menuTree");
+    // test_diffTriggerSingleTbl(dbCompare, "menuTree");
 #endif
 #if VER == 14 || RELEASE
     test_updateTriggerSingleTbl(dbCompare, "sunsModelCfg");
