@@ -17,6 +17,7 @@ using namespace Test;
 #ifdef DEFAULT_DB
 constexpr char dbpath_app[] = "../files/config-app.db3";
 constexpr char dbpath_pds2[] = "../files/config-psd2.db3";
+constexpr char dbpath_base[] = "../files/config-base.db3";
 #endif
 
 #define NEW_LINE \
@@ -132,34 +133,42 @@ int main(int argc, char *argv[])
 #define DBCOMPARE
 #ifdef DBCOMPARE
     NEW_LINE;
-    shared_ptr<DbReader> pdb1 = make_shared<DbReader>();
-    shared_ptr<DbReader> pdb2 = make_shared<DbReader>();
+    shared_ptr<DbReader> remote_db = make_shared<DbReader>();
+    shared_ptr<DbReader> local_db = make_shared<DbReader>();
+    shared_ptr<DbReader> base_db = make_shared<DbReader>();
 
-    bool db_connected = pdb1->connect(dbpath_app);
+    bool db_connected = local_db->connect(dbpath_app);
     if (!db_connected)
     {
-        cout << "can't open " << dbpath_app << endl;
+        cout << "can't open " << dbpath_app << " as local db" << endl;
         exit(1);
     }
 
-    db_connected = pdb2->connect(dbpath_pds2);
+    db_connected = remote_db->connect(dbpath_pds2);
     if (!db_connected)
     {
-        cout << "can't open " << dbpath_pds2 << endl;
+        cout << "can't open " << dbpath_pds2 << " as remote db" << endl;
+        exit(1);
+    }
+
+    db_connected = base_db->connect(dbpath_base);
+    if(!db_connected)
+    {
+        cout << "can't open " << dbpath_base << " as base db" << endl;
         exit(1);
     }
 
 #define DB_ATTACH
 #ifdef DB_ATTACH
     NEW_LINE;
-    auto rc = pdb1->attach_db(dbpath_pds2);
+    auto rc = local_db->attach_db(dbpath_base);
     cout << endl
          << "-> attach_db" << endl
-         << ((SQLITE_OK == rc) ? "true" : "false") << endl;
+         << std::boolalpha << (rc == SQLITE_OK) << endl;
 #endif
 
-    // shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb1, pdb2);
-    shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(pdb2, pdb1);
+    // shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(local_db, remote_db, base_db);
+    shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(remote_db, local_db, base_db);
     dbCompare->initialize();
 
 // #define NEXT_INITS

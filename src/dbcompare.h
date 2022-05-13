@@ -18,6 +18,7 @@ namespace Kaco
     {
         public:
             explicit DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2);
+            explicit DbCompare(std::shared_ptr<IDbReader> local_db, std::shared_ptr<IDbReader> remote_db, std::shared_ptr<IDbReader> base_db);
             ~DbCompare();
 
             bool initialize();
@@ -37,7 +38,7 @@ namespace Kaco
             inline string insertInto(string tbl_name) const { return m_table->insert_into(tbl_name); }
 
         private:
-            shared_ptr<IDbReader> m_db1, m_db2;
+            shared_ptr<IDbReader> m_db1, m_db2, m_base_db;
             shared_ptr<Trigger> m_trigger;
             shared_ptr<Table> m_table;
             map<string, string> m_db1TblIndices, m_db2TblIndices;
