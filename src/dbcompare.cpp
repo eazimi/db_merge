@@ -43,7 +43,7 @@ namespace Kaco
                          std::shared_ptr<IDbReader> remote_db, 
                          std::shared_ptr<IDbReader> base_db) : m_db1(local_db), m_db2(remote_db), m_base_db(base_db), m_initialized(false)
     {
-        m_trigger = make_shared<Trigger>(local_db, remote_db);
+        m_trigger = make_shared<Trigger>(local_db, remote_db, base_db);
         m_table = make_shared<Table>(local_db, remote_db);
         INIT_MAPS;
     }
@@ -59,6 +59,7 @@ namespace Kaco
         m_table->init_tbls();
         auto db_tbls = m_table->read_tbl_db();
         m_trigger->init_triggers(db_tbls.first, db_tbls.second);
+        m_trigger->init_triggers(db_tbls.first, db_tbls.second, {});
         m_table->init_tbl_schema();
         initDbTableIndices();
         m_initialized = true;
@@ -172,6 +173,11 @@ namespace Kaco
     PA_VEC_PS2 DbCompare::diffTriggerSingleTbl(string table_name) const
     {
         return m_trigger->diff_trigger_tbl(table_name);
+    }
+
+    PA_VEC_PS2 DbCompare::diffTriggerSingleTbl(string table_name, DB_IDX db_idx1, DB_IDX db_idx2) const
+    {
+        return m_trigger->diff_trigger_tbl(table_name, db_idx1, db_idx2);
     }
 
     VEC_PS2 DbCompare::updateTriggerSingleTbl(string table_name) const

@@ -100,8 +100,8 @@ namespace Kaco
         string ct = generate_ct(cc.second, tbl_name);
 
         auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
-        auto diff_cdef_main = name_definition_const(cc_diff, DB::main, NDC::definition);
-        auto diff_const_main = name_definition_const(cc_diff, DB::main, NDC::constraint);
+        auto diff_cdef_main = name_definition_const(cc_diff, DB_IDX::local, NDC::definition);
+        auto diff_const_main = name_definition_const(cc_diff, DB_IDX::local, NDC::constraint);
         
         // check for the columns which are in the target but not in ref
         // TODO: update this part by paying attention to the value that have been read from json config file, 
@@ -123,10 +123,10 @@ namespace Kaco
     string Table::insert_into(string tbl_name)
     {
         auto cc = get_cc(tbl_name, m_main_db, m_ref_db);
-        auto cname_ref = name_definition_const(cc, DB::ref, NDC::name);
+        auto cname_ref = name_definition_const(cc, DB_IDX::remote, NDC::name);
         auto col_detailed = col_name_detailed(tbl_name, cname_ref, SCHEMA_REF);
         auto cc_diff = getDiff(cc.first, cc.second); // cc.first: main, cc.second: ref
-        auto diff_cname_main = name_definition_const(cc_diff, DB::main, NDC::name);
+        auto diff_cname_main = name_definition_const(cc_diff, DB_IDX::local, NDC::name);
         auto diff_cname_detailed = col_name_detailed(tbl_name, diff_cname_main, SCHEMA_MAIN); 
         auto str_sel = generate_sel(col_detailed);
 

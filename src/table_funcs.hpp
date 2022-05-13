@@ -110,15 +110,15 @@ namespace Kaco
     }
 
     // ndc: 0 -> col name, 1 -> col detail, 2 -> constraints
-    static vector<string> name_definition_const(PA_VS2 cc, DB main_ref, NDC ndc)
+    static vector<string> name_definition_const(PA_VS2 cc, DB_IDX main_ref, NDC ndc)
     {
-        bool condition = (cc.first.empty() && (main_ref == DB::main)) ||
-                         (cc.second.empty() && (main_ref == DB::ref)) ||
-                         ((main_ref != DB::main) && (main_ref != DB::ref)) ||
+        bool condition = (cc.first.empty() && (main_ref == DB_IDX::local)) ||
+                         (cc.second.empty() && (main_ref == DB_IDX::remote)) ||
+                         ((main_ref != DB_IDX::local) && (main_ref != DB_IDX::remote)) ||
                          ((ndc != NDC::name) && (ndc != NDC::definition) && (ndc != NDC::constraint));
         if (condition)
             return {};
-        auto cc_picked = (main_ref == DB::main) ? cc.first : cc.second;
+        auto cc_picked = (main_ref == DB_IDX::local) ? cc.first : cc.second;
         auto split = split_cc(cc_picked);
         vector<string> data = (ndc == NDC::name) ? get<0>(split) : ((ndc == NDC::definition) ? get<1>(split) : get<2>(split));
         return data;

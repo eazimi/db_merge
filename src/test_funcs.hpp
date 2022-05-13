@@ -5,6 +5,7 @@
 #include <memory>
 #include "dbcompare.h"
 #include "global_funcs.hpp"
+#include "global_defines.hpp"
 #include "IDbReader.hpp"
 
 using namespace std;
@@ -15,19 +16,47 @@ namespace Test
     static void test_readDbTriggers(const shared_ptr<DbCompare> &db)
     {
         auto triggers_db = db->readDbTriggers();
-        print(triggers_db.first, "-> all the triggers in the main db", "main");
-        print(triggers_db.second, "-> all the triggers in the ref db", "ref");        
+        print(triggers_db.first, "-> [1] all the triggers in the main db", "main");
+        print(triggers_db.second, "-> [1] all the triggers in the ref db", "ref");        
+
+        auto triggers = db->triggers_db();
+        print(get<0>(triggers), "-> [2] all the triggers in the main db", "main");
+        print(get<1>(triggers), "-> [2] all the triggers in the ref db", "ref");        
     }
 
     static void test_readSingleTblTriggers(const shared_ptr<DbCompare> &db, string table_name, bool print_sql = true)
     {
         auto tbl_triggers = db->readSingleTblTriggers(table_name);
         stringstream ss;
-        ss << "-> triggers of " << table_name << " table in the main db";
+        ss << "-> [1] triggers of " << table_name << " table in the main db";
         print(tbl_triggers.first, ss.str(), "main", table_name, print_sql);
         ss.str("");
-        ss << "-> triggers of " << table_name << " table in the ref db";
+        ss << "-> [1] triggers of " << table_name << " table in the ref db";
         print(tbl_triggers.second, ss.str(), "ref", table_name, print_sql);
+
+        auto triggers = db->trigger_tbl(table_name);
+        ss.str("");
+        ss << "-> [2] triggers of " << table_name << " table in the main db";
+        print(get<0>(triggers), ss.str(), "main", table_name, print_sql);
+        ss.str("");
+        ss << "-> [2] triggers of " << table_name << " table in the ref db";
+        print(get<1>(triggers), ss.str(), "ref", table_name, print_sql);
+        ss.str("");
+        ss << "-> [2] triggers of " << table_name << " table in the base db";
+        print(get<2>(triggers), ss.str(), "base", table_name, print_sql);
+
+        auto triggers_idx_main = db->trigger_tbl(table_name, DB_IDX::local);
+        ss.str("");
+        ss << "-> [3] triggers of " << table_name << " table in the main db";
+        print(triggers_idx_main, ss.str(), "main", table_name, print_sql);
+        auto triggers_idx_ref = db->trigger_tbl(table_name, DB_IDX::remote);
+        ss.str("");
+        ss << "-> [3] triggers of " << table_name << " table in the ref db";
+        print(triggers_idx_ref, ss.str(), "ref", table_name, print_sql);
+        auto triggers_idx_base = db->trigger_tbl(table_name, DB_IDX::base);
+        ss.str("");
+        ss << "-> [3] triggers of " << table_name << " table in the base db";
+        print(triggers_idx_base, ss.str(), "base", table_name, print_sql);
     }
 
     static void test_diffTriggerDb(const shared_ptr<DbCompare> &db)
@@ -41,10 +70,18 @@ namespace Test
     {
         auto diff_m_trigger = db->diffTriggerSingleTbl(table_name);
         stringstream ss_trigger;
-        ss_trigger << "-> trigger in the main::" << table_name << " but not in the ref::" << table_name;
+        ss_trigger << "-> [1] trigger in the main::" << table_name << " but not in the ref::" << table_name;
         print(diff_m_trigger.first, ss_trigger.str(), "main", table_name, false);
         ss_trigger.str("");
-        ss_trigger << "-> trigger in the ref::" << table_name << " but not in the main::" << table_name;
+        ss_trigger << "-> [1] trigger in the ref::" << table_name << " but not in the main::" << table_name;
+        print(diff_m_trigger.second, ss_trigger.str(), "ref", table_name, false); 
+
+        auto diff_trigger = db->diffTriggerSingleTbl(table_name, DB_IDX::local, DB_IDX::remote);
+        ss_trigger.str("");
+        ss_trigger << "-> [2] trigger in the main::" << table_name << " but not in the ref::" << table_name;
+        print(diff_m_trigger.first, ss_trigger.str(), "main", table_name, false);
+        ss_trigger.str("");
+        ss_trigger << "-> [2] trigger in the ref::" << table_name << " but not in the main::" << table_name;
         print(diff_m_trigger.second, ss_trigger.str(), "ref", table_name, false); 
     }
 

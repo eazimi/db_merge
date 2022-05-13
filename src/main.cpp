@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 13
+#define VER 12
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     test_readDbTables(dbCompare);
@@ -234,8 +234,8 @@ int main(int argc, char *argv[])
 #endif    
 #if VER == 13 || RELEASE
     // test_diffTriggerDb(dbCompare);
-    // test_diffTriggerSingleTbl(dbCompare, "accounts");
-    // test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
+    test_diffTriggerSingleTbl(dbCompare, "accounts");
+    test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
     test_diffTriggerSingleTbl(dbCompare, "menuTree");
 #endif
 #if VER == 14 || RELEASE

@@ -9,6 +9,7 @@
 #include "table.h"
 #include "IDbReader.hpp"
 #include "data_types.hpp"
+#include "global_defines.hpp"
 
 using namespace std;
 
@@ -30,9 +31,13 @@ namespace Kaco
             PA_MAP_S2 readDbTblSchema() const;
             inline VEC_TS3 diffSchemaDb() const { return m_table->diff_schema_db(); }
             inline PA_MAP_SVPS2 readDbTriggers() const { return m_trigger->read_trigger_db(); };
+            inline T_MAP_SVPS2 triggers_db() const { return m_trigger->triggers_db(); };
             PA_VEC_PS2 readSingleTblTriggers(string table_name) const;
+            inline T_VEC_PS2 trigger_tbl(string tbl_name) const { return m_trigger->trigger_tbl(tbl_name); }
+            inline VEC_PS2 trigger_tbl(string tbl_name, DB_IDX db_idx) const { return m_trigger->trigger_tbl(tbl_name, db_idx); }
             PA_MAP_SVPS2 diffTriggerDb() const;
             PA_VEC_PS2 diffTriggerSingleTbl(string table_name) const;
+            PA_VEC_PS2 diffTriggerSingleTbl(string table_name, DB_IDX db_idx1, DB_IDX db_idx2) const;
             VEC_PS2 updateTriggerSingleTbl(string table_name) const;
             inline string createTbl(string tbl_name) const { return m_table->create_tbl(tbl_name); }
             inline string insertInto(string tbl_name) const { return m_table->insert_into(tbl_name); }

@@ -42,10 +42,13 @@ enum NDC
     constraint
 };
 
-enum DB
+#define DB_CNT 3
+
+enum DB_IDX
 {
-    main = 0,
-    ref
+    local = 0,
+    remote,
+    base
 };
 
 #endif
