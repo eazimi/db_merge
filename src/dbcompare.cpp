@@ -44,7 +44,7 @@ namespace Kaco
                          std::shared_ptr<IDbReader> base_db) : m_db1(local_db), m_db2(remote_db), m_base_db(base_db), m_initialized(false)
     {
         m_trigger = make_shared<Trigger>(local_db, remote_db, base_db);
-        m_table = make_shared<Table>(local_db, remote_db);
+        m_table = make_shared<Table>(local_db, remote_db, base_db);        
         INIT_MAPS;
     }
 

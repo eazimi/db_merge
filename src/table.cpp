@@ -15,10 +15,24 @@ namespace Kaco
         m_ref_db = ref_db;
     }
 
+    Table::Table(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db, shared_ptr<IDbReader> base_db)
+    {
+        m_main_db = main_db;
+        m_ref_db = ref_db;
+        
+        m_db[DB_IDX::local] = main_db;
+        m_db[DB_IDX::remote] = ref_db;
+        m_db[DB_IDX::base] = base_db;
+    }
+
     void Table::init_tbls()
     {
         m_main_tbls = m_main_db->getTables();
         m_ref_tbls = m_ref_db->getTables();
+
+        m_table[DB_IDX::local] = m_db[DB_IDX::local]->getTables();
+        m_table[DB_IDX::remote] = m_db[DB_IDX::remote]->getTables();
+        m_table[DB_IDX::base] = m_db[DB_IDX::base]->getTables();
     }
 
     void Table::init_tbl_schema()
@@ -28,11 +42,20 @@ namespace Kaco
 
         auto schema_ref = get_tbl_schema(m_ref_db, m_ref_tbls);
         m_ref_tbl_schema = std::move(schema_ref);
+
+        m_schema[DB_IDX::local] = get_tbl_schema(m_db[DB_IDX::local], m_table[DB_IDX::local]);
+        m_schema[DB_IDX::remote] = get_tbl_schema(m_db[DB_IDX::remote], m_table[DB_IDX::remote]);
+        m_schema[DB_IDX::base] = get_tbl_schema(m_db[DB_IDX::base], m_table[DB_IDX::base]);;
     }
 
     PA_VS2 Table::read_tbl_db() const
     {
         return make_pair(m_main_tbls, m_ref_tbls);
+    }
+
+    T_VS3 Table::tables_db() const
+    {
+        return make_tuple(m_table[DB_IDX::local], m_table[DB_IDX::remote], m_table[DB_IDX::base]);
     }
 
     PA_MAP_S2 Table::read_tschema_db() const
