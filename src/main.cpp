@@ -149,12 +149,12 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-// #define DB_ATTACH
+#define DB_ATTACH
 #ifdef DB_ATTACH
     NEW_LINE;
-    auto rc = pdb1->attachDb(dbpath_pds2);
+    auto rc = pdb1->attach_db(dbpath_pds2);
     cout << endl
-         << "-> attachDb" << endl
+         << "-> attach_db" << endl
          << ((SQLITE_OK == rc) ? "true" : "false") << endl;
 #endif
 
@@ -225,9 +225,9 @@ int main(int argc, char *argv[])
 #endif    
 #if VER == 13 || RELEASE
     // test_diffTriggerDb(dbCompare);
-    test_diffTriggerSingleTbl(dbCompare, "accounts");
-    test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
-    // test_diffTriggerSingleTbl(dbCompare, "menuTree");
+    // test_diffTriggerSingleTbl(dbCompare, "accounts");
+    // test_diffTriggerSingleTbl(dbCompare, "sunsModelCfg");
+    test_diffTriggerSingleTbl(dbCompare, "menuTree");
 #endif
 #if VER == 14 || RELEASE
     test_updateTriggerSingleTbl(dbCompare, "sunsModelCfg");

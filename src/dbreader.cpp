@@ -20,7 +20,7 @@ namespace Kaco
         return true;
     }
 
-    int DbReader::attachDb(string dbPath)
+    int DbReader::attach_db(string dbPath)
     {
         stringstream ss;
         ss << "ATTACH '" << dbPath << "' AS ref"; 
