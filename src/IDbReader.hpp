@@ -13,7 +13,7 @@ namespace Kaco
     {
     public:
         virtual bool connect(string dbPath) = 0;
-        virtual int attach_db(string dbPath) = 0;
+        virtual int attach_db(string dbPath, string alias) = 0;
         virtual int dbDump(char *fileName) = 0;
         virtual vector<string> getTables() = 0;
         virtual vector<string> getTableSchema(string tableName) = 0;

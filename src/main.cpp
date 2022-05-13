@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 #define DB_ATTACH
 #ifdef DB_ATTACH
     NEW_LINE;
-    auto rc = local_db->attach_db(dbpath_base);
+    auto rc = local_db->attach_db(dbpath_base, "remote");
     cout << endl
          << "-> attach_db" << endl
          << std::boolalpha << (rc == SQLITE_OK) << endl;
