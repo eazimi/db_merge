@@ -143,7 +143,7 @@ namespace Test
         print<vector<string>>("-> records in the local but not in the remote", diff_recs);
     }
 
-    static void test_table_pk(shared_ptr<DbCompare> &db)
+    static void test_table_pk(const shared_ptr<DbCompare> &db)
     {
         auto accounts_local = db->table_pk("accounts", DB_IDX::local);
         print<vector<string>>("-> accounts pk in the local db", {accounts_local});
@@ -165,6 +165,14 @@ namespace Test
         print<vector<string>>("-> ledCfg pk in the remote db", {ledCfg_remote});
         auto ledCfg_base = db->table_pk("ledCfg", DB_IDX::base);
         print<vector<string>>("-> ledCfg pk in the base db", {ledCfg_base});
+    }
+
+    static void test_records_status(const shared_ptr<DbCompare> &db)
+    {
+        auto tbl_name = "ledCfg";
+        auto records = db->records_status(tbl_name);
+        print<vector<string>>("-> new record in the remote", records.first); 
+        print<vector<string>>("-> new record in the local", records.second); 
     }
 
 } // namespace Test

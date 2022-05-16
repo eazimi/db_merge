@@ -200,6 +200,12 @@ namespace Kaco
         return m_commands->diff_records(m_master_db, tbl_name, db_idx1, db_idx2);
     }
 
+    PA_VS2 DbCompare::records_status(string tbl_name) const
+    {   
+        auto pk = m_table->table_pk(tbl_name, DB_IDX::remote);
+        return m_commands->records_status(m_master_db, tbl_name, pk);
+    }
+
     void DbCompare::initDbTableIndices()
     {
         auto db_tbls = m_table->read_tbl_db();
