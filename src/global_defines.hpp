@@ -1,6 +1,10 @@
 #ifndef GLOBAL_DEFINES_HPP
 #define GLOBAL_DEFINES_HPP
 
+#include <string>
+
+using namespace std;
+
 #define STR_SEPERATOR "##"
 #define VAL_SEPERATOR "|"
 #define STR_NULL std::string("")
@@ -50,5 +54,7 @@ enum DB_IDX
     remote,
     base
 };
+
+static const string DB_ALIAS[] = {"main", "remote", "base"};
 
 #endif

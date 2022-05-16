@@ -44,7 +44,9 @@ namespace Kaco
                          std::shared_ptr<IDbReader> base_db) : m_db1(local_db), m_db2(remote_db), m_base_db(base_db), m_initialized(false)
     {
         m_trigger = make_shared<Trigger>(local_db, remote_db, base_db);
-        m_table = make_shared<Table>(local_db, remote_db, base_db);        
+        m_table = make_shared<Table>(local_db, remote_db, base_db);
+        m_commands = make_shared<Commands>();
+        m_master_db = local_db;
         INIT_MAPS;
     }
 
@@ -183,6 +185,19 @@ namespace Kaco
     VEC_PS2 DbCompare::updateTriggerSingleTbl(string table_name) const
     {
         return m_trigger->update_trigger_tbl(table_name);
+    }
+
+    int DbCompare::attach_db(string remote_path, string base_path)
+    {
+        auto rc = m_master_db->attach_db(remote_path, DB_IDX::remote);
+        if(rc == SQLITE_OK)
+            rc = m_master_db->attach_db(base_path, DB_IDX::base);
+        return rc;
+    }
+
+    vector<string> DbCompare::diff_records(string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2) const
+    {
+        return m_commands->diff_records(m_master_db, tbl_name, db_idx1, db_idx2);
     }
 
     void DbCompare::initDbTableIndices()

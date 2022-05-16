@@ -10,6 +10,7 @@
 #include "IDbReader.hpp"
 #include "data_types.hpp"
 #include "global_defines.hpp"
+#include "commands.h"
 
 using namespace std;
 
@@ -41,11 +42,15 @@ namespace Kaco
             VEC_PS2 updateTriggerSingleTbl(string table_name) const;
             inline string createTbl(string tbl_name) const { return m_table->create_tbl(tbl_name); }
             inline string insertInto(string tbl_name) const { return m_table->insert_into(tbl_name); }
+            int attach_db(string remote_path, string base_path);
+            vector<string> diff_records(string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2) const;
 
         private:
             shared_ptr<IDbReader> m_db1, m_db2, m_base_db;
+            shared_ptr<IDbReader> m_master_db;
             shared_ptr<Trigger> m_trigger;
             shared_ptr<Table> m_table;
+            shared_ptr<Commands> m_commands;
             map<string, string> m_db1TblIndices, m_db2TblIndices;
             bool m_initialized;
 

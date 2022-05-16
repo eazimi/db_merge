@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-#define DB_ATTACH
+// #define DB_ATTACH
 #ifdef DB_ATTACH
     NEW_LINE;
     auto rc = local_db->attach_db(dbpath_base, "remote");
@@ -167,9 +167,12 @@ int main(int argc, char *argv[])
          << std::boolalpha << (rc == SQLITE_OK) << endl;
 #endif
 
-    // shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(local_db, remote_db, base_db);
-    shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(remote_db, local_db, base_db);
+    shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(local_db, remote_db, base_db);
+    // shared_ptr<DbCompare> dbCompare = make_shared<DbCompare>(remote_db, local_db, base_db);
     dbCompare->initialize();
+    auto rc_attach = dbCompare->attach_db(dbpath_pds2, dbpath_base);
+    cout << "-> attach_db" << endl
+         << std::boolalpha << (rc_attach == SQLITE_OK) << endl;
 
 // #define NEXT_INITS
 #ifdef NEXT_INITS
@@ -217,7 +220,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 12
+#define VER 17
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     test_readDbTables(dbCompare);
@@ -249,6 +252,9 @@ int main(int argc, char *argv[])
 #endif
 #if VER == 16 || RELEASE
     test_createTbl(dbCompare);
+#endif
+#if VER == 17 || RELEASE
+    test_diff_records(dbCompare);
 #endif
 
 #endif

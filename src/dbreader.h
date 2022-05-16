@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 #include "IDBReader.hpp"
+#include "global_defines.hpp"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ namespace Kaco
             ~DbReader();
 
             bool connect(string dbPath);
-            int attach_db(string dbPath, string alias);
+            int attach_db(string dbPath, DB_IDX alias);
             int sql_exec(string sql, ExecCallback cb);
             vector<string> sql_exec(string cmd);
             int dbDump(char *fileName);

@@ -134,6 +134,15 @@ namespace Test
         print<vector<string>>("-> [table] insert into table", {insert_sql});
     }
 
+    static void test_diff_records(const shared_ptr<DbCompare> &db)
+    {
+        auto tbl_name = "ledCfg";
+        auto diff_recs = db->diff_records(tbl_name, DB_IDX::remote, DB_IDX::local);
+        print<vector<string>>("-> records in the remote but not in the local", diff_recs);
+        diff_recs = db->diff_records(tbl_name, DB_IDX::local, DB_IDX::remote);
+        print<vector<string>>("-> records in the local but not in the remote", diff_recs);
+    }
+
 } // namespace Test
 
 #endif

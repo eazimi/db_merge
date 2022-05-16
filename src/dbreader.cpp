@@ -20,10 +20,10 @@ namespace Kaco
         return true;
     }
 
-    int DbReader::attach_db(string dbPath, string alias)
+    int DbReader::attach_db(string dbPath, DB_IDX alias)
     {
         stringstream ss;
-        ss << "ATTACH '" << dbPath << "' AS " << alias; 
+        ss << "ATTACH '" << dbPath << "' AS " << DB_ALIAS[alias]; 
         return sql_exec(ss.str(), nullptr);
     }
 
