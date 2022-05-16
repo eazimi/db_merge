@@ -143,6 +143,30 @@ namespace Test
         print<vector<string>>("-> records in the local but not in the remote", diff_recs);
     }
 
+    static void test_table_pk(shared_ptr<DbCompare> &db)
+    {
+        auto accounts_local = db->table_pk("accounts", DB_IDX::local);
+        print<vector<string>>("-> accounts pk in the local db", {accounts_local});
+        auto accounts_remote = db->table_pk("accounts", DB_IDX::remote);
+        print<vector<string>>("-> accounts pk in the remote db", {accounts_remote});
+        auto accounts_base = db->table_pk("accounts", DB_IDX::base);
+        print<vector<string>>("-> accounts pk in the base db", {accounts_base});
+
+        auto csc_local = db->table_pk("countrySettingCfg", DB_IDX::local);
+        print<vector<string>>("-> countrySettingCfg pk in the local db", {csc_local});
+        auto csc_remote = db->table_pk("countrySettingCfg", DB_IDX::remote);
+        print<vector<string>>("-> countrySettingCfg pk in the remote db", {csc_remote});
+        auto csc_base = db->table_pk("countrySettingCfg", DB_IDX::base);
+        print<vector<string>>("-> countrySettingCfg pk in the base db", {csc_base});
+
+        auto ledCfg_local = db->table_pk("ledCfg", DB_IDX::local);
+        print<vector<string>>("-> ledCfg pk in the local db", {ledCfg_local});
+        auto ledCfg_remote = db->table_pk("ledCfg", DB_IDX::remote);
+        print<vector<string>>("-> ledCfg pk in the remote db", {ledCfg_remote});
+        auto ledCfg_base = db->table_pk("ledCfg", DB_IDX::base);
+        print<vector<string>>("-> ledCfg pk in the base db", {ledCfg_base});
+    }
+
 } // namespace Test
 
 #endif

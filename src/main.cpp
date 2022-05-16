@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 17
+#define VER 18
 #if VER == 10 || RELEASE
     dbCompare->testDbDump();
     test_readDbTables(dbCompare);
@@ -255,6 +255,9 @@ int main(int argc, char *argv[])
 #endif
 #if VER == 17 || RELEASE
     test_diff_records(dbCompare);
+#endif
+#if VER == 18 || RELEASE
+    test_table_pk(dbCompare);
 #endif
 
 #endif

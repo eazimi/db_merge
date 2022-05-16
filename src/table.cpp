@@ -3,6 +3,7 @@
 #include <utility>
 #include <stack>
 #include <unordered_map>
+#include <cstring>
 #include "global_defines.hpp"
 #include "global_funcs.hpp"
 #include "table_funcs.hpp"
@@ -43,9 +44,9 @@ namespace Kaco
         auto schema_ref = get_tbl_schema(m_ref_db, m_ref_tbls);
         m_ref_tbl_schema = std::move(schema_ref);
 
-        m_schema[DB_IDX::local] = get_tbl_schema(m_db[DB_IDX::local], m_table[DB_IDX::local]);
-        m_schema[DB_IDX::remote] = get_tbl_schema(m_db[DB_IDX::remote], m_table[DB_IDX::remote]);
-        m_schema[DB_IDX::base] = get_tbl_schema(m_db[DB_IDX::base], m_table[DB_IDX::base]);;
+        m_schema[DB_IDX::local] = std::move(get_tbl_schema(m_db[DB_IDX::local], m_table[DB_IDX::local]));
+        m_schema[DB_IDX::remote] = std::move(get_tbl_schema(m_db[DB_IDX::remote], m_table[DB_IDX::remote]));
+        m_schema[DB_IDX::base] = std::move(get_tbl_schema(m_db[DB_IDX::base], m_table[DB_IDX::base]));
     }
 
     PA_VS2 Table::read_tbl_db() const
@@ -173,6 +174,27 @@ namespace Kaco
         stringstream ss;
         ss << "INSERT INTO " << tbl_name.append("_tmp") << " " << select_cmd << ";";
         return ss.str();
-    } 
+    }
+
+    string Table::table_pk(string tbl_name, DB_IDX db_idx)
+    {
+        auto tbl_schema = m_schema[db_idx][tbl_name];
+        auto ch_tbl_schema = const_cast<char *>(tbl_schema.c_str());
+        char *token = strtok(ch_tbl_schema, STR_SEPERATOR);
+        while (token != nullptr)
+        {
+            string str_token(token);
+            auto pos = str_token.find_last_of('|');
+            if ((pos != string::npos) && (token[pos + 1] != '0'))
+            {
+                int cname_begin = str_token.find_first_of('|');
+                ++cname_begin;
+                int cname_end = str_token.find_first_of('|', cname_begin);
+                return str_token.substr(cname_begin, cname_end - cname_begin);
+            }
+            token = strtok(nullptr, STR_SEPERATOR);
+        }
+        return "";
+    }
 
 } // namespace Kaco
