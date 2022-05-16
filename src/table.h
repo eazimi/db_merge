@@ -39,6 +39,7 @@ namespace Kaco
             string create_tbl(string tbl_name);
             string insert_into(string tbl_name);
             string table_pk(string tbl_name, DB_IDX db_idx);
+            vector<string> table_cols(string tbl_name, DB_IDX db_idx);
     };
 
 } // namespace Kaco

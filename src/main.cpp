@@ -258,7 +258,8 @@ int main(int argc, char *argv[])
 #endif
 #if VER == 18 || RELEASE
     // test_table_pk(dbCompare);
-    test_records_status(dbCompare);
+    // test_records_status(dbCompare);
+    test_table_cols(dbCompare);
 #endif
 
 #endif

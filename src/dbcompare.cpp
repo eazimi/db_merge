@@ -206,6 +206,11 @@ namespace Kaco
         return m_commands->records_status(m_master_db, tbl_name, pk);
     }
 
+    vector<string> DbCompare::table_cols(string tbl_name, DB_IDX db_idx) const
+    {
+        return m_table->table_cols(tbl_name, db_idx);
+    }
+
     void DbCompare::initDbTableIndices()
     {
         auto db_tbls = m_table->read_tbl_db();

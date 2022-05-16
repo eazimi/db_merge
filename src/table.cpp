@@ -197,4 +197,23 @@ namespace Kaco
         return "";
     }
 
+    vector<string> Table::table_cols(string tbl_name, DB_IDX db_idx)
+    {
+        vector<string> tbl_cols = {};
+        auto tbl_schema = m_schema[db_idx][tbl_name];
+        auto ch_tbl_schema = const_cast<char *>(tbl_schema.c_str());
+        char *token = strtok(ch_tbl_schema, STR_SEPERATOR);
+        while (token != nullptr)
+        {
+            string str_token(token);
+            int cname_begin = str_token.find_first_of('|');
+            ++cname_begin;
+            int cname_end = str_token.find_first_of('|', cname_begin);
+            auto col_name = str_token.substr(cname_begin, cname_end - cname_begin);
+            tbl_cols.push_back(std::move(col_name));
+            token = strtok(nullptr, STR_SEPERATOR);
+        }
+        return tbl_cols;
+    }
+
 } // namespace Kaco

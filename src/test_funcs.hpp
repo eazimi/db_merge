@@ -175,6 +175,23 @@ namespace Test
         print<vector<string>>("-> new record in the local", records.second); 
     }
 
+    static void test_table_cols(const shared_ptr<DbCompare> &db)
+    {
+        auto tbl_name = "ledCfg";
+        DB_IDX db_idx = DB_IDX::remote;
+        auto cols = db->table_cols(tbl_name, db_idx);
+        stringstream ss;
+        ss << "-> table cols in the " << DB_ALIAS[db_idx] << "::" << tbl_name;
+        print<vector<string>>(ss.str(), cols); 
+
+        tbl_name = "countrySettingCfg";
+        db_idx = DB_IDX::local;
+        cols = db->table_cols(tbl_name, db_idx);
+        ss.str("");
+        ss << "-> table cols in the " << DB_ALIAS[db_idx] << "::" << tbl_name;
+        print<vector<string>>(ss.str(), cols); 
+    }
+
 } // namespace Test
 
 #endif
