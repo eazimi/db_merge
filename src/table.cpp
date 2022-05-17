@@ -184,12 +184,12 @@ namespace Kaco
         while (token != nullptr)
         {
             string str_token(token);
-            auto pos = str_token.find_last_of('|');
+            auto pos = str_token.find_last_of(VAL_SEPERATOR);
             if ((pos != string::npos) && (token[pos + 1] != '0'))
             {
-                int cname_begin = str_token.find_first_of('|');
+                int cname_begin = str_token.find_first_of(VAL_SEPERATOR);
                 ++cname_begin;
-                int cname_end = str_token.find_first_of('|', cname_begin);
+                int cname_end = str_token.find_first_of(VAL_SEPERATOR, cname_begin);
                 return str_token.substr(cname_begin, cname_end - cname_begin);
             }
             token = strtok(nullptr, STR_SEPERATOR);
@@ -206,9 +206,9 @@ namespace Kaco
         while (token != nullptr)
         {
             string str_token(token);
-            int cname_begin = str_token.find_first_of('|');
+            int cname_begin = str_token.find_first_of(VAL_SEPERATOR);
             ++cname_begin;
-            int cname_end = str_token.find_first_of('|', cname_begin);
+            int cname_end = str_token.find_first_of(VAL_SEPERATOR, cname_begin);
             auto col_name = str_token.substr(cname_begin, cname_end - cname_begin);
             tbl_cols.push_back(std::move(col_name));
             token = strtok(nullptr, STR_SEPERATOR);

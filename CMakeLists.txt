@@ -33,6 +33,7 @@ ADD_EXECUTABLE(${PROJECT}
     src/table_funcs.hpp 
     src/commands.cpp
     src/commands.h
+    src/commands_funcs.hpp
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT} ${SQLite3_LIBRARIES})
