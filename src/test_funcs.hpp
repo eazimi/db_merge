@@ -171,9 +171,10 @@ namespace Test
     {
         auto tbl_name = "ledCfg";
         auto records = db->records_status(tbl_name);
-        print<vector<string>>("-> new record in the remote", get<0>(records));
-        print<vector<string>>("-> update corresponding record in the local", get<1>(records)); 
-        print<vector<string>>("-> new record in the local", get<2>(records)); 
+        print<vector<string>>("-> new records in the remote", (get<0>(records)).first);
+        print<vector<string>>("-> new records in the local", (get<0>(records)).second); 
+        print<vector<string>>("-> modified records in the remote", (get<1>(records)).first); 
+        print<vector<string>>("-> modified records in the local", (get<1>(records)).second); 
     }
 
     static void test_table_cols(const shared_ptr<DbCompare> &db)

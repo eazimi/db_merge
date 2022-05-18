@@ -45,7 +45,7 @@ namespace Kaco
             int attach_db(string remote_path, string base_path);
             vector<string> diff_records(string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2) const;
             inline string table_pk(string tbl_name, DB_IDX db_idx) const { return m_table->table_pk(tbl_name, db_idx); }
-            T_VS3 records_status(string tbl_name) const;
+            PA_PA_VS2 records_status(string tbl_name) const;
             vector<string> table_cols(string tbl_name, DB_IDX db_idx) const;
         private:
             shared_ptr<IDbReader> m_db1, m_db2, m_base_db;

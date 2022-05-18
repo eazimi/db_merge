@@ -27,7 +27,7 @@ namespace Kaco
         vector<string> diff_records(const shared_ptr<IDbReader> &db, string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2);
         // returns tuple(diff between remote and local, values to be used to update records in local, 
         // diff between local and remote)
-        T_VS3 records_status(const shared_ptr<IDbReader> &db, string tbl_name, vector<string> tbl_cols, string primary_key);
+        PA_PA_VS2 records_status(const shared_ptr<IDbReader> &db, string tbl_name, vector<string> tbl_cols, string primary_key);
     };
 
 } // namespace Kaco
