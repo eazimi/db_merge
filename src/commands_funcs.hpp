@@ -42,6 +42,24 @@ namespace Kaco
         }
         return unformatted_recs;
     }
+
+    static VEC_PS2 match_col_val(string record, const vector<string> &cols)
+    {
+        VEC_PS2 col_val = {};
+        int cols_size = cols.size();
+        int start_pos = 0;
+        int i = 0;
+        while (true)
+        {
+            int pos = record.find_first_of(VAL_SEPERATOR, start_pos);
+            auto val = record.substr(start_pos, pos - start_pos);
+            col_val.push_back(std::move(make_pair(cols[i], val)));
+            if (++i >= cols_size)
+                break;
+            start_pos = pos + 1;
+        }
+        return col_val;
+    }
     
 } // namespace
 

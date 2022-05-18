@@ -19,8 +19,9 @@ namespace Kaco
         vector<string> new_records(const shared_ptr<IDbReader> &db, string tbl_name,
                                    string tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2);
         vector<string> update_records(const vector<string> &diff_recs, const vector<string> &new_recs);
-        vector<string> new_records(const shared_ptr<IDbReader> &db, string tbl_name, string tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2);
-
+        vector<DB_IDX> record_origin(const shared_ptr<IDbReader> &db, const vector<string> &records, string tbl_name,
+                                     const vector<string> &cols, pair<DB_IDX, DB_IDX> db_idx);
+        bool check_src(const shared_ptr<IDbReader> &db, string tbl_name, VEC_PS2 col_val, DB_IDX db_idx);
     public:
         Commands() = default;
         // get the differences by finding records that are in the db_idx1.tbl_name but not in db_idx2.tbl_name
