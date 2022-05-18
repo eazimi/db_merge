@@ -58,7 +58,7 @@ namespace Kaco
         auto diff_local_base = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::base);
         auto diff_remote_local = diff_records(db, tbl_name, DB_IDX::remote, DB_IDX::local);
         // print("-> diff_remote_local", diff_remote_local);
-        auto diff_local_remote = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::remote);        
+        auto diff_local_remote = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::remote);
         
         bool remote_local_change = !diff_remote_local.empty();
         bool remote_base_change = !diff_remote_base.empty();
