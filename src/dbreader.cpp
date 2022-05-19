@@ -3,8 +3,8 @@
 #include <cstring>
 #include <sstream>
 #include <memory>
+#include "global_funcs.hpp"
 
-#define SEPERATOR "|"
 namespace Kaco
 {
     DbReader::~DbReader()
@@ -14,7 +14,7 @@ namespace Kaco
 
     bool DbReader::connect(string dbPath)
     {
-        auto rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READONLY, 0);
+        auto rc = sqlite3_open_v2(dbPath.c_str(), &db, SQLITE_OPEN_READWRITE, 0);
         if (rc)
             return false;
         return true;
@@ -24,45 +24,15 @@ namespace Kaco
     {
         stringstream ss;
         ss << "ATTACH '" << dbPath << "' AS " << DB_ALIAS[alias]; 
-        return sql_exec(ss.str(), nullptr);
-    }
-
-    int DbReader::sql_exec(string sql, ExecCallback cb)
-    {
-        char *zErrMsg = 0;
-        auto rc = sqlite3_exec(db, sql.c_str(), cb, this, &zErrMsg);
-
-        if (SQLITE_OK != rc)
-            cout << __FUNCTION__ << " returned error code " << rc << ": " << zErrMsg;
-
-        if (zErrMsg)
-            sqlite3_free(zErrMsg);
-
+        int rc = sql_exec(ss.str(), nullptr, nullptr);
         return rc;
     }
 
-    vector<string> DbReader::sql_exec(string cmd)
+    int DbReader::sql_exec(string cmd, ExecCallback cb, vector<string> *results)
     {
-        vector<string> result = {};
-
-        auto cb = [](void *buffer, int cnt, char **row, char **cols)
-        {
-            stringstream ssdata;
-            for (auto i = 0; i < cnt; i++)
-            {
-                if (i)
-                    ssdata << SEPERATOR;
-                if (row[i])
-                    ssdata << row[i];
-            }
-            (*((vector<string> *)buffer)).push_back(ssdata.str());
-            return 0;
-        };
-        char *zErrMsg = (char *)(("ERROR::" + cmd).c_str());
-
-        auto rc = sqlite3_exec(db, cmd.c_str(), cb, (void *)&result, &zErrMsg);
-
-        return result;
+        auto err_msg = const_cast<char *>((string("ERROR::").append(cmd)).c_str());
+        int rc = sqlite3_exec(db, cmd.c_str(), cb, results, &err_msg);
+        return rc;
     }
 
     int DbReader::dbDump(char *fileName)
@@ -222,7 +192,8 @@ namespace Kaco
     {
         stringstream ss;
         ss << "PRAGMA table_info(" << tableName << ");";
-        auto tableSchema = sql_exec(ss.str());
+        vector<string> tableSchema;
+        sql_exec(ss.str(), cb_sql_exec, &tableSchema);
         return tableSchema;
     }
 
@@ -250,12 +221,13 @@ namespace Kaco
     {
         stringstream ss;
         ss << "SELECT name, sql from sqlite_master WHERE type='trigger' AND tbl_name='" << tableName << "';";
-        auto result = sql_exec(ss.str());
+        vector<string> results;
+        sql_exec(ss.str(), cb_sql_exec, &results);
 
         vector<pair<string, string>> triggers{};
-        for (auto str : result)
+        for (auto str : results)
         {
-            auto pos = str.find(SEPERATOR);
+            auto pos = str.find(VAL_SEPERATOR);
             auto name = str.substr(0, pos);
             auto sql = str.substr(pos + 1);
             triggers.push_back(std::forward<pair<string, string>>({name, sql}));
@@ -268,7 +240,8 @@ namespace Kaco
     {
         stringstream ss;
         ss << "SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='" << tableName << "' ORDER BY name;";
-        auto tableIndices = sql_exec(ss.str());
+        vector<string> tableIndices;
+        sql_exec(ss.str(), cb_sql_exec, &tableIndices);
         return tableIndices;
     }
 

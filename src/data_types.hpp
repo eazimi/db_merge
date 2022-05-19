@@ -35,6 +35,7 @@ namespace Kaco
     using PA_MAP_SVPS2 = pair<MAP_STR_VPS2, MAP_STR_VPS2>;
     using PA_VEC_PS2 = pair<VEC_PS2, VEC_PS2>;
     using PA_PA_VS2 = pair<PA_VS2, PA_VS2>;
+    
 } // namespace Kaco
 
 #endif

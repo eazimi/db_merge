@@ -11,9 +11,7 @@
 using namespace std;
 
 namespace Kaco
-{
-    typedef int (*ExecCallback)(void*, int, char**, char**);
-
+{    
     class DbReader : public IDbReader
     {
         // TODO: set flags by a function
@@ -25,8 +23,7 @@ namespace Kaco
 
             bool connect(string dbPath);
             int attach_db(string dbPath, DB_IDX alias);
-            int sql_exec(string sql, ExecCallback cb);
-            vector<string> sql_exec(string cmd);
+            int sql_exec(string cmd, ExecCallback cb, vector<string> *results);
             int dbDump(char *fileName);
             void command_exec(string dbPath, string output, string command);
             void dbDiff(string dbPath1, string dbPath2, string output);

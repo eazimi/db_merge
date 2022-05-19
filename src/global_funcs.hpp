@@ -172,6 +172,22 @@ namespace Kaco
         for (const auto &str : data)
             cout << str.first << ": " << str.second << endl;
     }
+
+    static auto cb_sql_exec = [](void *buffer, int cnt, char **row, char **cols)
+    {
+        stringstream ss_data;
+        for (auto i = 0; i < cnt; i++)
+        {
+            if (i)
+                ss_data << VAL_SEPERATOR;
+            if (row[i])
+                ss_data << row[i];
+        }
+        auto ptr_buffer = static_cast<vector<string> *>(buffer);
+        ptr_buffer->push_back(ss_data.str());
+        return 0;
+    };
+    
 } // namespace Kaco
 
 #endif

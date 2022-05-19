@@ -15,7 +15,8 @@ namespace Kaco
            << " EXCEPT SELECT * FROM " << DB_ALIAS[db_idx2]   
            << "." << tbl_name
            << ";";
-        auto records = db->sql_exec(ss.str());
+        vector<string> records;
+        db->sql_exec(ss.str(), cb_sql_exec, &records);
         return records;
     }
     
@@ -36,7 +37,8 @@ namespace Kaco
            << "." << tbl_name << " ON " 
            << pk1 << "=" << pk2
            << " WHERE " << pk2 << " IS NULL;";
-        auto records = db->sql_exec(ss.str());
+        vector<string> records;
+        db->sql_exec(ss.str(), cb_sql_exec, &records);
         return records;
     }
 

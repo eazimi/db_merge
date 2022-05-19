@@ -6,6 +6,7 @@
 #include <vector>
 #include "global_defines.hpp"
 
+using ExecCallback = int(void*, int, char**, char**);
 using namespace std;
 
 namespace Kaco
@@ -21,7 +22,7 @@ namespace Kaco
         virtual vector<string> getIndices(string tableName) = 0;
         virtual vector<pair<string, string>> getTriggers(string tableName) = 0;
         virtual string getCreateTblCmd(string tblName) = 0;
-        virtual vector<string> sql_exec(string cmd) = 0;
+        virtual int sql_exec(string cmd, ExecCallback cb, vector<string> *results) = 0;
     };
 
 } // namespace Kaco
