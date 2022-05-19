@@ -17,17 +17,17 @@ namespace Kaco
     class Table
     {
         private:
-            shared_ptr<IDbReader> m_main_db, m_ref_db;
-            array<shared_ptr<IDbReader>, DB_CNT> m_db;
+            IDbReader *m_main_db, *m_ref_db;
+            array<IDbReader *, DB_CNT> m_db;
             vector<string> m_main_tbls, m_ref_tbls;
             array<vector<string>, DB_CNT> m_table;
             map<string, string> m_main_tbl_schema, m_ref_tbl_schema;
             array<map<string, string>, DB_CNT> m_schema;
-            map<string, string> get_tbl_schema(const shared_ptr<IDbReader> &db, const vector<string> &db_tbls);
+            map<string, string> get_tbl_schema(IDbReader *db, const vector<string> &db_tbls);
 
         public:
-            Table(const shared_ptr<IDbReader> &main_db, const shared_ptr<IDbReader> &ref_db);
-            Table(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db, shared_ptr<IDbReader> base_db);
+            Table(IDbReader *main_db, IDbReader *ref_db);
+            Table(IDbReader *main_db, IDbReader *ref_db, IDbReader *base_db);
             void init_tbls();
             void init_tbl_schema();
             PA_VS2 read_tbl_db() const;

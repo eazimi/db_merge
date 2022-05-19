@@ -62,8 +62,8 @@ namespace Kaco
     }
 
     static PA_VS2 get_cc(string tbl_name,
-                         const shared_ptr<IDbReader> &db_main,
-                         const shared_ptr<IDbReader> &db_ref)
+                         IDbReader *db_main,
+                         IDbReader *db_ref)
     {
         // db1: target, db2: reference
         auto main_ct = db_main->getCreateTblCmd(tbl_name);

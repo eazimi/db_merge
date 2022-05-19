@@ -10,13 +10,13 @@
 
 namespace Kaco
 {
-    Table::Table(const shared_ptr<IDbReader> &main_db, const shared_ptr<IDbReader> &ref_db)
+    Table::Table(IDbReader *main_db, IDbReader *ref_db)
     {
         m_main_db = main_db;
         m_ref_db = ref_db;
     }
 
-    Table::Table(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db, shared_ptr<IDbReader> base_db)
+    Table::Table(IDbReader *main_db, IDbReader *ref_db, IDbReader *base_db)
     {
         m_main_db = main_db;
         m_ref_db = ref_db;
@@ -65,7 +65,7 @@ namespace Kaco
     }
 
     // TODO: store table schema in vector<string>
-    map<string, string> Table::get_tbl_schema(const shared_ptr<IDbReader> &db, const vector<string> &db_tbls)
+    map<string, string> Table::get_tbl_schema(IDbReader *db, const vector<string> &db_tbls)
     {
         map<string, string> tbl_schema = {};
         for (auto tbl : db_tbls)
