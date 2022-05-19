@@ -60,7 +60,61 @@ namespace Kaco
         }
         return col_val;
     }
-    
+
+    static map<string, string> map_col_record(const vector<string> &records)
+    {
+        map<string, string> map_cr = {};
+        for(auto record:records)
+        {
+            int pos = record.find_first_of(VAL_SEPERATOR);
+            auto col = record.substr(0, pos);
+            map_cr.insert(make_pair(col, record));
+        }
+        return map_cr;
+    }
+
+    static string col_equal_val(VEC_PS2 col_val, bool skip_empty = false)
+    {
+        stringstream ss;
+        for (auto cv : col_val)
+        {
+            if (skip_empty && cv.second.empty())
+                continue;
+            ss << cv.first << "="
+               << "'" << cv.second << "'"
+               << " AND ";
+        }
+        auto ss_str = ss.str();
+        int pos_and = ss_str.find_last_of("AND");
+        ss_str.replace(pos_and - 3, 5, "");
+        ss_str.append(";");
+        return ss_str;
+    }
+
+    static pair<string, string> col_val_par(VEC_PS2 col_val, bool skip_empty = false)
+    {
+        stringstream ss_col;
+        stringstream ss_val;
+        ss_col << "(";
+        ss_val << "(";
+        for (auto cv : col_val)
+        {
+            if(skip_empty && cv.second.empty())
+                continue;
+            ss_col << cv.first << ", ";
+            ss_val << "'" << cv.second << "'" << ", ";
+        }
+        ss_col << ")";
+        ss_val << ");";
+        auto str_ss_col = ss_col.str();
+        auto str_ss_val = ss_val.str();
+        auto pos_col = str_ss_col.find_last_of(",");
+        auto pos_val = str_ss_val.find_last_of(",");
+        str_ss_col.replace(pos_col, 2, "");
+        str_ss_val.replace(pos_val, 2, "");
+        return make_pair(str_ss_col, str_ss_val);
+    }
+
 } // namespace
 
 #endif

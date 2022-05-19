@@ -50,7 +50,7 @@ namespace Kaco
         auto update_fmt = getDiff(diff_fmt, new_fmt);
         auto update = retrieve_records(update_fmt.first, map_diff);
         return update;
-    }    
+    }
 
     // returns tuple(diff between remote and local, values to be used to update records in local, 
     // diff between local and remote)
@@ -59,7 +59,6 @@ namespace Kaco
         auto diff_remote_base = diff_records(db, tbl_name, DB_IDX::remote, DB_IDX::base);
         auto diff_local_base = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::base);
         auto diff_remote_local = diff_records(db, tbl_name, DB_IDX::remote, DB_IDX::local);
-        // print("-> diff_remote_local", diff_remote_local);
         auto diff_local_remote = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::remote);
         
         bool remote_local_change = !diff_remote_local.empty();
@@ -70,6 +69,54 @@ namespace Kaco
         auto new_local_remote = new_records(db, tbl_name, primary_key, DB_IDX::local, DB_IDX::remote);
         auto modified_remote = modified_records(diff_remote_local, new_remote_local);
         auto modified_local = modified_records(diff_local_remote, new_local_remote);
+
+        // insert into local
+        /*
+            get new records to remote, extract values from the record, create insert command the run it
+        */
+
+        // delete from local
+        /*
+            get the new records to the local, check if they exitst in the base table then delete them
+        */
+
+        // update in local
+        /*
+            find the record in the local that corresponds to a sample record picked from modified records in the remote
+            according to the pk
+
+            create the update command for the local table, use the extracted values from the record that comes from
+            modified records in the remote in the set clause, use the extracted values from the record that comes
+            from modified records in the local in the where clause
+
+            run update command
+        */
+
+        map<string, string> map_modified_local = map_col_record(modified_local);
+        stringstream ss_del, ss_ins;
+
+        for (auto record : modified_remote)
+        {
+            auto col_val_remote = match_col_val(record, tbl_cols);
+            auto pk_value = col_val_remote[0].second;
+            string rec_local = (map_modified_local.find(pk_value))->second;
+            auto col_val_local = match_col_val(rec_local, tbl_cols);
+
+            auto str_cv_remote = col_val_par(col_val_remote, true);
+            string str_cv_local = col_equal_val(col_val_local, true);
+
+            ss_del << "DELETE FROM " << DB_ALIAS[DB_IDX::local]
+                   << "." << tbl_name << " WHERE "
+                   << str_cv_local;
+
+            ss_ins << "INSERT INTO " << DB_ALIAS[DB_IDX::local]
+                   << "." << tbl_name << " "
+                   << str_cv_remote.first << " VALUES "
+                   << str_cv_remote.second;
+        }
+
+        db->sql_exec(ss_del.str(), nullptr, nullptr);
+        db->sql_exec(ss_ins.str(), nullptr, nullptr);
 
         return make_pair(make_pair(new_remote_local, new_local_remote), make_pair(modified_remote, modified_local));
     }
