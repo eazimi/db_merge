@@ -23,7 +23,11 @@ namespace Kaco
         vector<DB_IDX> record_origin(const shared_ptr<IDbReader> &db, const vector<string> &records, string tbl_name,
                                      const vector<string> &cols, pair<DB_IDX, DB_IDX> db_idx);
         // arguments: (pair<db, db_idx>, pair<tbl_name, tbl_cols>, record_value)
-        int delete_record(pair<const shared_ptr<IDbReader> &, DB_IDX> db_param, pair<string, vector<string>> tbl_param, string rec_values);
+        int delete_record(pair<const shared_ptr<IDbReader> &, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
+                          string rec_values);
+        // arguments: (pair<db, db_idx>, pair<tbl_name, tbl_cols>, record_value)
+        int insert_record(pair<const shared_ptr<IDbReader> &, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
+                          string rec_values);
 
     public:
         Commands() = default;

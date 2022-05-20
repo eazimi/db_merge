@@ -62,8 +62,24 @@ namespace Kaco
         ss_del << "DELETE FROM " << DB_ALIAS[db_param.second]
                << "." << tbl_param.first << " WHERE "
                << str_cv;
-        cout << "delete_record" << endl << ss_del.str() << endl;
+        // cout << "delete_record" << endl << ss_del.str() << endl;
         auto rc = db_param.first->sql_exec(ss_del.str(), nullptr, nullptr);
+        return rc;
+    }
+
+    // arguments: (pair<db, db_idx>, pair<tbl_name, tbl_cols>, record_value)
+    int Commands::insert_record(pair<const shared_ptr<IDbReader> &, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
+                                string rec_values)
+    {
+        auto col_val = match_col_val(rec_values, tbl_param.second);
+        auto str_cv = col_val_par(col_val, true);
+        stringstream ss_ins;
+        ss_ins << "INSERT INTO " << DB_ALIAS[DB_IDX::local]
+               << "." << tbl_param.first << " "
+               << str_cv.first << " VALUES "
+               << str_cv.second;
+        cout << "insert_record" << endl << ss_ins.str() << endl;
+        auto rc = db_param.first->sql_exec(ss_ins.str(), nullptr, nullptr);
         return rc;
     }
 
@@ -108,7 +124,6 @@ namespace Kaco
         */
 
         map<string, string> map_modified_local = map_col_record(modified_local);
-        stringstream ss_del, ss_ins;
 
         for (auto record : modified_remote)
         {
@@ -116,17 +131,9 @@ namespace Kaco
             auto pk_value = col_val_remote[0].second;
             string rec_local = (map_modified_local.find(pk_value))->second;
 
-            auto str_cv_remote = col_val_par(col_val_remote, true);
-
             delete_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, rec_local);
-
-            ss_ins << "INSERT INTO " << DB_ALIAS[DB_IDX::local]
-                   << "." << tbl_name << " "
-                   << str_cv_remote.first << " VALUES "
-                   << str_cv_remote.second;
+            insert_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, record);
         }
-
-        db->sql_exec(ss_ins.str(), nullptr, nullptr);
 
         return make_pair(make_pair(new_remote_local, new_local_remote), make_pair(modified_remote, modified_local));
     }
