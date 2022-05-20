@@ -7,7 +7,7 @@
 namespace Kaco
 {
     // get the differences by finding records that are in the db_idx1.tbl_name but not in db_idx2.tbl_name
-    vector<string> Commands::diff_records(const shared_ptr<IDbReader> &db, string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2)
+    vector<string> Commands::diff_records(IDbReader *db, string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2)
     {
         stringstream ss;
         ss << "SELECT * FROM " << DB_ALIAS[db_idx1]
@@ -20,7 +20,7 @@ namespace Kaco
         return records;
     }
     
-    vector<string> Commands::new_records(const shared_ptr<IDbReader> &db, string tbl_name, string tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2)
+    vector<string> Commands::new_records(IDbReader *db, string tbl_name, string tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2)
     {
         auto alias1 = DB_ALIAS[db_idx1];
         auto alias2 = DB_ALIAS[db_idx2];
@@ -53,7 +53,7 @@ namespace Kaco
     }
 
     // arguments: (pair<db, db_idx>, pair<tbl_name, tbl_cols>, record_value)
-    int Commands::delete_record(pair<const shared_ptr<IDbReader> &, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
+    int Commands::delete_record(pair<IDbReader *, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
                                 string rec_values)
     {
         auto col_val = match_col_val(rec_values, tbl_param.second);
@@ -68,7 +68,7 @@ namespace Kaco
     }
 
     // arguments: (pair<db, db_idx>, pair<tbl_name, tbl_cols>, record_value)
-    int Commands::insert_record(pair<const shared_ptr<IDbReader> &, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
+    int Commands::insert_record(pair<IDbReader *, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
                                 string rec_values)
     {
         auto col_val = match_col_val(rec_values, tbl_param.second);
@@ -84,7 +84,7 @@ namespace Kaco
 
     // returns tuple(diff between remote and local, values to be used to update records in local, 
     // diff between local and remote)
-    PA_PA_VS2 Commands::records_status(const shared_ptr<IDbReader> &db, string tbl_name, vector<string> tbl_cols, string primary_key)
+    PA_PA_VS2 Commands::records_status(IDbReader *db, string tbl_name, vector<string> tbl_cols, string primary_key)
     {
         auto diff_remote_base = diff_records(db, tbl_name, DB_IDX::remote, DB_IDX::base);
         auto diff_local_base = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::base);

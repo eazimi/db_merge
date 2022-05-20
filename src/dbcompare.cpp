@@ -197,14 +197,14 @@ namespace Kaco
 
     vector<string> DbCompare::diff_records(string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2) const
     {
-        return m_commands->diff_records(m_master_db, tbl_name, db_idx1, db_idx2);
+        return m_commands->diff_records(m_master_db.get(), tbl_name, db_idx1, db_idx2);
     }
 
     PA_PA_VS2 DbCompare::records_status(string tbl_name) const
     {   
         auto pk = m_table->table_pk(tbl_name, DB_IDX::remote);
         auto tbl_cols = m_table->table_cols(tbl_name, DB_IDX::remote);
-        return m_commands->records_status(m_master_db, tbl_name, tbl_cols, pk);
+        return m_commands->records_status(m_master_db.get(), tbl_name, tbl_cols, pk);
     }
 
     vector<string> DbCompare::table_cols(string tbl_name, DB_IDX db_idx) const
