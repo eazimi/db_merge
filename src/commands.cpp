@@ -52,6 +52,21 @@ namespace Kaco
         return update;
     }
 
+    // arguments: (pair<db, db_idx>, pair<tbl_name, tbl_cols>, record_value)
+    int Commands::delete_record(pair<const shared_ptr<IDbReader> &, DB_IDX> db_param, pair<string, vector<string>> tbl_param,
+                                string rec_values)
+    {
+        auto col_val = match_col_val(rec_values, tbl_param.second);
+        string str_cv = col_equal_val(col_val, true);
+        stringstream ss_del;
+        ss_del << "DELETE FROM " << DB_ALIAS[db_param.second]
+               << "." << tbl_param.first << " WHERE "
+               << str_cv;
+        cout << "delete_record" << endl << ss_del.str() << endl;
+        auto rc = db_param.first->sql_exec(ss_del.str(), nullptr, nullptr);
+        return rc;
+    }
+
     // returns tuple(diff between remote and local, values to be used to update records in local, 
     // diff between local and remote)
     PA_PA_VS2 Commands::records_status(const shared_ptr<IDbReader> &db, string tbl_name, vector<string> tbl_cols, string primary_key)
@@ -100,14 +115,10 @@ namespace Kaco
             auto col_val_remote = match_col_val(record, tbl_cols);
             auto pk_value = col_val_remote[0].second;
             string rec_local = (map_modified_local.find(pk_value))->second;
-            auto col_val_local = match_col_val(rec_local, tbl_cols);
 
             auto str_cv_remote = col_val_par(col_val_remote, true);
-            string str_cv_local = col_equal_val(col_val_local, true);
 
-            ss_del << "DELETE FROM " << DB_ALIAS[DB_IDX::local]
-                   << "." << tbl_name << " WHERE "
-                   << str_cv_local;
+            delete_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, rec_local);
 
             ss_ins << "INSERT INTO " << DB_ALIAS[DB_IDX::local]
                    << "." << tbl_name << " "
@@ -115,7 +126,6 @@ namespace Kaco
                    << str_cv_remote.second;
         }
 
-        db->sql_exec(ss_del.str(), nullptr, nullptr);
         db->sql_exec(ss_ins.str(), nullptr, nullptr);
 
         return make_pair(make_pair(new_remote_local, new_local_remote), make_pair(modified_remote, modified_local));
