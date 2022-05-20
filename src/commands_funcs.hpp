@@ -61,6 +61,13 @@ namespace Kaco
         return col_val;
     }
 
+    static string pk_value(string record)
+    {
+        int pos = record.find_first_of(VAL_SEPERATOR);
+        auto value = record.substr(0, pos);
+        return value;
+    }
+
     static map<string, string> map_col_record(const vector<string> &records)
     {
         map<string, string> map_cr = {};

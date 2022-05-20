@@ -78,7 +78,6 @@ namespace Kaco
                << "." << tbl_param.first << " "
                << str_cv.first << " VALUES "
                << str_cv.second;
-        cout << "insert_record" << endl << ss_ins.str() << endl;
         auto rc = db_param.first->sql_exec(ss_ins.str(), nullptr, nullptr);
         return rc;
     }
@@ -127,9 +126,8 @@ namespace Kaco
 
         for (auto record : modified_remote)
         {
-            auto col_val_remote = match_col_val(record, tbl_cols);
-            auto pk_value = col_val_remote[0].second;
-            string rec_local = (map_modified_local.find(pk_value))->second;
+            auto pk_val_remote = pk_value(record);
+            string rec_local = (map_modified_local.find(pk_val_remote))->second;
 
             delete_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, rec_local);
             insert_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, record);
