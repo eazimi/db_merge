@@ -34,7 +34,7 @@ namespace Kaco
 
     DbCompare::DbCompare(std::shared_ptr<IDbReader> db1, std::shared_ptr<IDbReader> db2) : m_db1(db1), m_db2(db2), m_initialized(false)
     {
-        m_trigger = make_shared<Trigger>(db1, db2);
+        m_trigger = make_shared<Trigger>(db1.get(), db2.get());
         m_table = make_shared<Table>(db1.get(), db2.get());
         INIT_MAPS;
     }
@@ -43,7 +43,7 @@ namespace Kaco
                          std::shared_ptr<IDbReader> remote_db, 
                          std::shared_ptr<IDbReader> base_db) : m_db1(local_db), m_db2(remote_db), m_base_db(base_db), m_initialized(false)
     {
-        m_trigger = make_shared<Trigger>(local_db, remote_db, base_db);
+        m_trigger = make_shared<Trigger>(local_db.get(), remote_db.get(), base_db.get());
         m_table = make_shared<Table>(local_db.get(), remote_db.get(), base_db.get());
         m_commands = make_shared<Commands>();
         m_master_db = local_db;

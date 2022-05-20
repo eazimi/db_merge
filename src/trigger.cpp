@@ -8,13 +8,13 @@
 
 namespace Kaco
 {
-    Trigger::Trigger(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db) : m_main_db(main_db), m_ref_db(ref_db)
+    Trigger::Trigger(IDbReader *main_db, IDbReader *ref_db) : m_main_db(main_db), m_ref_db(ref_db)
     {
         for (auto i = 0; i < DB_CNT; i++)
             m_triggers[i] = {};
     }
 
-    Trigger::Trigger(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db, shared_ptr<IDbReader> base_db)
+    Trigger::Trigger(IDbReader *main_db, IDbReader *ref_db, IDbReader *base_db)
     {
         m_main_db = main_db;
         m_ref_db = ref_db;
@@ -46,7 +46,7 @@ namespace Kaco
         m_triggers[DB_IDX::base] = std::move(base_triggers);
     }
 
-    MAP_STR_VPS2 Trigger::getDbTriggers(const shared_ptr<IDbReader> &db, const vector<string> &db_tbls)
+    MAP_STR_VPS2 Trigger::getDbTriggers(IDbReader *db, const vector<string> &db_tbls)
     {
         MAP_STR_VPS2 tbl_triggers = {};
         for (auto tbl : db_tbls)

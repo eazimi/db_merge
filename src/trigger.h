@@ -14,15 +14,15 @@ namespace Kaco
     class Trigger
     {   
         private:
-            shared_ptr<IDbReader> m_main_db, m_ref_db, m_base_db;
-            array<shared_ptr<IDbReader>, DB_CNT> m_db;
+            IDbReader *m_main_db, *m_ref_db, *m_base_db;
+            array<IDbReader *, DB_CNT> m_db;
             MAP_STR_VPS2 m_mainTriggers, m_refTriggers;
             array<MAP_STR_VPS2, DB_CNT> m_triggers;
-            MAP_STR_VPS2 getDbTriggers(const shared_ptr<IDbReader> &db, const vector<string> &db_tbls);
+            MAP_STR_VPS2 getDbTriggers(IDbReader *db, const vector<string> &db_tbls);
 
         public:
-            Trigger(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db);
-            Trigger(shared_ptr<IDbReader> main_db, shared_ptr<IDbReader> ref_db, shared_ptr<IDbReader> base_db);
+            Trigger(IDbReader *main_db, IDbReader *ref_db);
+            Trigger(IDbReader *main_db, IDbReader *ref_db, IDbReader *base_db);
             void init_triggers(const vector<string> &main_tbls, const vector<string> &ref_tbls);
             void init_triggers(const vector<string> &main_tbls, const vector<string> &ref_tbls, const vector<string> &base_tbls);
             PA_VEC_PS2 diff_trigger_tbl(string tbl_name); // returns triggers diff for a particular table
