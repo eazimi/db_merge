@@ -136,13 +136,22 @@ namespace Kaco
         return result;
     }
 
-    void DbCompare::testDbDump()
+    void DbCompare::dump_db(DB_IDX db_idx, string path)
     {
-        cout << endl
-             << "-> dumping db1 in ./dump_db1.sql" << endl;
-        m_db1->dbDump((char *)"./dump_db1.sql");
-        cout << "-> dumping db2 in ./dump_db2.sql" << endl;
-        m_db2->dbDump((char *)"./dump_db2.sql");
+        switch (db_idx)
+        {
+        case DB_IDX::local:
+            m_db1->dbDump(const_cast<char *>(path.c_str()));
+            break;
+
+        case DB_IDX::remote:
+            m_db2->dbDump(const_cast<char *>(path.c_str()));
+            break;
+
+        default:
+            m_base_db->dbDump(const_cast<char *>(path.c_str()));
+            break;
+        }
     }
 
     void DbCompare::testTableIndices()

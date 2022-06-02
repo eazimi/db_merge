@@ -194,6 +194,14 @@ namespace Test
         print<vector<string>>(ss.str(), cols); 
     }
 
+    static void test_dump_db(DbCompare *db)
+    {
+        cout << "-> dumping db1 in ./dump_db1.sql" << endl;
+        db->dump_db(DB_IDX::local, "./dump_db1.sql");
+        cout << "-> dumping db2 in ./dump_db2.sql" << endl;
+        db->dump_db(DB_IDX::remote, "./dump_db2.sql");
+    }
+
 } // namespace Test
 
 #endif

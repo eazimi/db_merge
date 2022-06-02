@@ -24,8 +24,7 @@ namespace Kaco
             ~DbCompare();
 
             bool initialize();
-            string compareAndMerge();
-            void testDbDump();
+            string compareAndMerge();            
             void testTableIndices();
             inline PA_VS2 diffTblNameDb() const { return m_table->diff_tname_db(); }
             PA_VS2 readDbTables() const;
@@ -47,6 +46,7 @@ namespace Kaco
             inline string table_pk(string tbl_name, DB_IDX db_idx) const { return m_table->table_pk(tbl_name, db_idx); }
             PA_PA_VS2 records_status(string tbl_name) const;
             vector<string> table_cols(string tbl_name, DB_IDX db_idx) const;
+            void dump_db(DB_IDX db_idx, string path);
         private:
             shared_ptr<IDbReader> m_db1, m_db2, m_base_db;
             shared_ptr<IDbReader> m_master_db;

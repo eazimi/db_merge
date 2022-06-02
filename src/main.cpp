@@ -220,12 +220,12 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 18
+#define VER 10
 #if VER == 10 || RELEASE
-    dbCompare->testDbDump();
-    test_readDbTables(dbCompare);
-    test_readDbTblSchema(dbCompare);
-    dbCompare->testTableIndices();
+    test_dump_db(dbCompare.get());
+    // test_readDbTables(dbCompare);
+    // test_readDbTblSchema(dbCompare);
+    // dbCompare->testTableIndices();
 #endif
 #if VER == 11 || RELEASE
     test_diffTblNameDb(dbCompare);
