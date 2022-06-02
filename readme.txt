@@ -12,13 +12,13 @@ Version 1.0
 
 * How to run
 1- go to the destination folder on your pc
-2- git clone -b master git@code.siemens.com:ehsan.azimi/db_merge.git
-3- cd db_merge/
+2- git clone -b master git@code.siemens.com:kaco-sw/test-framework/common/db_merger.git
+3- cd db_merger/
 4- mkdir build
 5- cd build
 6- cmake ..
 7- make
-8- ./db_merge [PATH_TO_DB1] [PATH_TO_DB2] > out.sql (to save the logs in 'out.sql' in the current directory)
+8- ./db_merger [PATH_TO_DB1] [PATH_TO_DB2] > out.sql (to save the logs in 'out.sql' in the current directory)
 
 * Sample 
-user-id@pc-id: ./db_merge ../db/config-app.db3 ../db/config-psd2.db3 > test.sql
+user-id@pc-id: ./db_merger ../db/config-app.db3 ../db/config-psd2.db3 > test.sql

@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     {
         cout << "-> try it like this:"
              << endl
-             << "./db_merge [PATH_TO_DB1] [PATH_TO_DB2]"
+             << "./db_merger [PATH_TO_DB1] [PATH_TO_DB2]"
              << endl;
         return 0;
     }
