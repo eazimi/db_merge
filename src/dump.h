@@ -18,6 +18,7 @@ namespace Kaco
         sqlite3_stmt *stmt_data = nullptr;
         ostringstream oss;
         void save_dump(string dump_path);
+        void cleanup();
         Dump() {}
 
     public:

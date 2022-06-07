@@ -15,4 +15,13 @@ namespace Kaco
         ofs << oss.str();
         ofs.close();
     }
+
+    void Dump::cleanup()
+    {
+        if (stmt_data)
+            sqlite3_finalize(stmt_data);
+        if (stmt_table)
+            sqlite3_finalize(stmt_table);
+        oss.str("");
+    }
 } // namespace Kaco
