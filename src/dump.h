@@ -16,8 +16,7 @@ namespace Kaco
     private:
         sqlite3_stmt *stmt_table = nullptr;
         sqlite3_stmt *stmt_data = nullptr;
-        ostringstream oss;
-        void save_dump(string dump_path);
+        ostringstream oss;        
         void cleanup();
         Dump() {}
 
@@ -37,6 +36,7 @@ namespace Kaco
         }
 
         static DumpBuilder create();
+        void save_dump(string dump_path);
         
         friend class DumpBuilder;
         friend class DumpTableBuilder;
