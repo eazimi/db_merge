@@ -17,6 +17,10 @@ namespace Kaco
     public:
         DumpTableBuilder tables() const;
         DumpTriggerBuilder triggers() const;
+        operator Dump() const
+        {
+            return std::move(dump);
+        }
     };
 
     class DumpBuilder : public DumpBuilderBase

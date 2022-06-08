@@ -11,9 +11,9 @@ namespace Kaco
 
     void Dump::save_dump(string dump_path)
     {
-        ofstream ofs(dump_path, ios_base::out);
-        ofs << oss.str();
-        ofs.close();
+        fstream fs(dump_path, ios_base::out);
+        fs << oss.str();
+        fs.close();
     }
 
     void Dump::cleanup()
@@ -25,9 +25,9 @@ namespace Kaco
         oss.str("");
     }
 
-    bool Dump::prepare(sqlite3 *db, const string &cmd, sqlite3_stmt *stmt)
+    bool Dump::prepare(sqlite3 *db, const string &cmd, sqlite3_stmt **stmt)
     {
-        int rc = sqlite3_prepare_v2(db, cmd.c_str(), -1, &stmt, nullptr);
+        int rc = sqlite3_prepare_v2(db, cmd.c_str(), -1, stmt, nullptr);
         bool rc_bool = (rc == SQLITE_OK); 
         if (!rc_bool)
             cleanup();

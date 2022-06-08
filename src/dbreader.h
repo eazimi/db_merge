@@ -24,7 +24,7 @@ namespace Kaco
             bool connect(string dbPath);
             int attach_db(string dbPath, DB_IDX alias);
             int sql_exec(string cmd, ExecCallback cb, vector<string> *results);
-            int dbDump(char *fileName);
+            void dbDump(char *fileName);
             void command_exec(string dbPath, string output, string command);
             void dbDiff(string dbPath1, string dbPath2, string output);
             vector<string> getTables();

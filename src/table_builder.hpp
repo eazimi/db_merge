@@ -17,7 +17,7 @@ namespace Kaco
         Self &dump_tbls(sqlite3 *db)
         {
             bool rc_bool = dump.prepare(db, 
-                    "SELECT sql,tbl_name FROM sqlite_master WHERE type = 'table';", dump.stmt_table);
+                    "SELECT sql,tbl_name FROM sqlite_master WHERE type = 'table';", &dump.stmt_table);
             if(!rc_bool)
                 return *this;
             dump.oss << "PRAGMA foreign_keys=OFF;\nBEGIN TRANSACTION;\n";
@@ -30,12 +30,12 @@ namespace Kaco
                     return *this;
 
                 /* CREATE TABLE statements */
-                dump.oss << tbl_data << endl;
+                dump.oss << tbl_data << ";\n";
 
                 /* fetch table data */
                 ostringstream ss;
                 ss << "SELECT * from " << tbl_name << ";";
-                rc_bool = dump.prepare(db, ss.str().c_str(), dump.stmt_data);
+                rc_bool = dump.prepare(db, ss.str().c_str(), &dump.stmt_data);
                 if(!rc_bool)
                     return *this;
                 auto tbl_records = dump.table_data(tbl_name);

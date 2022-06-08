@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
 #endif
 
 #define RELEASE false
-#define VER 18
+#define VER 10
 #if VER == 10 || RELEASE
     test_dump_db(dbCompare.get());
     // test_readDbTables(dbCompare);

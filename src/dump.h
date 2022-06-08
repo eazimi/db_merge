@@ -17,7 +17,7 @@ namespace Kaco
         sqlite3_stmt *stmt_data = nullptr;
         ostringstream oss;        
         void cleanup();
-        bool prepare(sqlite3 *db, const string &cmd, sqlite3_stmt *stmt);
+        bool prepare(sqlite3 *db, const string &cmd, sqlite3_stmt **stmt);
         bool table_info(string &tbl_data, string &tbl_name);
         string table_record();
         string table_data(string tbl_name);
@@ -41,7 +41,12 @@ namespace Kaco
 
         static DumpBuilder create();
         void save_dump(string dump_path);
-        
+
+        friend ostream &operator<<(ostream &os, const Dump &obj)
+        {
+            return os << obj.oss.str();
+        }
+
         friend class DumpBuilder;
         friend class DumpTableBuilder;
         friend class DumpTriggerBuilder;

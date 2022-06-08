@@ -19,7 +19,7 @@ namespace Kaco
             if (dump.stmt_table)
                 sqlite3_finalize(dump.stmt_table);
             bool rc_bool = dump.prepare(db, 
-                    "SELECT sql FROM sqlite_master WHERE type = 'trigger';", dump.stmt_table);
+                    "SELECT sql FROM sqlite_master WHERE type = 'trigger';", &dump.stmt_table);
             if(!rc_bool)
                 return *this;
             auto triggers = dump.db_triggers();
