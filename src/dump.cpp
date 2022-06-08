@@ -82,4 +82,22 @@ namespace Kaco
         }
         return ss.str();
     }
+
+    string Dump::db_triggers()
+    {
+        ostringstream ss;
+        auto rc = sqlite3_step(stmt_table);
+        while (rc == SQLITE_ROW)
+        {
+            auto data = (const char *)sqlite3_column_text(stmt_table, 0);
+            if (!data)
+            {
+                cleanup();
+                return "";
+            }
+            ss << data << ";\n";
+            rc = sqlite3_step(stmt_table);
+        }
+        return ss.str();
+    }
 } // namespace Kaco

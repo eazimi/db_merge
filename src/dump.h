@@ -21,6 +21,7 @@ namespace Kaco
         bool table_info(string &tbl_data, string &tbl_name);
         string table_record();
         string table_data(string tbl_name);
+        string db_triggers();
         Dump() {}
 
     public:
