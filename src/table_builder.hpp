@@ -9,8 +9,7 @@ namespace Kaco
 {
     class DumpTableBuilder : public DumpBuilderBase
     {
-        using Self = DumpTableBuilder;
-    
+        using Self = DumpTableBuilder;    
 
     public:
         DumpTableBuilder(Dump &dump) : DumpBuilderBase{dump} {}
@@ -22,9 +21,7 @@ namespace Kaco
                     "SELECT sql,tbl_name FROM sqlite_master WHERE type = 'table';", dump.stmt_table);
             if(!rc)
                 return *this;
-            
             dump.oss << "PRAGMA foreign_keys=OFF;\nBEGIN TRANSACTION;\n";
-
             rc = sqlite3_step(dump.stmt_table);
             while (rc == SQLITE_ROW)
             {
@@ -39,37 +36,11 @@ namespace Kaco
                 /* fetch table data */
                 ostringstream ss;
                 ss << "SELECT * from " << tbl_name << ";";
-
                 rc = dump.prepare(db, ss.str().c_str(), dump.stmt_data);
                 if(!rc)
                     return *this;
-
-                rc = sqlite3_step(dump.stmt_data);
-                while (rc == SQLITE_ROW)
-                {
-                    // sprintf(cmd, "INSERT INTO %s VALUES(", table_name);
-                    ss.str("");
-                    ss << "INSERT INTO " << tbl_name << " VALUES(";
-                    auto col_cnt = sqlite3_column_count(dump.stmt_data);
-                    for (auto index = 0; index < col_cnt; index++)
-                    {
-                        if (index)
-                            ss << ",";
-                        tbl_data = (const char *)sqlite3_column_text(dump.stmt_data, index);
-
-                        if (!tbl_data.empty())
-                        {
-                            if (sqlite3_column_type(dump.stmt_data, index) == SQLITE_TEXT)
-                                ss << "'" << tbl_data << "'";  
-                            else
-                                ss << tbl_data;
-                        }
-                        else
-                            ss << "NULL";
-                    }
-                    dump.oss << ss.str() << ");\n";
-                    rc = sqlite3_step(dump.stmt_data);
-                }
+                auto tbl_records = dump.table_data(tbl_name);
+                dump.oss << tbl_records;
                 rc = sqlite3_step(dump.stmt_table);
             }
             return *this;

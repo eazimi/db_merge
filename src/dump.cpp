@@ -67,4 +67,19 @@ namespace Kaco
         }
         return ss.str();
     }
+
+    string Dump::table_data(string tbl_name)
+    {
+        /* fetch table data */
+        ostringstream ss;
+        int rc = sqlite3_step(stmt_data);
+        while (rc == SQLITE_ROW)
+        {
+            auto tbl_record = table_record();
+            ss << "INSERT INTO " << tbl_name
+               << " VALUES(" << tbl_record << ");\n";
+            rc = sqlite3_step(stmt_data);
+        }
+        return ss.str();
+    }
 } // namespace Kaco
