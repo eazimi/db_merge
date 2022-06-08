@@ -13,11 +13,11 @@ namespace Kaco
 
     class Dump
     {
-    private:
         sqlite3_stmt *stmt_table = nullptr;
         sqlite3_stmt *stmt_data = nullptr;
         ostringstream oss;        
         void cleanup();
+        bool prepare(sqlite3 *db, const string &cmd, sqlite3_stmt *stmt);
         Dump() {}
 
     public:

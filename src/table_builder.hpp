@@ -10,20 +10,19 @@ namespace Kaco
     class DumpTableBuilder : public DumpBuilderBase
     {
         using Self = DumpTableBuilder;
+    
 
     public:
         DumpTableBuilder(Dump &dump) : DumpBuilderBase{dump} {}
 
         Self &dump_tbls(sqlite3 *db)
         {
-            int rc = sqlite3_prepare_v2(db, "SELECT sql,tbl_name FROM sqlite_master WHERE type = 'table';",
-                                     -1, &dump.stmt_table, nullptr);
-            if (rc != SQLITE_OK)
-            {
-                dump.cleanup();
-                return *this;
-            }
 
+            int rc = dump.prepare(db, 
+                    "SELECT sql,tbl_name FROM sqlite_master WHERE type = 'table';", dump.stmt_table);
+            if(!rc)
+                return *this;
+            
             dump.oss << "PRAGMA foreign_keys=OFF;\nBEGIN TRANSACTION;\n";
 
             rc = sqlite3_step(dump.stmt_table);
@@ -43,12 +42,10 @@ namespace Kaco
                 /* fetch table data */
                 ostringstream ss;
                 ss << "SELECT * from " << table_name << ";";
-                rc = sqlite3_prepare_v2(db, ss.str().c_str(), -1, &dump.stmt_data, nullptr);
-                if (rc != SQLITE_OK)
-                {
-                    dump.cleanup();
+
+                rc = dump.prepare(db, ss.str().c_str(), dump.stmt_data);
+                if(!rc)
                     return *this;
-                }
 
                 rc = sqlite3_step(dump.stmt_data);
                 while (rc == SQLITE_ROW)
