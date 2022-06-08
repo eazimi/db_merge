@@ -33,4 +33,16 @@ namespace Kaco
             cleanup();
         return rc_bool;
     }
+
+    bool Dump::table_info(string &tbl_data, string &tbl_name)
+    {
+        tbl_data = (const char *)(sqlite3_column_text(stmt_table, 0));
+        tbl_name = (const char *)sqlite3_column_text(stmt_table, 1);
+        if (tbl_data.empty() || tbl_name.empty())
+        {
+            cleanup();
+            return false;
+        }
+        return true;
+    }
 } // namespace Kaco

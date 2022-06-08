@@ -18,7 +18,7 @@ namespace Kaco
         Self &dump_tbls(sqlite3 *db)
         {
 
-            int rc = dump.prepare(db, 
+            bool rc = dump.prepare(db, 
                     "SELECT sql,tbl_name FROM sqlite_master WHERE type = 'table';", dump.stmt_table);
             if(!rc)
                 return *this;
@@ -28,20 +28,17 @@ namespace Kaco
             rc = sqlite3_step(dump.stmt_table);
             while (rc == SQLITE_ROW)
             {
-                auto data = (const char *)sqlite3_column_text(dump.stmt_table, 0);
-                auto table_name = (const char *)sqlite3_column_text(dump.stmt_table, 1);
-                if (!data || !table_name)
-                {
-                    dump.cleanup();
+                string tbl_data = "", tbl_name = "";
+                rc = dump.table_info(tbl_data, tbl_name);
+                if(!rc)
                     return *this;
-                }
 
                 /* CREATE TABLE statements */
-                dump.oss << data << endl;
+                dump.oss << tbl_data << endl;
 
                 /* fetch table data */
                 ostringstream ss;
-                ss << "SELECT * from " << table_name << ";";
+                ss << "SELECT * from " << tbl_name << ";";
 
                 rc = dump.prepare(db, ss.str().c_str(), dump.stmt_data);
                 if(!rc)
@@ -52,20 +49,20 @@ namespace Kaco
                 {
                     // sprintf(cmd, "INSERT INTO %s VALUES(", table_name);
                     ss.str("");
-                    ss << "INSERT INTO " << table_name << " VALUES(";
+                    ss << "INSERT INTO " << tbl_name << " VALUES(";
                     auto col_cnt = sqlite3_column_count(dump.stmt_data);
                     for (auto index = 0; index < col_cnt; index++)
                     {
                         if (index)
                             ss << ",";
-                        data = (const char *)sqlite3_column_text(dump.stmt_data, index);
+                        tbl_data = (const char *)sqlite3_column_text(dump.stmt_data, index);
 
-                        if (data)
+                        if (!tbl_data.empty())
                         {
                             if (sqlite3_column_type(dump.stmt_data, index) == SQLITE_TEXT)
-                                ss << "'" << data << "'";  
+                                ss << "'" << tbl_data << "'";  
                             else
-                                ss << data;
+                                ss << tbl_data;
                         }
                         else
                             ss << "NULL";
