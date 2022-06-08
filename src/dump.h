@@ -19,6 +19,7 @@ namespace Kaco
         void cleanup();
         bool prepare(sqlite3 *db, const string &cmd, sqlite3_stmt *stmt);
         bool table_info(string &tbl_data, string &tbl_name);
+        string table_record();
         Dump() {}
 
     public:

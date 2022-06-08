@@ -45,4 +45,26 @@ namespace Kaco
         }
         return true;
     }
+
+    string Dump::table_record()
+    {
+        stringstream ss;
+        auto col_cnt = sqlite3_column_count(stmt_data);
+        for (auto index = 0; index < col_cnt; index++)
+        {
+            if (index)
+                ss << ",";
+            auto data = (const char *)sqlite3_column_text(stmt_data, index);
+            if (data)
+            {
+                if (sqlite3_column_type(stmt_data, index) == SQLITE_TEXT)
+                    ss << "'" << data << "'";
+                else
+                    ss << data;
+            }
+            else
+                ss << "NULL";
+        }
+        return ss.str();
+    }
 } // namespace Kaco
