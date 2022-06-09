@@ -7,6 +7,8 @@
 #include "global_funcs.hpp"
 #include "global_defines.hpp"
 #include "IDbReader.hpp"
+#include "log.h"
+#include "log_builder.hpp"
 
 using namespace std;
 using namespace Kaco;
