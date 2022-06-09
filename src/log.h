@@ -33,8 +33,9 @@ namespace Kaco
         string tbl_name = "";
         string msg_text = "";
         string col_names = "";
-        vector<pair<string, string>> captions; // vector<<caption_text, caption_value>>
-        ostringstream oss;
+        vector<vector<string>> records{};
+        vector<string> captions{};
+        ostringstream oss{};
         Log() {}
 
     public:

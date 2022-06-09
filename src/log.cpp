@@ -9,6 +9,7 @@ namespace Kaco
         tbl_name{move(other.tbl_name)},
         msg_text{move(other.msg_text)},
         col_names{move(other.col_names)},
+        records{move(other.records)},
         captions{move(other.captions)},
         oss{move(other.oss)}
     {
@@ -21,6 +22,7 @@ namespace Kaco
         tbl_name = other.tbl_name;
         msg_text = other.msg_text;
         col_names = other.col_names;
+        records = other.records;
         captions = other.captions;
         oss.str("");
         oss << other.oss.str();
@@ -35,6 +37,7 @@ namespace Kaco
         tbl_name = move(other.tbl_name);
         msg_text = move(other.msg_text);
         col_names = move(other.col_names);
+        records = move(other.records);
         captions = move(other.captions);
         oss = move(other.oss);
         return *this;
@@ -55,11 +58,36 @@ namespace Kaco
     string Log::str()
     {
         oss.str("");
-        oss << msg_text
-            << "[" << schema << "::" << tbl_name << "]" << endl
-            << string(' ', indent) << col_names << endl;
-        for(auto cap:captions)
-            oss << cap.first << ": " << cap.second << endl;
+        oss << string(1, '"') << msg_text;
+        if(schema.empty())
+            oss << "[" << tbl_name << "]" << string(1, '"') << string(1, '\n');
+        else
+            oss << "[" << schema << "::" << tbl_name << "]" << string(1, '"') << string(1, '\n');
+        int set_size = records.size();
+        int data_size = records[0].size();
+        bool print_cols = true;
+        for (auto i = 0; i < data_size; i++)
+        {
+            if(print_cols)
+            {
+                oss << string(indent, ' ') << col_names << endl;
+                print_cols = (set_size > 1);
+            }                
+            
+            if(!captions[0].empty())
+                oss << captions[0] << ": ";
+            oss << records[0][i] << endl;
+            if(set_size > 1)
+            {
+                if(!captions[1].empty())
+                    oss << captions[1] << ": ";
+                oss << records[1][i] << endl;
+            }
+            if(set_size > 1)
+                oss << endl;
+        }
+        if(set_size == 1)
+            oss << endl;
         return oss.str();
     }
 } // namespace Kaco

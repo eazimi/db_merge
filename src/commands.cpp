@@ -124,14 +124,14 @@ namespace Kaco
 
         map<string, string> map_modified_local = map_col_record(modified_local);
 
-        for (auto record : modified_remote)
-        {
-            auto pk_val_remote = pk_value(record);
-            string rec_local = (map_modified_local.find(pk_val_remote))->second;
+        // for (auto record : modified_remote)
+        // {
+        //     auto pk_val_remote = pk_value(record);
+        //     string rec_local = (map_modified_local.find(pk_val_remote))->second;
 
-            delete_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, rec_local);
-            insert_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, record);
-        }
+        //     delete_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, rec_local);
+        //     insert_record({db, DB_IDX::local}, {tbl_name, tbl_cols}, record);
+        // }
 
         return make_pair(make_pair(new_remote_local, new_local_remote), make_pair(modified_remote, modified_local));
     }

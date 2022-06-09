@@ -4,6 +4,7 @@
 #include "log.h"
 #include <string>
 #include <utility>
+#include <sstream>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ namespace Kaco
             msg.indent = indent;
         }
 
-        Self &add_tbl(string schema, string tbl_name)
+        Self &add_table(string schema, string tbl_name)
         {
             msg.schema = schema;
             msg.tbl_name = tbl_name;
@@ -35,15 +36,30 @@ namespace Kaco
             return *this;
         }
 
-        Self &add_col_names(string col_names)
+        Self &add_col_names(vector<string> col_names)
         {
-            msg.col_names = col_names;
+            ostringstream oss;
+            int col_names_size = col_names.size();
+            for (auto i = 0; i < col_names_size; i++)
+            {
+                oss << col_names[i];
+                if (i < col_names_size - 1)
+                    oss << "|";
+            }
+            msg.col_names = oss.str();
             return *this;
         }
 
-        Self &add_caption(string caption_text, string caption_value)
+        Self &add_records(string caption, vector<string> records)
         {
-            msg.captions.emplace_back(make_pair(caption_text, caption_value));
+            msg.captions.emplace_back(caption);
+            msg.records.emplace_back(records);
+            return *this;
+        }
+
+        Self &set_indent(int indent)
+        {
+            msg.indent = indent;
             return *this;
         }
 
