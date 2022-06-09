@@ -3,6 +3,7 @@
 
 #include "log.h"
 #include <string>
+#include <utility>
 
 using namespace std;
 
@@ -42,8 +43,7 @@ namespace Kaco
 
         Self &add_caption(string caption_text, string caption_value)
         {
-            msg.caption_text = caption_text;
-            msg.caption_value = caption_value;
+            msg.captions.emplace_back(make_pair(caption_text, caption_value));
             return *this;
         }
 
@@ -52,7 +52,7 @@ namespace Kaco
             return msg;
         }
 
-        inline string str() const { return msg.str(); }
+        inline string str() { return msg.str(); }
     };
 } // namespace Kaco
 

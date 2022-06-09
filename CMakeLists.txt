@@ -16,6 +16,7 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 ADD_EXECUTABLE(${PROJECT} 
     src/data_types.hpp
+    src/main__.cpp
     src/main.cpp
     src/IDbReader.hpp
     src/dbreader.cpp
@@ -27,6 +28,7 @@ ADD_EXECUTABLE(${PROJECT}
     src/trigger.cpp 
     src/trigger.h
     src/global_funcs.hpp
+    src/test_funcs__.hpp
     src/test_funcs.hpp
     src/table.cpp 
     src/table.h

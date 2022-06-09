@@ -15,6 +15,8 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
+#include <utility>
 
 using namespace std;
 
@@ -31,8 +33,7 @@ namespace Kaco
         string tbl_name = "";
         string msg_text = "";
         string col_names = "";
-        string caption_text = "";
-        string caption_value = "";
+        vector<pair<string, string>> captions; // vector<<caption_text, caption_value>>
         ostringstream oss;
         Log() {}
 
@@ -42,7 +43,7 @@ namespace Kaco
         Log(const Log &other);
         Log &operator=(Log &&other);
         static LogBuilder create(int indent = 0);
-        string str() const;
+        string str();
     };
 } // namespace Kaco
 

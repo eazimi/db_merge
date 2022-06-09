@@ -9,8 +9,7 @@ namespace Kaco
         tbl_name{move(other.tbl_name)},
         msg_text{move(other.msg_text)},
         col_names{move(other.col_names)},
-        caption_text{move(other.caption_text)},
-        caption_value{move(other.caption_value)},
+        captions{move(other.captions)},
         oss{move(other.oss)}
     {
     }
@@ -22,8 +21,7 @@ namespace Kaco
         tbl_name = other.tbl_name;
         msg_text = other.msg_text;
         col_names = other.col_names;
-        caption_text = other.caption_text;
-        caption_value = other.caption_value;
+        captions = other.captions;
         oss.str("");
         oss << other.oss.str();
     }    
@@ -37,8 +35,7 @@ namespace Kaco
         tbl_name = move(other.tbl_name);
         msg_text = move(other.msg_text);
         col_names = move(other.col_names);
-        caption_text = move(other.caption_text);
-        caption_value = move(other.caption_value);
+        captions = move(other.captions);
         oss = move(other.oss);
         return *this;
     }
@@ -48,8 +45,21 @@ namespace Kaco
         return {indent};
     }
 
-    string Log::str() const
+    /* 
+        msg_text [schema::tbl_name]
+        [indent] col_names
+        caption_text: caption_value
+        ...
+        caption_text: caption_value 
+    */
+    string Log::str()
     {
+        oss.str("");
+        oss << msg_text
+            << "[" << schema << "::" << tbl_name << "]" << endl
+            << string(' ', indent) << col_names << endl;
+        for(auto cap:captions)
+            oss << cap.first << ": " << cap.second << endl;
         return oss.str();
     }
 } // namespace Kaco
