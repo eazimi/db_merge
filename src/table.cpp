@@ -59,6 +59,30 @@ namespace Kaco
         return make_tuple(m_table[DB_IDX::local], m_table[DB_IDX::remote], m_table[DB_IDX::base]);
     }
 
+    VEC_PS2 Table::common_tbls_db(DB_IDX db_idx1, DB_IDX db_idx2)
+    {
+        VEC_PS2 common_tbls{};
+        auto map_schema_1 = m_schema[db_idx1];
+        auto map_schema_2 = m_schema[db_idx2];
+        vector<string> schema_1, schema_2;
+        for (auto p : map_schema_1)
+            schema_1.emplace_back(p.second);
+        for (auto p : map_schema_2)
+            schema_2.emplace_back(p.second);
+        auto inter_schema = getIntersect(schema_1, schema_2);
+        for (auto schema : inter_schema)
+        {
+            auto comp = [schema](pair<string, string> p)
+            {
+                return (p.second == schema);
+            };
+            auto it = find_if(map_schema_1.begin(), map_schema_1.end(), comp);
+            if(it != map_schema_1.end())
+                common_tbls.emplace_back(*it);
+        }
+        return common_tbls;
+    }
+
     PA_MAP_S2 Table::read_tschema_db() const
     {
         return make_pair(m_main_tbl_schema, m_ref_tbl_schema);

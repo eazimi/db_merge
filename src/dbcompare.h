@@ -47,6 +47,9 @@ namespace Kaco
             PA_PA_VS2 records_status(string tbl_name) const;
             vector<string> table_cols(string tbl_name, DB_IDX db_idx) const;
             void dump_db(DB_IDX db_idx, string path);
+            inline VEC_PS2 common_tbls_db(DB_IDX db_idx1, DB_IDX db_idx2) const {
+                return m_table->common_tbls_db(db_idx1, db_idx2);
+            }
         private:
             shared_ptr<IDbReader> m_db1, m_db2, m_base_db;
             shared_ptr<IDbReader> m_master_db;
