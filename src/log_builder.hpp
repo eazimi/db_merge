@@ -68,7 +68,8 @@ namespace Kaco
             return msg;
         }
 
-        inline string str() { return msg.str(); }
+        inline string str_records() { return msg.str_records(); }
+        inline string str_no_pk() { return msg.str_no_pk(); }
     };
 } // namespace Kaco
 

@@ -17,6 +17,7 @@
 #include <sstream>
 #include <vector>
 #include <utility>
+#include <memory>
 
 using namespace std;
 
@@ -43,8 +44,9 @@ namespace Kaco
         Log(Log &&other);
         Log(const Log &other);
         Log &operator=(Log &&other);
-        static LogBuilder create(int indent = 0);
-        string str();
+        static unique_ptr<LogBuilder> create(int indent = 0);
+        string str_records();
+        string str_no_pk();
     };
 } // namespace Kaco
 
