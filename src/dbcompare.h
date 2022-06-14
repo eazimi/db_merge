@@ -29,7 +29,6 @@ namespace Kaco
             inline PA_VS2 diffTblNameDb() const { return m_table->diff_tname_db(); }
             PA_VS2 readDbTables() const;
             PA_MAP_S2 readDbTblSchema() const;
-            inline VEC_TS3 diffSchemaDb() const { return m_table->diff_schema_db(); }
             inline PA_MAP_SVPS2 readDbTriggers() const { return m_trigger->read_trigger_db(); };
             inline T_MAP_SVPS2 triggers_db() const { return m_trigger->triggers_db(); };
             PA_VEC_PS2 readSingleTblTriggers(string table_name) const;

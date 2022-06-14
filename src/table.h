@@ -36,7 +36,6 @@ namespace Kaco
             PA_MAP_S2 read_tschema_db() const;
             PA_VS2 diff_tname_db() const;
             bool diff_schema_tbl(string tbl_name, pair<string, string> &schema); // returns schema diff for a particular table
-            VEC_TS3 diff_schema_db(); // returns schema diff for a the tables in the dbs
             string create_tbl(string tbl_name);
             string insert_into(string tbl_name);
             vector<string> table_pk(string tbl_name, DB_IDX db_idx);
