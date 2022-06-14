@@ -87,6 +87,15 @@ namespace Kaco
         return common_tbls;
     }
 
+    vector<string> Table::common_tnames_db(DB_IDX db_idx1, DB_IDX db_idx2)
+    {
+        auto tbls = common_tbls_db(db_idx1, db_idx2);
+        vector<string> tbl_names{};
+        for (auto p : tbls)
+            tbl_names.emplace_back(p.first);
+        return tbl_names;
+    }
+
     PA_MAP_S2 Table::read_tschema_db() const
     {
         return make_pair(m_main_tbl_schema, m_ref_tbl_schema);
