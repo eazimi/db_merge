@@ -20,23 +20,30 @@ namespace Kaco
         return records;
     }
     
-    vector<string> Commands::new_records(IDbReader *db, string tbl_name, string tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2)
+    vector<string> Commands::new_records(IDbReader *db, string tbl_name, vector<string> tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2)
     {
         auto alias1 = DB_ALIAS[db_idx1];
         auto alias2 = DB_ALIAS[db_idx2];
+        stringstream ss_all_pk, ss_pk2;
+        int pk_size = tbl_pk.size();
+        for (auto i = 0; i < pk_size; i++)
+        {
+            if (i > 0)
+            {
+                ss_all_pk << " AND ";
+                ss_pk2 << " AND ";
+            }            
+            ss_all_pk << alias1 << "." << tbl_name << "." << tbl_pk[i]
+                      << "="
+                      << alias2 << "." << tbl_name << "." << tbl_pk[i];
+            ss_pk2 << alias2 << "." << tbl_name << "." << tbl_pk[i]
+                   << " IS NULL";
+        }
         stringstream ss;
-        ss << alias1 << "." << tbl_name << "." << tbl_pk;
-        auto pk1 = ss.str();
-        ss.str("");
-        ss << alias2 << "." << tbl_name << "." << tbl_pk;
-        auto pk2 = ss.str();
-        ss.str("");
-        ss << "SELECT * FROM " << alias1
-           << "." << tbl_name
-           << " LEFT JOIN " << alias2
-           << "." << tbl_name << " ON " 
-           << pk1 << "=" << pk2
-           << " WHERE " << pk2 << " IS NULL;";
+        ss << "SELECT * FROM " << alias1 << "." << tbl_name
+           << " LEFT JOIN " << alias2 << "." << tbl_name 
+           << " ON " << ss_all_pk.str()            
+           << " WHERE " << ss_pk2.str() << ";";
         vector<string> records;
         db->sql_exec(ss.str(), cb_sql_exec, &records);
         return records;
@@ -82,19 +89,22 @@ namespace Kaco
         return rc;
     }
 
-    // returns tuple(diff between remote and local, values to be used to update records in local, 
-    // diff between local and remote)
-    PA_PA_VS2 Commands::records_status(IDbReader *db, string tbl_name, vector<string> tbl_cols, string primary_key)
+    // returns pair<pair<new records in remote, new records in local>,
+    //    pair<modified records in remote, modified records in local>>
+    PA_PA_VS2 Commands::records_status(IDbReader *db, string tbl_name, vector<string> tbl_cols, vector<string> primary_key)
     {
         auto diff_remote_base = diff_records(db, tbl_name, DB_IDX::remote, DB_IDX::base);
         auto diff_local_base = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::base);
         auto diff_remote_local = diff_records(db, tbl_name, DB_IDX::remote, DB_IDX::local);
         auto diff_local_remote = diff_records(db, tbl_name, DB_IDX::local, DB_IDX::remote);
         
-        bool remote_local_change = !diff_remote_local.empty();
-        bool remote_base_change = !diff_remote_base.empty();
-        bool local_base_change = !diff_local_base.empty();
-        
+        // bool remote_local_change = !diff_remote_local.empty();
+        // bool remote_base_change = !diff_remote_base.empty();
+        // bool local_base_change = !diff_local_base.empty();
+
+        if(primary_key.empty())
+            return make_pair(make_pair(diff_remote_local, diff_local_remote), make_pair(vector<string>{}, vector<string>{}));
+
         auto new_remote_local = new_records(db, tbl_name, primary_key, DB_IDX::remote, DB_IDX::local);
         auto new_local_remote = new_records(db, tbl_name, primary_key, DB_IDX::local, DB_IDX::remote);
         auto modified_remote = modified_records(diff_remote_local, new_remote_local);

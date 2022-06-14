@@ -18,7 +18,7 @@ namespace Kaco
     {
     private:
         vector<string> new_records(IDbReader *db, string tbl_name,
-                                   string tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2);
+                                   vector<string> tbl_pk, DB_IDX db_idx1, DB_IDX db_idx2);
         vector<string> modified_records(const vector<string> &diff_recs, const vector<string> &new_recs);
         vector<DB_IDX> record_origin(IDbReader *db, const vector<string> &records, string tbl_name,
                                      const vector<string> &cols, pair<DB_IDX, DB_IDX> db_idx);
@@ -33,9 +33,9 @@ namespace Kaco
         Commands() = default;
         // get the differences by finding records that are in the db_idx1.tbl_name but not in db_idx2.tbl_name
         vector<string> diff_records(IDbReader *db, string tbl_name, DB_IDX db_idx1, DB_IDX db_idx2);
-        // returns tuple(diff between remote and local, values to be used to update records in local, 
-        // diff between local and remote)
-        PA_PA_VS2 records_status(IDbReader *db, string tbl_name, vector<string> tbl_cols, string primary_key);
+        // returns pair<pair<new records in remote, new records in local>, 
+        //    pair<modified records in remote, modified records in local>>
+        PA_PA_VS2 records_status(IDbReader *db, string tbl_name, vector<string> tbl_cols, vector<string> primary_key);
     };
 
 } // namespace Kaco

@@ -200,8 +200,9 @@ namespace Kaco
         return ss.str();
     }
 
-    string Table::table_pk(string tbl_name, DB_IDX db_idx)
+    vector<string> Table::table_pk(string tbl_name, DB_IDX db_idx)
     {
+        vector<string> pk{};
         auto tbl_schema = m_schema[db_idx][tbl_name];
         auto ch_tbl_schema = const_cast<char *>(tbl_schema.c_str());
         char *token = strtok(ch_tbl_schema, STR_SEPERATOR);
@@ -214,11 +215,11 @@ namespace Kaco
                 int cname_begin = str_token.find_first_of(VAL_SEPERATOR);
                 ++cname_begin;
                 int cname_end = str_token.find_first_of(VAL_SEPERATOR, cname_begin);
-                return str_token.substr(cname_begin, cname_end - cname_begin);
+                pk.emplace_back(str_token.substr(cname_begin, cname_end - cname_begin));
             }
             token = strtok(nullptr, STR_SEPERATOR);
         }
-        return "";
+        return pk;
     }
 
     vector<string> Table::table_cols(string tbl_name, DB_IDX db_idx)

@@ -39,7 +39,7 @@ namespace Kaco
             VEC_TS3 diff_schema_db(); // returns schema diff for a the tables in the dbs
             string create_tbl(string tbl_name);
             string insert_into(string tbl_name);
-            string table_pk(string tbl_name, DB_IDX db_idx);
+            vector<string> table_pk(string tbl_name, DB_IDX db_idx);
             vector<string> table_cols(string tbl_name, DB_IDX db_idx);
     };
 
