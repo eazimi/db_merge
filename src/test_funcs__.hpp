@@ -111,13 +111,6 @@ namespace Test
         print(db_tbl_schema.second, "-> ref db, all the table schemas");
     }
 
-    static void test_diffTblNameDb(const shared_ptr<DbCompare> &db)
-    {
-        auto diff_tbls = db->diffTblNameDb();
-        print<vector<string>>("-> table [names] in the main db but not in the ref db", diff_tbls.first);
-        print<vector<string>>("-> table [names] in the ref db but not in the main db", diff_tbls.second);
-    }
-
     static void test_createTbl(const shared_ptr<DbCompare> &db)
     {
         // auto tbl_name = "inv";

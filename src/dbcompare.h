@@ -26,7 +26,6 @@ namespace Kaco
             bool initialize();
             string compareAndMerge();            
             void testTableIndices();
-            inline PA_VS2 diffTblNameDb() const { return m_table->diff_tname_db(); }
             PA_VS2 readDbTables() const;
             PA_MAP_S2 readDbTblSchema() const;
             inline PA_MAP_SVPS2 readDbTriggers() const { return m_trigger->read_trigger_db(); };

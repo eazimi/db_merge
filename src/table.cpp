@@ -121,14 +121,6 @@ namespace Kaco
         return tbl_schema;
     }
 
-    // first: tables in the main db but not in the ref db
-    // second: tables in the ref db but not in the main db
-    PA_VS2 Table::diff_tname_db() const
-    {
-        auto diff_tbls = getDiff(m_main_tbls, m_ref_tbls);
-        return make_pair(diff_tbls.first, diff_tbls.second);
-    }
-
     // returns schema diff for a particular table
     bool Table::diff_schema_tbl(string tbl_name, pair<string, string> &schema)
     {
