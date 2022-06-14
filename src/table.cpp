@@ -10,6 +10,14 @@
 
 namespace Kaco
 {
+    static vector<string> vector_schema(const map<string, string> schema)
+    {
+        vector<string> vec_schema;
+        for (auto p : schema)
+            vec_schema.emplace_back(p.second);
+        return vec_schema;
+    }
+
     Table::Table(IDbReader *main_db, IDbReader *ref_db)
     {
         m_main_db = main_db;
@@ -63,12 +71,8 @@ namespace Kaco
     {
         VEC_PS2 common_tbls{};
         auto map_schema_1 = m_schema[db_idx1];
-        auto map_schema_2 = m_schema[db_idx2];
-        vector<string> schema_1, schema_2;
-        for (auto p : map_schema_1)
-            schema_1.emplace_back(p.second);
-        for (auto p : map_schema_2)
-            schema_2.emplace_back(p.second);
+        auto schema_1 = vector_schema(m_schema[db_idx1]);
+        auto schema_2 = vector_schema(m_schema[db_idx2]);
         auto inter_schema = getIntersect(schema_1, schema_2);
         for (auto schema : inter_schema)
         {
