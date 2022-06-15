@@ -33,6 +33,7 @@ namespace Kaco
         string schema = "";
         string tbl_name = "";
         string msg_text = "";
+        vector<string> msg_multi{};
         string col_names = "";
         vector<vector<string>> data{};
         vector<string> captions{};

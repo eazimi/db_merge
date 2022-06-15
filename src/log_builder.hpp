@@ -41,6 +41,12 @@ namespace Kaco
             return *this;
         }
 
+        Self &add_msg_multi(string msg_text)
+        {
+            msg.msg_multi.emplace_back(msg_text);
+            return *this;
+        }
+
         Self &add_col_names(vector<string> col_names)
         {
             ostringstream oss;
