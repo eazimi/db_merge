@@ -28,7 +28,7 @@ namespace Kaco
         tbl_name{move(other.tbl_name)},
         msg_text{move(other.msg_text)},
         col_names{move(other.col_names)},
-        records{move(other.records)},
+        data{move(other.data)},
         captions{move(other.captions)},
         oss{move(other.oss)}
     {
@@ -41,7 +41,7 @@ namespace Kaco
         tbl_name = other.tbl_name;
         msg_text = other.msg_text;
         col_names = other.col_names;
-        records = other.records;
+        data = other.data;
         captions = other.captions;
         oss.str("");
         oss << other.oss.str();
@@ -56,7 +56,7 @@ namespace Kaco
         tbl_name = move(other.tbl_name);
         msg_text = move(other.msg_text);
         col_names = move(other.col_names);
-        records = move(other.records);
+        data = move(other.data);
         captions = move(other.captions);
         oss = move(other.oss);
         return *this;
@@ -77,16 +77,16 @@ namespace Kaco
     string Log::str_records()
     {
         oss << string(1, '"') << msg_text << full_tbl(schema, tbl_name) << string(1, '"') << endl;
-        int set_size = records.size();
-        int data_size = records[0].size();
+        int set_size = data.size();
+        int data_size = data[0].size();
         for (auto i = 0; i < data_size; i++)
         {
             if (i == 0 || set_size > 1)
                 oss << string(indent, ' ') << col_names << endl;
-            oss << format_caption(captions[0]) << records[0][i] << endl;
+            oss << format_caption(captions[0]) << data[0][i] << endl;
             if(set_size > 1)
                 oss << format_caption(captions[1])
-                    << records[1][i] << string(2, '\n');
+                    << data[1][i] << string(2, '\n');
         }
         if (!(data_size > 0 && set_size > 1))
             oss << endl;
@@ -101,12 +101,12 @@ namespace Kaco
             << "it is not possible to seperate modified records from new records, "
             << "here is all the new/modified records in " << ftbl;
         oss << string(1, '"') << ss.str() << string(1, '"') << endl;
-        int data_size = records[0].size();
+        int data_size = data[0].size();
         oss << string(indent, ' ') << col_names << endl;
         for (auto i = 0; i < data_size; i++)
         {
             oss << format_caption(captions[0])
-                << records[0][i] << endl;
+                << data[0][i] << endl;
         }
         oss << endl;
         return oss.str();

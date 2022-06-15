@@ -50,10 +50,10 @@ namespace Kaco
             return *this;
         }
 
-        Self &add_records(string caption, vector<string> records)
+        Self &add_data(string caption, vector<string> data)
         {
             msg.captions.emplace_back(caption);
-            msg.records.emplace_back(records);
+            msg.data.emplace_back(data);
             return *this;
         }
 

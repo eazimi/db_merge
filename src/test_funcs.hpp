@@ -28,29 +28,29 @@ namespace Test
             {
                 cout << Log::create()->add_table(DB_ALIAS[DB_IDX::remote], tbl_name)
                             .add_col_names(tbl_cols)
-                            .add_records("", (get<0>(records)).first)
+                            .add_data("", (get<0>(records)).first)
                             .str_no_pk();
                 cout << Log::create()->add_table(DB_ALIAS[DB_IDX::local], tbl_name)
                             .add_col_names(tbl_cols)
-                            .add_records("", (get<0>(records)).second)
+                            .add_data("", (get<0>(records)).second)
                             .str_no_pk();
                 continue;
             }
             cout << Log::create()->add_msg_text("-> new records in ")
                     .add_table(DB_ALIAS[DB_IDX::remote], tbl_name)
                     .add_col_names(tbl_cols)
-                    .add_records("", (get<0>(records)).first)
+                    .add_data("", (get<0>(records)).first)
                     .str_records();
             cout << Log::create()->add_msg_text("-> new records in ")
                     .add_table(DB_ALIAS[DB_IDX::local], tbl_name)
                     .add_col_names(tbl_cols)
-                    .add_records("", (get<0>(records)).second)
+                    .add_data("", (get<0>(records)).second)
                     .str_records();
             cout << Log::create()->add_msg_text("-> modified records in ")
                     .add_table("", tbl_name)
                     .add_col_names(tbl_cols)
-                    .add_records("-> old values", (get<1>(records)).second)
-                    .add_records("-> new values", (get<1>(records)).first)
+                    .add_data("-> old values", (get<1>(records)).second)
+                    .add_data("-> new values", (get<1>(records)).first)
                     .str_records();
         }
     }
