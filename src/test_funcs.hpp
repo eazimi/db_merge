@@ -26,28 +26,32 @@ namespace Test
             auto records = db->records_status(tbl_name);
             if (tbl_pk_local.empty() || tbl_pk_remote.empty())
             {
-                cout << Log::create()->add_table(DB_ALIAS[DB_IDX::remote], tbl_name)
+                cout << Log::create()->add_schema(DB_ALIAS[DB_IDX::remote])
+                            .add_table(tbl_name)
                             .add_col_names(tbl_cols)
                             .add_data("", (get<0>(records)).first)
                             .str_no_pk();
-                cout << Log::create()->add_table(DB_ALIAS[DB_IDX::local], tbl_name)
+                cout << Log::create()->add_schema(DB_ALIAS[DB_IDX::local])
+                            .add_table(tbl_name)
                             .add_col_names(tbl_cols)
                             .add_data("", (get<0>(records)).second)
                             .str_no_pk();
                 continue;
             }
             cout << Log::create()->add_msg_text("-> new records in ")
-                    .add_table(DB_ALIAS[DB_IDX::remote], tbl_name)
+                    .add_schema(DB_ALIAS[DB_IDX::remote])
+                    .add_table(tbl_name)
                     .add_col_names(tbl_cols)
                     .add_data("", (get<0>(records)).first)
                     .str_records();
             cout << Log::create()->add_msg_text("-> new records in ")
-                    .add_table(DB_ALIAS[DB_IDX::local], tbl_name)
+                    .add_schema(DB_ALIAS[DB_IDX::local])
+                    .add_table(tbl_name)
                     .add_col_names(tbl_cols)
                     .add_data("", (get<0>(records)).second)
                     .str_records();
             cout << Log::create()->add_msg_text("-> modified records in ")
-                    .add_table("", tbl_name)
+                    .add_table(tbl_name)
                     .add_col_names(tbl_cols)
                     .add_data("-> old values", (get<1>(records)).second)
                     .add_data("-> new values", (get<1>(records)).first)

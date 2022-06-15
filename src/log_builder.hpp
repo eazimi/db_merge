@@ -23,10 +23,15 @@ namespace Kaco
             msg.indent = indent;
         }
 
-        Self &add_table(string schema, string tbl_name)
+        Self &add_table(string tbl_name)
+        {
+            msg.tbl_name = tbl_name;
+            return *this;
+        }
+
+        Self &add_schema(string schema)
         {
             msg.schema = schema;
-            msg.tbl_name = tbl_name;
             return *this;
         }
 
