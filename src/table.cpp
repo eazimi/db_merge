@@ -18,6 +18,22 @@ namespace Kaco
         return vec_schema;
     }
 
+    static vector<string> find_tname(const vector<string> &schema, const map<string, string> &hash_map)
+    {
+        vector<string> vec_tname{};
+        for (auto s : schema)
+        {
+            auto comp = [s](pair<string, string> p)
+            {
+                return (p.second == s);
+            };
+            auto it = find_if(hash_map.begin(), hash_map.end(), comp);
+            if (it != hash_map.end())
+                vec_tname.push_back(it->first);
+        }
+        return vec_tname;
+    }
+
     Table::Table(IDbReader *main_db, IDbReader *ref_db)
     {
         m_main_db = main_db;
@@ -85,6 +101,19 @@ namespace Kaco
                 common_tbls.emplace_back(*it);
         }
         return common_tbls;
+    }
+
+    PA_VS2 Table::diff_tbls_db(DB_IDX db_idx1, DB_IDX db_idx2)
+    {
+        PA_VS2 diff_tbls{};
+        auto map_schema_1 = m_schema[db_idx1];
+        auto map_schema_2 = m_schema[db_idx2];
+        auto schema_1 = vector_schema(map_schema_1);
+        auto schema_2 = vector_schema(map_schema_2);
+        auto diff_schema = getDiff(schema_1, schema_2);
+        auto diff_tname_1 = find_tname(diff_schema.first, map_schema_1); 
+        auto diff_tname_2 = find_tname(diff_schema.second, map_schema_2); 
+        return move(make_pair(diff_tname_1, diff_tname_2));
     }
 
     vector<string> Table::common_tnames_db(DB_IDX db_idx1, DB_IDX db_idx2)

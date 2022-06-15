@@ -48,6 +48,7 @@ namespace Kaco
         static unique_ptr<LogBuilder> create(int indent = 0);
         string str_records();
         string str_no_pk();
+        string str_diff_tbls();
     };
 } // namespace Kaco
 

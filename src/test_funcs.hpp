@@ -58,6 +58,21 @@ namespace Test
                     .str_records();
         }
     }
+
+    static void diff_tables(DbCompare *db)
+    {
+        auto diff = db->diff_tbls_db(DB_IDX::local, DB_IDX::remote);
+        cout << Log::create()->add_msg_multi("-> new/modified tables in ")
+                .add_schema(DB_ALIAS[DB_IDX::local])
+                .add_msg_multi(" db")
+                .add_data("", diff.first)
+                .str_diff_tbls();
+        cout << Log::create()->add_msg_multi("-> new/modified tables in ")
+                .add_schema(DB_ALIAS[DB_IDX::remote])
+                .add_msg_multi(" db")
+                .add_data("", diff.second)
+                .str_diff_tbls();
+    }
 } // namespace Test
 
 #endif

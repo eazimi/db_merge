@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    diff_tables(dbCompare.get());
     test_records_status(dbCompare.get());
 
     return 0;

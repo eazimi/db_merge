@@ -111,4 +111,15 @@ namespace Kaco
         oss << endl;
         return oss.str();
     }
+
+    string Log::str_diff_tbls()
+    {
+        if(msg_multi.size() > 1)
+            oss << string(1, '"') << msg_multi[0] << schema << msg_multi[1] << string(1, '"') << endl;
+        int data_size = data[0].size();
+        for(auto i=0; i<data_size; i++)
+            oss << data[0][i] << endl;
+        oss << endl;
+        return oss.str();
+    }
 } // namespace Kaco
