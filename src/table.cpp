@@ -167,6 +167,19 @@ namespace Kaco
         return move(make_pair(diff_tname_1, diff_tname_2));
     }
 
+    PA_VS2 Table::diff_tbls_db_2(DB_IDX db_idx1, DB_IDX db_idx2)
+    {
+        vector<string> diff_tbls_1{}, diff_tbls_2{};
+        auto comm_tbls = common_tnames_db(db_idx1, db_idx2);
+        auto tbl_1 = getDiff(m_table[db_idx1], comm_tbls);
+        auto tbl_2 = getDiff(m_table[db_idx2], comm_tbls);
+        for (auto tbl : tbl_1.first)
+            diff_tbls_1.push_back(tbl);
+        for (auto tbl : tbl_2.first)
+            diff_tbls_2.push_back(tbl);
+        return move(make_pair(diff_tbls_1, diff_tbls_2));
+    }
+
     // the logic is correct, but it detects log table as a difference, which is not correct. 
     PA_MAP_S2 Table::diff_schema_db(DB_IDX db_idx1, DB_IDX db_idx2)
     {

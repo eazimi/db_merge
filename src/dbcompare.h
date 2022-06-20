@@ -49,7 +49,7 @@ namespace Kaco
                 return m_table->common_tbls_db(db_idx1, db_idx2);
             }
             inline PA_VS2 diff_tbls_db(DB_IDX db_idx1, DB_IDX db_idx2) const {
-                return m_table->diff_tbls_db(db_idx1, db_idx2);
+                return m_table->diff_tbls_db_2(db_idx1, db_idx2);
             }
 
             inline PA_MAP_S2 diff_schema_db(DB_IDX db_idx1, DB_IDX db_idx2) const {
