@@ -3,6 +3,8 @@
 
 #include <string>
 #include <tuple>
+#include <cstring>
+#include <sstream>
 #include "dbcompare.h"
 #include "global_funcs.hpp"
 #include "global_defines.hpp"
@@ -14,6 +16,21 @@ using namespace Kaco;
 
 namespace Test
 {
+    static string format_schema_string(string schema)
+    {
+        ostringstream oss{""};
+        auto token = strtok(const_cast<char *>(schema.c_str()), STR_SEPERATOR);
+        while(token != nullptr)
+        {
+            oss << string(1, '"') << token << string(1, '"') << ", ";
+            token = strtok(nullptr, STR_SEPERATOR);
+        }
+        auto oss_str = oss.str();
+        int virgool = oss_str.find_last_of(", ");
+        oss_str.replace(virgool - 1, 2, "");
+        return oss_str;
+    }
+
     static void test_records_status(DbCompare *db)
     {        
         auto common_tbls = db->common_tbls_db(DB_IDX::local, DB_IDX::remote);
@@ -104,22 +121,22 @@ namespace Test
         {
             cout << "[" << get<0>(tu) << "]" << endl
                  << col_names << endl
-                 << "-> schema in " << LOCAL << " db: " << get<1>(tu) << endl
-                 << "-> schema in " << REMOTE << " db: " << get<2>(tu) << string(2, '\n');
+                 << "-> schema in " << LOCAL << " db: " << format_schema_string(get<1>(tu)) << endl
+                 << "-> schema in " << REMOTE << " db: " << format_schema_string(get<2>(tu)) << string(2, '\n');
         }
         cout << string(1, '"') << "-> schema of new tables in " << LOCAL << " db" << string(1, '"') << endl;
         for (auto p : new_local)
         {
             cout << "[" << p.first << "]" << endl
                  << col_names << endl
-                 << p.second << string(2, '\n');
+                 << format_schema_string(p.second) << string(2, '\n');
         }
         cout << string(1, '"') << "-> schema of new tables in " << REMOTE << " db" << string(1, '"') << endl;
         for (auto p : new_remote)
         {
             cout << "[" << p.first << "]" << endl
                  << col_names << endl
-                 << p.second << string(2, '\n');
+                 << format_schema_string(p.second) << string(2, '\n');
         }
     }
 } // namespace Test
