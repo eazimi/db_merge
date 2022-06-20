@@ -30,7 +30,8 @@ namespace Kaco
     private:
         friend class LogBuilder;
         int indent = 0;
-        string schema = "";
+        string schema{""};
+        string schema_aux{""};
         string tbl_name = "";
         string msg_text = "";
         vector<string> msg_multi{};
@@ -49,6 +50,7 @@ namespace Kaco
         string str_records();
         string str_no_pk();
         string str_diff_tbls();
+        string str_schema();
     };
 } // namespace Kaco
 

@@ -25,6 +25,7 @@ namespace Kaco
     Log::Log(Log &&other)
         : indent{move(other.indent)},
         schema{move(other.schema)},
+        schema_aux{move(other.schema_aux)},
         tbl_name{move(other.tbl_name)},
         msg_text{move(other.msg_text)},
         col_names{move(other.col_names)},
@@ -38,6 +39,7 @@ namespace Kaco
     {
         indent = other.indent;
         schema = other.schema;
+        schema_aux = other.schema_aux;
         tbl_name = other.tbl_name;
         msg_text = other.msg_text;
         col_names = other.col_names;
@@ -53,6 +55,7 @@ namespace Kaco
             return *this;
         indent = move(other.indent);
         schema = move(other.schema);
+        schema_aux = move(other.schema_aux);
         tbl_name = move(other.tbl_name);
         msg_text = move(other.msg_text);
         col_names = move(other.col_names);
@@ -120,6 +123,39 @@ namespace Kaco
         for(auto i=0; i<data_size; i++)
             oss << data[0][i] << endl;
         oss << endl;
+        return oss.str();
+    }
+
+    string Log::str_schema()
+    {
+        // "-> new/modified tables in remote db"
+        // accounts
+        // countrySettingCfg
+
+        // "-> table schema diff between main and remote"
+        // [accounts]
+        // cid|name|type|notnull|dflt_value|pk
+        // -> schema in main db: 0|accName|TEXT|1||1##1|hashDefault|TEXT|1||0##2|hash|TEXT|0||0
+        // -> schema in remote db: 0|accName|TEXT|1||1##1|hashDefault|TEXT|1||0##2|hash|TEXT|0||0##3|timeStamp|DATETIME|1|DATETIME(CURRENT_TIMESTAMP, 'localtime')|0
+
+        // "-> schema of new tables in main db"
+        // [logGridChanges]
+        // cid|name|type|notnull|dflt_value|pk
+        // 0|tableName|TEXT|0||0##1|rowName|TEXT|0||0##2|columnName|TEXT|0||0##3|timeStamp|DATETIME|1|DATETIME(CURRENT_TIMESTAMP, 'localtime')|0##4|event|TEXT|1||0##5|oldValue|TEXT|0||0##6|newValue|TEXT|0||0##7|user|TEXT|0||0
+
+        // [measDataCfg]
+        // cid|name|type|notnull|dflt_value|pk
+        // 0|regionId|TEXT|1||1##1|invFamilyId|TEXT|1||2##2|powerclassId|TEXT|1||3##3|measDataId|TEXT|1||4##4|available|BOOLEAN|1||0
+
+        if (msg_multi.size() > 1)
+        {
+            oss << string(1, '"') << msg_multi[0] << schema[0]
+                << msg_multi[1];
+            if(!schema_aux.empty())
+                oss << " " << schema_aux << string(1, '"') << endl;
+            else
+                oss << string(1, '"') << endl;
+        }
         return oss.str();
     }
 } // namespace Kaco
