@@ -181,6 +181,28 @@ namespace Kaco
         auto diff_schema_2 = find_sname(diff_schema.second, map_schema_2, fmtd_map_s2); 
         return move(make_pair(diff_schema_1, diff_schema_2));
     }
+
+    PA_MAP_S2 Table::diff_schema_db_2(DB_IDX db_idx1, DB_IDX db_idx2)
+    {
+        auto comm_tbls = common_tnames_db(db_idx1, db_idx2);
+        auto map_schema_1 = m_schema[db_idx1];
+        auto map_schema_2 = m_schema[db_idx2];
+        auto tbl_1 = getDiff(m_table[db_idx1], comm_tbls);
+        auto tbl_2 = getDiff(m_table[db_idx2], comm_tbls);
+        map<string, string> schema_1{}, schema_2{};
+        for (auto tbl : tbl_1.first)
+        {
+            auto s = map_schema_1[tbl];
+            schema_1.insert({tbl, s});
+        }
+        for (auto tbl : tbl_2.first)
+        {
+            auto s = map_schema_2[tbl];
+            schema_2.insert({tbl, s});
+        }
+        return move(make_pair(schema_1, schema_2));
+    }
+
     vector<string> Table::common_tnames_db(DB_IDX db_idx1, DB_IDX db_idx2)
     {
         auto tbls = common_tbls_db(db_idx1, db_idx2);

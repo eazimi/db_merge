@@ -35,6 +35,7 @@ namespace Kaco
             VEC_PS2 common_tbls_db(DB_IDX db_idx1, DB_IDX db_idx2);
             PA_VS2 diff_tbls_db(DB_IDX db_idx1, DB_IDX db_idx2);
             PA_MAP_S2 diff_schema_db(DB_IDX db_idx1, DB_IDX db_idx2);
+            PA_MAP_S2 diff_schema_db_2(DB_IDX db_idx1, DB_IDX db_idx2);
             vector<string> common_tnames_db(DB_IDX db_idx1, DB_IDX db_idx2);
             PA_MAP_S2 read_tschema_db() const;
             bool diff_schema_tbl(string tbl_name, pair<string, string> &schema); // returns schema diff for a particular table
