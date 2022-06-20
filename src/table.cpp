@@ -10,7 +10,37 @@
 
 namespace Kaco
 {
-    static vector<string> vector_schema(const map<string, string> schema)
+    static string format_string(string data)
+    {
+        stringstream ss;
+        size_t input_len = data.length();
+        for (auto i = 0; i < input_len; i++)
+        {
+            if ((data[i] != '\n') && (data[i] != ' '))
+            {
+                if (data[i] == '\"')
+                    ss << "'";
+                else
+                    ss << data[i];
+            }
+        }
+        auto str_ss = ss.str();
+        transform(str_ss.begin(), str_ss.end(), str_ss.begin(), ::tolower);
+        return str_ss;
+    }
+
+    static map<string, string> format_schema(const map<string, string> &map_schema)
+    {
+        map<string, string> schema;
+        for (auto p : map_schema)
+        {
+            auto fmtd = format_string(p.second);
+            schema.insert(move(make_pair(p.first, fmtd)));
+        }
+        return schema;
+    }
+
+    static vector<string> vector_schema(const map<string, string> &schema)
     {
         vector<string> vec_schema;
         for (auto p : schema)
@@ -32,6 +62,28 @@ namespace Kaco
                 vec_tname.push_back(it->first);
         }
         return vec_tname;
+    }
+
+    static map<string, string> find_sname(const vector<string> &schema,
+                                          const map<string, string> &hash_map,
+                                          const map<string, string> &fmtd_hash_map)
+    {
+        map<string, string> map_tbl_schema{};
+        for (auto s : schema)
+        {
+            auto comp = [s](pair<string, string> p)
+            {
+                return (p.second == s);
+            };
+            auto it = find_if(fmtd_hash_map.begin(), fmtd_hash_map.end(), comp);
+            if (it != fmtd_hash_map.end())
+            {
+                auto tbl_name = it->first;
+                auto raw_schema = hash_map.find(tbl_name)->second;
+                map_tbl_schema.insert(move(make_pair(tbl_name, raw_schema)));
+            }
+        }
+        return map_tbl_schema;
     }
 
     Table::Table(IDbReader *main_db, IDbReader *ref_db)
@@ -105,7 +157,6 @@ namespace Kaco
 
     PA_VS2 Table::diff_tbls_db(DB_IDX db_idx1, DB_IDX db_idx2)
     {
-        PA_VS2 diff_tbls{};
         auto map_schema_1 = m_schema[db_idx1];
         auto map_schema_2 = m_schema[db_idx2];
         auto schema_1 = vector_schema(map_schema_1);
@@ -116,6 +167,20 @@ namespace Kaco
         return move(make_pair(diff_tname_1, diff_tname_2));
     }
 
+    // the logic is correct, but it detects log table as a difference, which is not correct. 
+    PA_MAP_S2 Table::diff_schema_db(DB_IDX db_idx1, DB_IDX db_idx2)
+    {
+        auto map_schema_1 = m_schema[db_idx1];
+        auto fmtd_map_s1 = move(format_schema(map_schema_1));
+        auto map_schema_2 = m_schema[db_idx2];
+        auto fmtd_map_s2 = move(format_schema(map_schema_2));
+        auto schema_1 = vector_schema(fmtd_map_s1);
+        auto schema_2 = vector_schema(fmtd_map_s2);
+        auto diff_schema = diff_by_hash(schema_1, schema_2);
+        auto diff_schema_1 = find_sname(diff_schema.first, map_schema_1, fmtd_map_s1);
+        auto diff_schema_2 = find_sname(diff_schema.second, map_schema_2, fmtd_map_s2); 
+        return move(make_pair(diff_schema_1, diff_schema_2));
+    }
     vector<string> Table::common_tnames_db(DB_IDX db_idx1, DB_IDX db_idx2)
     {
         auto tbls = common_tbls_db(db_idx1, db_idx2);

@@ -73,6 +73,51 @@ namespace Test
                 .add_data("", diff.second)
                 .str_diff_tbls();
     }
+
+    static void diff_schema(DbCompare *db)
+    {
+        auto LOCAL = DB_ALIAS[DB_IDX::local];
+        auto REMOTE = DB_ALIAS[DB_IDX::remote];
+        auto diff = db->diff_schema_db(DB_IDX::local, DB_IDX::remote);
+        auto schema_1 = diff.first;
+        auto schema_2 = diff.second;
+        vector<tuple<string, string, string>> mdfyd_schema{};
+        vector<pair<string, string>> new_local{}, new_remote{};
+        for (auto p : schema_1)
+        {
+            auto tbl_name = p.first;
+            auto it = schema_2.find(tbl_name);
+            if (it != schema_2.end())
+            {
+                mdfyd_schema.emplace_back(make_tuple(tbl_name, p.second, it->second));
+                schema_2.erase(it->first);
+            }
+            else
+                new_local.emplace_back(make_pair(tbl_name, p.second));
+        }
+        for (auto p : schema_2)
+            new_remote.emplace_back(p);
+        cout << string(1, '"') << "-> table schema diff between " << LOCAL
+             << " and " << REMOTE << string(1, '"') << endl;
+        for (auto tu : mdfyd_schema)
+        {
+            cout << "[" << get<0>(tu) << "]" << endl
+                 << "-> schema in " << LOCAL << " db: " << get<1>(tu) << endl 
+                 << "-> schema in " << REMOTE << " db: " << get<2>(tu) << string(2, '\n');
+        }
+        cout << string(1, '"') << "-> schema of new tables in " << LOCAL << " db" << string(1, '"') << endl;
+        for (auto p : new_local)
+        {
+            cout << "[" << p.first << "]" << endl
+                 << p.second << string(2, '\n');
+        }
+        cout << string(1, '"') << "-> schema of new tables in " << REMOTE << " db" << string(1, '"') << endl;
+        for (auto p : new_remote)
+        {
+            cout << "[" << p.first << "]" << endl
+                 << p.second << string(2, '\n');
+        }
+    }
 } // namespace Test
 
 #endif
