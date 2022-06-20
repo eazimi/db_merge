@@ -83,6 +83,7 @@ namespace Test
         auto schema_2 = diff.second;
         vector<tuple<string, string, string>> mdfyd_schema{};
         vector<pair<string, string>> new_local{}, new_remote{};
+        string col_names("cid|name|type|notnull|dflt_value|pk");
         for (auto p : schema_1)
         {
             auto tbl_name = p.first;
@@ -102,19 +103,22 @@ namespace Test
         for (auto tu : mdfyd_schema)
         {
             cout << "[" << get<0>(tu) << "]" << endl
-                 << "-> schema in " << LOCAL << " db: " << get<1>(tu) << endl 
+                 << col_names << endl
+                 << "-> schema in " << LOCAL << " db: " << get<1>(tu) << endl
                  << "-> schema in " << REMOTE << " db: " << get<2>(tu) << string(2, '\n');
         }
         cout << string(1, '"') << "-> schema of new tables in " << LOCAL << " db" << string(1, '"') << endl;
         for (auto p : new_local)
         {
             cout << "[" << p.first << "]" << endl
+                 << col_names << endl
                  << p.second << string(2, '\n');
         }
         cout << string(1, '"') << "-> schema of new tables in " << REMOTE << " db" << string(1, '"') << endl;
         for (auto p : new_remote)
         {
             cout << "[" << p.first << "]" << endl
+                 << col_names << endl
                  << p.second << string(2, '\n');
         }
     }
