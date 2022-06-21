@@ -5,7 +5,7 @@
 #include <functional>
 #include <vector>
 #include <utility>
-#include "IDBReader.hpp"
+#include "IDbReader.hpp"
 #include "global_defines.hpp"
 
 using namespace std;
