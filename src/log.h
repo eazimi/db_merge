@@ -18,6 +18,7 @@
 #include <vector>
 #include <utility>
 #include <memory>
+#include <tuple>
 
 using namespace std;
 
@@ -37,6 +38,8 @@ namespace Kaco
         vector<string> msg_multi{};
         string col_names = "";
         vector<vector<string>> data{};
+        vector<tuple<string, string, string>> vec_tu_data{};
+        vector<vector<pair<string, string>>> vec_pa_data{};
         vector<string> captions{};
         ostringstream oss{};
         Log() {}

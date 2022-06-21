@@ -1,10 +1,12 @@
-#ifndef MAG_BUILDER_HPP
-#define MAG_BUILDER_HPP
+#ifndef LOG_BUILDER_HPP
+#define LOG_BUILDER_HPP
 
 #include "log.h"
 #include <string>
 #include <utility>
 #include <sstream>
+#include <tuple>
+#include <iostream>
 
 using namespace std;
 
@@ -35,6 +37,12 @@ namespace Kaco
             return *this;
         }
 
+        Self &add_schema_aux(string schema_aux)
+        {
+            msg.schema_aux = schema_aux;
+            return *this;
+        }
+
         Self &add_msg_text(string msg_text)
         {
             msg.msg_text = msg_text;
@@ -44,6 +52,12 @@ namespace Kaco
         Self &add_msg_multi(string msg_text)
         {
             msg.msg_multi.emplace_back(msg_text);
+            return *this;
+        }
+
+        Self &add_msg_multi(vector<string> msg_text)
+        {
+            msg.msg_multi = move(msg_text);
             return *this;
         }
 
@@ -61,10 +75,35 @@ namespace Kaco
             return *this;
         }
 
+        Self &add_col_names(string col_names)
+        {
+            msg.col_names = col_names;
+            return *this;
+        }
+
         Self &add_data(string caption, vector<string> data)
         {
             msg.captions.emplace_back(caption);
             msg.data.emplace_back(data);
+            return *this;
+        }
+
+        Self &add_data(vector<string> caption, vector<tuple<string, string, string>> data)
+        {
+            msg.captions = move(caption);
+            msg.vec_tu_data = move(data);
+            return *this;
+        }
+
+        Self &add_captions(vector<string> captions)
+        {
+            msg.captions = move(captions);
+            return *this;
+        }
+
+        Self &add_data(vector<vector<pair<string, string>>> data)
+        {
+            msg.vec_pa_data = move(data);
             return *this;
         }
 

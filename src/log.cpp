@@ -1,5 +1,7 @@
 #include "log.h"
 #include "log_builder.hpp"
+#include "global_defines.hpp"
+#include <cstring>
 
 namespace Kaco
 {
@@ -22,16 +24,33 @@ namespace Kaco
         return ss.str();
     }
 
+    static string format_schema_string(string schema)
+    {
+        ostringstream oss{""};
+        auto token = strtok(const_cast<char *>(schema.c_str()), STR_SEPERATOR);
+        while(token != nullptr)
+        {
+            oss << string(1, '"') << token << string(1, '"') << ", ";
+            token = strtok(nullptr, STR_SEPERATOR);
+        }
+        auto oss_str = oss.str();
+        int virgool = oss_str.find_last_of(", ");
+        oss_str.replace(virgool - 1, 2, "");
+        return oss_str;
+    }
+
     Log::Log(Log &&other)
         : indent{move(other.indent)},
-        schema{move(other.schema)},
-        schema_aux{move(other.schema_aux)},
-        tbl_name{move(other.tbl_name)},
-        msg_text{move(other.msg_text)},
-        col_names{move(other.col_names)},
-        data{move(other.data)},
-        captions{move(other.captions)},
-        oss{move(other.oss)}
+          schema{move(other.schema)},
+          schema_aux{move(other.schema_aux)},
+          tbl_name{move(other.tbl_name)},
+          msg_text{move(other.msg_text)},
+          col_names{move(other.col_names)},
+          data{move(other.data)},
+          vec_tu_data{move(other.vec_tu_data)},
+          vec_pa_data{move(other.vec_pa_data)},
+          captions{move(other.captions)},
+          oss{move(other.oss)}
     {
     }
 
@@ -44,6 +63,8 @@ namespace Kaco
         msg_text = other.msg_text;
         col_names = other.col_names;
         data = other.data;
+        vec_tu_data = other.vec_tu_data;
+        vec_pa_data = other.vec_pa_data;
         captions = other.captions;
         oss.str("");
         oss << other.oss.str();
@@ -60,6 +81,8 @@ namespace Kaco
         msg_text = move(other.msg_text);
         col_names = move(other.col_names);
         data = move(other.data);
+        vec_tu_data = move(other.vec_tu_data);
+        vec_pa_data = move(other.vec_pa_data);
         captions = move(other.captions);
         oss = move(other.oss);
         return *this;
@@ -128,34 +151,32 @@ namespace Kaco
 
     string Log::str_schema()
     {
-        // "-> new/modified tables in remote db"
-        // accounts
-        // countrySettingCfg
+        oss << string(1, '"') << msg_multi[0] << " " << schema << msg_multi[1] << " " 
+            << msg_multi[2] << " " << schema_aux << msg_multi[1] << string(1, '"') << endl;
 
-        // "-> table schema diff between main and remote"
-        // [accounts]
-        // cid|name|type|notnull|dflt_value|pk
-        // -> schema in main db: 0|accName|TEXT|1||1##1|hashDefault|TEXT|1||0##2|hash|TEXT|0||0
-        // -> schema in remote db: 0|accName|TEXT|1||1##1|hashDefault|TEXT|1||0##2|hash|TEXT|0||0##3|timeStamp|DATETIME|1|DATETIME(CURRENT_TIMESTAMP, 'localtime')|0
-
-        // "-> schema of new tables in main db"
-        // [logGridChanges]
-        // cid|name|type|notnull|dflt_value|pk
-        // 0|tableName|TEXT|0||0##1|rowName|TEXT|0||0##2|columnName|TEXT|0||0##3|timeStamp|DATETIME|1|DATETIME(CURRENT_TIMESTAMP, 'localtime')|0##4|event|TEXT|1||0##5|oldValue|TEXT|0||0##6|newValue|TEXT|0||0##7|user|TEXT|0||0
-
-        // [measDataCfg]
-        // cid|name|type|notnull|dflt_value|pk
-        // 0|regionId|TEXT|1||1##1|invFamilyId|TEXT|1||2##2|powerclassId|TEXT|1||3##3|measDataId|TEXT|1||4##4|available|BOOLEAN|1||0
-
-        if (msg_multi.size() > 1)
+        for (auto tu : vec_tu_data)
         {
-            oss << string(1, '"') << msg_multi[0] << schema[0]
-                << msg_multi[1];
-            if(!schema_aux.empty())
-                oss << " " << schema_aux << string(1, '"') << endl;
-            else
-                oss << string(1, '"') << endl;
+            oss << "[" << get<0>(tu) << "]" << endl
+                 << col_names << endl
+                 << captions[0] << " " << schema << " " << captions[1] << format_schema_string(get<1>(tu)) << endl
+                 << captions[0] << " " << schema_aux << " " << captions[1] << format_schema_string(get<2>(tu)) << string(2, '\n');
         }
+
+        oss << string(1, '"') << msg_multi[3] << " " << schema << " " << msg_multi[4] << string(1, '"') << endl;
+        for (auto p : vec_pa_data[0])
+        {
+            oss << "[" << p.first << "]" << endl
+                 << col_names << endl
+                 << format_schema_string(p.second) << string(2, '\n');
+        }
+        oss << string(1, '"') << msg_multi[3] << " " << schema_aux << " " << msg_multi[4] << string(1, '"') << endl;
+        for (auto p : vec_pa_data[1])
+        {
+            oss << "[" << p.first << "]" << endl
+                 << col_names << endl
+                 << format_schema_string(p.second) << string(2, '\n');
+        }
+        
         return oss.str();
     }
 } // namespace Kaco

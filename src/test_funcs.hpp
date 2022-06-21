@@ -93,8 +93,6 @@ namespace Test
 
     static void diff_schema(DbCompare *db)
     {
-        auto LOCAL = DB_ALIAS[DB_IDX::local];
-        auto REMOTE = DB_ALIAS[DB_IDX::remote];
         auto diff = db->diff_schema_db(DB_IDX::local, DB_IDX::remote);
         auto schema_1 = diff.first;
         auto schema_2 = diff.second;
@@ -115,29 +113,41 @@ namespace Test
         }
         for (auto p : schema_2)
             new_remote.emplace_back(p);
-        cout << string(1, '"') << "-> table schema diff between " << LOCAL
-             << " and " << REMOTE << string(1, '"') << endl;
-        for (auto tu : mdfyd_schema)
-        {
-            cout << "[" << get<0>(tu) << "]" << endl
-                 << col_names << endl
-                 << "-> schema in " << LOCAL << " db: " << format_schema_string(get<1>(tu)) << endl
-                 << "-> schema in " << REMOTE << " db: " << format_schema_string(get<2>(tu)) << string(2, '\n');
-        }
-        cout << string(1, '"') << "-> schema of new tables in " << LOCAL << " db" << string(1, '"') << endl;
-        for (auto p : new_local)
-        {
-            cout << "[" << p.first << "]" << endl
-                 << col_names << endl
-                 << format_schema_string(p.second) << string(2, '\n');
-        }
-        cout << string(1, '"') << "-> schema of new tables in " << REMOTE << " db" << string(1, '"') << endl;
-        for (auto p : new_remote)
-        {
-            cout << "[" << p.first << "]" << endl
-                 << col_names << endl
-                 << format_schema_string(p.second) << string(2, '\n');
-        }
+
+        cout << Log::create()->add_msg_multi({"-> all the schema differences between", "'s tables", "and",
+                                "-> schema of new tables in", "db"})
+                                .add_schema(DB_ALIAS[DB_IDX::local])
+                                .add_schema_aux(DB_ALIAS[DB_IDX::remote])
+                                .add_captions({"-> schema in", " db:"})
+                                .add_data({"-> schema in", " db:"}, mdfyd_schema)
+                                .add_col_names(col_names)
+                                .add_data({new_local, new_remote})
+                                .str_schema();
+
+        // cout << string(1, '"') << "-> table schema diff between " << LOCAL
+        //      << " and " << REMOTE << string(1, '"') << endl;
+        // for (auto tu : mdfyd_schema)
+        // {
+        //     cout << "[" << get<0>(tu) << "]" << endl
+        //          << col_names << endl
+        //          << "-> schema in " << LOCAL << " db: " << format_schema_string(get<1>(tu)) << endl
+        //          << "-> schema in " << REMOTE << " db: " << format_schema_string(get<2>(tu)) << string(2, '\n');
+        // }
+        // cout << string(1, '"') << "-> schema of new tables in " << LOCAL << " db" << string(1, '"') << endl;
+        // for (auto p : new_local)
+        // {
+        //     cout << "[" << p.first << "]" << endl
+        //          << col_names << endl
+        //          << format_schema_string(p.second) << string(2, '\n');
+        // }
+        // cout << string(1, '"') << "-> schema of new tables in " << REMOTE << " db" << string(1, '"') << endl;
+        // for (auto p : new_remote)
+        // {
+        //     cout << "[" << p.first << "]" << endl
+        //          << col_names << endl
+        //          << format_schema_string(p.second) << string(2, '\n');
+        // }
+                                
     }
 } // namespace Test
 
